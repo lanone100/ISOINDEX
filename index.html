@@ -1,0 +1,2371 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ISO 文件檢索｜瓶膠事業部 製瓶廠</title>
+<script>
+  (function(){try{var s=JSON.parse(localStorage.getItem('isoTheme_v3')||'""');
+  document.documentElement.dataset.theme=s||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');}catch(e){}})();
+</script>
+<style>
+/* ================= 色彩 Token ================= */
+:root{
+  color-scheme:light;
+  --base:#E4ECFF;
+  --g1:#F2F7FF; --g2:#D6E6FF; --g3:#A9CBFF; --glow:rgba(255,255,255,.7);
+  --glass:rgba(255,255,255,.52); --glass2:rgba(255,255,255,.72); --bar:rgba(246,249,255,.9); --edge:rgba(255,255,255,.75);
+  --fill:rgba(255,255,255,.55); --hair:rgba(30,40,80,.10);
+  --text:#141824; --text2:#4C5670; --text3:#7A8399;
+  --shadow:0 8px 32px rgba(40,60,140,.14);
+  --blue:#0A6CFF; --green:#1E9E47; --orange:#E07800; --red:#E0322A; --purple:#8E44D6; --yellow:#B08600;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --base:#0A0E1E;
+    --g1:#050B1F; --g2:#0B1E4A; --g3:#16357A; --glow:rgba(90,150,255,.18);
+    --glass:rgba(24,28,46,.50); --glass2:rgba(28,32,52,.78); --bar:rgba(14,20,42,.9); --edge:rgba(255,255,255,.14);
+    --fill:rgba(255,255,255,.08); --hair:rgba(255,255,255,.10);
+    --text:#F2F4FA; --text2:#AEB6CC; --text3:#7F889F;
+    --shadow:0 10px 36px rgba(0,0,0,.45);
+    --blue:#5AA2FF; --green:#4CD97B; --orange:#FFAA3D; --red:#FF6B62; --purple:#C98BFF; --yellow:#FFD54A;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --base:#0A0E1E;
+  --g1:#050B1F; --g2:#0B1E4A; --g3:#16357A; --glow:rgba(90,150,255,.18);
+  --glass:rgba(24,28,46,.50); --glass2:rgba(28,32,52,.78); --bar:rgba(14,20,42,.9); --edge:rgba(255,255,255,.14);
+  --fill:rgba(255,255,255,.08); --hair:rgba(255,255,255,.10);
+  --text:#F2F4FA; --text2:#AEB6CC; --text3:#7F889F;
+  --shadow:0 10px 36px rgba(0,0,0,.45);
+  --blue:#5AA2FF; --green:#4CD97B; --orange:#FFAA3D; --red:#FF6B62; --purple:#C98BFF; --yellow:#FFD54A;
+}
+.s9001{--sc:#0A7AFF;--sc2:#4FB8FF;--ink:var(--blue)}
+.s14001{--sc:#22B04B;--sc2:#26C6B0;--ink:var(--green)}
+.s22000{--sc:#FF8A00;--sc2:#FF5A5F;--ink:var(--orange)}
+.s45001{--sc:#9B4DE0;--sc2:#5B5BF0;--ink:var(--purple)}
+
+/* ================= 基礎 ================= */
+*{box-sizing:border-box;margin:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang TC","Noto Sans TC","Microsoft JhengHei","Helvetica Neue",Arial,sans-serif;
+  font-size:16px;line-height:1.55;color:var(--text);background:var(--base);min-height:100vh;-webkit-font-smoothing:antialiased;
+  padding-bottom:calc(90px + env(safe-area-inset-bottom));
+}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+[hidden]{display:none!important}
+svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* 彩色背景（玻璃後面要有色彩才看得出霧面） */
+.bg{position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(70% 55% at 85% 0%,var(--glow),transparent 70%),
+    linear-gradient(165deg,var(--g1) 0%,var(--g2) 55%,var(--g3) 100%)}
+.bg i{display:none}
+
+.glass{background:var(--glass);backdrop-filter:blur(26px) saturate(170%);-webkit-backdrop-filter:blur(26px) saturate(170%);
+  border:1px solid var(--edge);box-shadow:var(--shadow)}
+.wrap{max-width:1320px;margin:0 auto;padding:0 16px}
+
+/* ================= 頂部：標題 + 檢索 ================= */
+.top{position:sticky;top:0;z-index:30;padding-top:env(safe-area-inset-top);border-width:0 0 1px;border-radius:0}
+.top .wrap{padding-top:10px;padding-bottom:12px}
+.head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.logo{width:34px;height:34px;border-radius:10px;flex:none;background:conic-gradient(from 225deg,#0A7AFF,#22B04B,#FF8A00,#9B4DE0,#0A7AFF);
+  display:grid;place-items:center;box-shadow:0 4px 12px rgba(90,80,220,.35)}
+.logo span{width:14px;height:14px;border-radius:4px;background:rgba(255,255,255,.92)}
+.head h1{font-size:17px;font-weight:700;letter-spacing:-.01em;line-height:1.2}
+.head p{font-size:12.5px;color:var(--text2)}
+.head .act{margin-left:auto;display:flex;gap:8px}
+.ibtn{width:40px;height:40px;border-radius:12px;border:1px solid var(--edge);background:var(--fill);display:grid;place-items:center;cursor:pointer}
+.ibtn:active{transform:scale(.94)}
+.i-sun{display:none}[data-theme="dark"] .i-sun{display:block}[data-theme="dark"] .i-moon{display:none}
+.i-snd-off{display:none}[data-sound="off"] .i-snd-off{display:block}[data-sound="off"] .i-snd-on{display:none}
+[data-sound="off"] .sndBtn{color:var(--text3)}
+@media (max-width:420px){
+  .head{gap:8px}.head .act{gap:4px}
+  .ibtn{width:36px;min-width:36px;height:36px;min-height:36px;border-radius:11px}
+  .logo{width:30px;height:30px;border-radius:9px}
+  .head h1{font-size:16px;white-space:nowrap}
+  .head p{font-size:11.5px;white-space:nowrap}
+}
+
+.search{display:flex;align-items:center;gap:10px;height:52px;padding:0 8px 0 16px;border-radius:16px;
+  background:var(--glass2);border:1px solid var(--edge);box-shadow:inset 0 1px 0 rgba(255,255,255,.4)}
+.search:focus-within{box-shadow:0 0 0 4px rgba(10,108,255,.22)}
+.search svg{color:var(--text3)}
+.search input{flex:1;min-width:0;border:0;background:transparent;outline:none;font-size:17px}
+.search input::placeholder{color:var(--text3)}
+.search .count{font-size:13px;color:var(--text2);white-space:nowrap;padding:0 4px}
+@media (max-width:479px){.search .count{display:none}}
+.scope{flex:none;appearance:none;-webkit-appearance:none;border:1px solid rgba(10,122,255,.35);background-color:rgba(10,122,255,.10);border-radius:11px;
+  min-height:36px;padding:4px 26px 4px 11px;font-size:14px;font-weight:700;color:var(--blue);cursor:pointer;line-height:1.3;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230A7AFF' stroke-width='2.6' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 8px center;background-size:13px}
+.scope:focus{outline:none;box-shadow:0 0 0 3px rgba(10,108,255,.25)}
+.scope.on{background-color:var(--blue);color:#fff;border-color:transparent;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.6' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")}
+.search .sep-v{flex:none;width:1px;height:24px;background:var(--hair)}
+.search{padding-left:8px}
+@media (max-width:479px){.search .i{display:none}.search .sep-v{display:none}}
+.smart{height:32px;padding:0 11px;border-radius:99px;border:1px solid var(--edge);background:var(--fill);font-size:13px;font-weight:700;color:var(--text3);cursor:pointer;white-space:nowrap;flex:none}
+.smart[aria-pressed="true"]{background:linear-gradient(140deg,#9B4DE0,#0A7AFF);color:#fff;border-color:transparent}
+.sugg{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:8px;font-size:13px;color:var(--text2)}
+.sugg:empty{display:none}
+.sugg .lb{font-weight:600;margin-right:2px}
+.sugg button{border:1px solid var(--edge);background:var(--fill);border-radius:99px;padding:3px 10px;font-size:13px;font-weight:600;cursor:pointer;color:var(--text)}
+.sugg button.go{color:var(--blue)}
+.search input::-webkit-search-cancel-button{-webkit-appearance:none;appearance:none}
+.snip{display:block;font-size:12.5px;color:var(--text3);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rel{display:inline-block;font-size:11.5px;font-weight:700;color:var(--purple);border:1px solid currentColor;border-radius:6px;padding:0 5px;margin-left:6px;vertical-align:1px}
+.clear{width:34px;height:34px;border:0;border-radius:50%;background:var(--fill);color:var(--text2);display:grid;place-items:center;cursor:pointer}
+.clear svg{width:16px;height:16px}
+
+/* 篩選膠囊 */
+.chips{display:flex;gap:8px;overflow-x:auto;padding:14px 16px 4px;margin:0 -16px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;height:38px;padding:0 14px;border-radius:99px;border:1px solid var(--edge);background:var(--glass);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);font-size:14.5px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.chip .n{font-size:12.5px;font-weight:700;color:var(--text2)}
+.chip .dot{width:9px;height:9px;border-radius:50%;background:linear-gradient(140deg,var(--sc),var(--sc2))}
+.chip[aria-pressed="true"]{background:linear-gradient(140deg,var(--sc,#3A4256),var(--sc2,#3A4256));color:#fff;border-color:transparent}
+.chip[aria-pressed="true"] .n{color:rgba(255,255,255,.85)}
+.chip[aria-pressed="true"] .dot{background:#fff}
+.chip.ehs{--sc:#22B04B;--sc2:#9B4DE0}
+.chip.ehs .dot{background:linear-gradient(90deg,#22B04B 50%,#9B4DE0 50%)}
+.chip.late{--sc:#FF3B30;--sc2:#FF6F5E}.chip.soon{--sc:#FF9500;--sc2:#FFB340}
+.chip.late:not([aria-pressed="true"]){color:var(--red)}.chip.soon:not([aria-pressed="true"]){color:var(--orange)}
+.chips .gap{flex:none;width:1px;background:var(--hair);margin:6px 2px}
+@media (min-width:1024px){.chips{overflow:visible;flex-wrap:wrap;margin:0;padding:16px 0 4px}}
+
+/* ================= 主體：手機直式 / PC 左右橫式 ================= */
+.main{display:grid;gap:16px;padding-top:12px}
+@media (min-width:1024px){
+  body{padding-bottom:32px}
+  .fab{display:none!important}
+}
+.card{border-radius:24px;padding:18px}
+.card-h{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:8px}
+.card-h h2{font-size:18px;font-weight:700}
+.card-h span{font-size:13px;color:var(--text2)}
+
+/* 文件清單（PC 為表格欄位，手機為卡片） */
+.lhead,.row{display:grid;grid-template-columns:var(--cols,minmax(0,1fr) 7.5rem 5.2rem 5.8rem);gap:12px;align-items:center}
+/* 可隱藏欄位 */
+.h-doc .c-doc,.h-std .c-std,.h-st .c-st,.h-due .c-due,.h-file .c-file{display:none!important}
+.fbtn{display:inline-flex;align-items:center;gap:4px;min-height:32px;padding:4px 11px;border-radius:10px;font-size:13.5px;font-weight:700;white-space:nowrap;cursor:pointer;
+  background:linear-gradient(140deg,#0A7AFF,#5B5BF0);color:#fff;line-height:1.3}
+.fbtn.add{background:transparent;color:var(--text3);border:1px dashed var(--text3);font-weight:600}
+.fbtn.add:hover{color:var(--blue);border-color:var(--blue)}
+.sh-quick{display:flex;gap:8px;margin-top:8px}
+.sh-quick .in{flex:1;min-width:0}
+.lk-del{flex:none;width:32px;height:32px;border-radius:50%;border:0;background:transparent;color:var(--text3);font-size:19px;line-height:1;cursor:pointer}
+.lk-del:hover{background:rgba(255,59,48,.12);color:var(--red)}
+.colbar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:0 2px 12px;margin-bottom:4px;border-bottom:1px solid var(--hair)}
+.colbar .lbl{font-size:13px;color:var(--text3);font-weight:600;margin-right:2px}
+.ctog{height:34px;padding:0 12px;border-radius:99px;border:1px solid var(--edge);background:var(--fill);font-size:14px;font-weight:600;cursor:pointer;
+  display:inline-flex;align-items:center;gap:6px;color:var(--text3)}
+.ctog::before{content:"";width:15px;height:15px;border-radius:5px;border:1.5px solid currentColor;flex:none}
+.ctog[aria-pressed="true"]{color:var(--text);background:var(--glass2)}
+.ctog[aria-pressed="true"]::before{border-color:#0A7AFF;background:#0A7AFF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12l5 5 9-10'/%3E%3C/svg%3E") center/11px no-repeat}
+.ctog[aria-pressed="false"]{text-decoration:line-through}
+.colbar .lk{margin-left:4px}
+.lhead{font-size:13px;color:var(--text3);font-weight:600;padding:6px 12px 8px 18px;border-bottom:1px solid var(--hair)}
+.row{position:relative;width:100%;text-align:left;border:0;background:transparent;padding:13px 12px 13px 18px;border-bottom:1px solid var(--hair);cursor:pointer;border-radius:14px}
+.row:last-child{border-bottom:0}
+.row::before{content:"";position:absolute;left:4px;top:14px;bottom:14px;width:4px;border-radius:4px;background:linear-gradient(var(--sc),var(--sc2))}
+@media (hover:hover){.row:hover{background:var(--fill)}}
+.code{display:block;font-size:13px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.title{display:block;font-size:16px;font-weight:600;line-height:1.35}
+.meta{display:block;font-size:13px;color:var(--text2);margin-top:1px}
+mark{background:rgba(255,204,0,.45);color:inherit;border-radius:3px;padding:0 1px}
+.pill{display:inline-block;padding:3px 10px;border-radius:99px;font-size:12.5px;font-weight:700;white-space:nowrap;
+  background:linear-gradient(140deg,var(--sc),var(--sc2));color:#fff}
+.st{font-size:13.5px;font-weight:700;white-space:nowrap}
+.st-ok{color:var(--green)}.st-rev{color:var(--orange)}.st-void{color:var(--text3);text-decoration:line-through}
+.due{font-size:14px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.due small{display:block;font-size:12.5px;font-weight:700}
+.due.ok small{color:var(--green)}.due.soon small{color:var(--orange)}.due.late small{color:var(--red)}.due.none{color:var(--text3)}
+@media (max-width:767px){
+  .lhead{display:none}
+  .row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
+  .row .c-doc{flex-basis:100%}
+  .row .c-due{margin-left:auto;text-align:right}
+  .due small{display:inline;margin-left:6px}
+}
+.empty{text-align:center;padding:36px 12px;color:var(--text2)}
+.empty b{display:block;color:var(--text);font-size:17px;margin-bottom:4px}
+.foot{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-top:10px;font-size:13px;color:var(--text3)}
+.lk{border:0;background:none;color:var(--blue);font-size:13px;font-weight:600;cursor:pointer;padding:0}
+
+/* ================= 工具面板 ================= */
+.seg{display:flex;gap:3px;padding:4px;border-radius:14px;background:var(--fill);border:1px solid var(--edge);margin-bottom:16px}
+.seg button{flex:1;border:0;background:transparent;font-size:14px;font-weight:600;padding:9px 4px;border-radius:10px;cursor:pointer;white-space:nowrap;color:var(--text2)}
+.seg button[aria-pressed="true"]{background:var(--glass2);color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,.12)}
+
+/* ================= 頁面切換：檢索頁 / 工具頁 ================= */
+.pbtn{height:40px;padding:0 12px;border-radius:12px;border:1px solid var(--edge);background:var(--fill);display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap}
+.pbtn.pri{background:linear-gradient(140deg,#0A7AFF,#5B5BF0);color:#fff;border-color:transparent}
+.pbtn span{display:none}
+@media (min-width:768px){.pbtn span{display:inline}}
+@media (max-width:767px){#goForm{display:none}} /* 手機用右下角按鈕新增 */
+.back{display:inline-flex;align-items:center;gap:2px;height:40px;padding:0 12px 0 6px;border-radius:12px;border:1px solid var(--edge);background:var(--fill);
+  color:var(--blue);font-size:15px;font-weight:600;cursor:pointer;flex:none;white-space:nowrap}
+.ttl{font-size:17px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.tw{max-width:1100px}
+.tlayout{padding-top:12px}
+.tnav{position:sticky;top:calc(var(--hdr,62px) + 4px);z-index:20;background:var(--glass2);backdrop-filter:blur(26px) saturate(170%);-webkit-backdrop-filter:blur(26px) saturate(170%);box-shadow:var(--shadow)}
+.tnav b{font-weight:inherit}
+.tnav .l,.tnav .d{display:none}
+.editbar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 14px;border-radius:14px;margin-bottom:14px;
+  background:rgba(10,122,255,.12);border:1px solid rgba(10,122,255,.3);font-size:14px;font-weight:600;color:var(--blue)}
+@media (min-width:1024px){
+  .tlayout{display:grid;grid-template-columns:260px minmax(0,1fr);gap:22px;align-items:start;padding-top:22px}
+  .tnav{flex-direction:column;top:96px;padding:8px;border-radius:20px;margin:0}
+  .tnav button{text-align:left;padding:12px 14px;border-radius:13px;font-size:15.5px}
+  .tnav .s{display:none}
+  .tnav .l{display:block;color:var(--text)}
+  .tnav .d{display:block;font-size:12.5px;font-weight:500;color:var(--text3);margin-top:2px}
+  .tools{padding:26px 30px}
+}
+.f{margin-bottom:12px}
+.lab{display:block;font-size:13.5px;font-weight:600;color:var(--text2);margin:0 0 5px 4px}
+.req::after{content:" *";color:var(--red)}
+.in{width:100%;height:46px;border:1px solid var(--edge);border-radius:13px;background:var(--fill);padding:0 13px;font-size:16px;outline:none;appearance:none;-webkit-appearance:none}
+textarea.in{height:auto;min-height:72px;padding:11px 13px;resize:vertical}
+select.in{padding-right:34px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238A93A8' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;background-size:16px}
+.in:focus{border-color:var(--blue);background-color:var(--glass2);box-shadow:0 0 0 4px rgba(10,108,255,.18)}
+.in.bad{border-color:var(--red)}
+.err{font-size:13px;color:var(--red);margin:4px 0 0 4px}.err:empty{display:none}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.with-btn{display:flex;gap:8px}.with-btn .in{flex:1;min-width:0}
+.mini{height:46px;border:1px solid var(--edge);border-radius:13px;padding:0 12px;background:var(--fill);color:var(--blue);font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap}
+.opts{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.opts.three{grid-template-columns:repeat(3,1fr)}
+.opt{height:42px;border:1px solid var(--edge);border-radius:12px;background:var(--fill);font-size:14.5px;font-weight:600;cursor:pointer}
+.opt[aria-pressed="true"]{background:linear-gradient(140deg,var(--sc,#0A7AFF),var(--sc2,#5B5BF0));color:#fff;border-color:transparent}
+.quick{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
+.quick button{border:1px solid var(--edge);background:var(--fill);font-size:13px;font-weight:600;padding:4px 11px;border-radius:99px;cursor:pointer}
+.preview{font-size:13.5px;color:var(--text2);padding:9px 12px;border-radius:12px;background:var(--fill);margin:-2px 0 12px}
+.preview b{color:var(--text)}
+details.more{margin:4px 0 12px}
+details.more summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--blue);padding:6px 4px;list-style:none}
+details.more summary::-webkit-details-marker{display:none}
+details.more summary::before{content:"＋ "}
+details.more[open] summary::before{content:"－ "}
+.btn{height:50px;border:0;border-radius:15px;font-size:16px;font-weight:700;cursor:pointer;width:100%}
+.btn:active{transform:scale(.98)}
+.btn.pri{background:linear-gradient(140deg,#0A7AFF,#5B5BF0);color:#fff;box-shadow:0 10px 22px -10px #0A7AFF}
+.btn.sub{background:var(--fill);border:1px solid var(--edge);height:44px;font-size:15px}
+.btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.note{font-size:12.5px;color:var(--text3);text-align:center;margin-top:10px}
+
+/* 計算 */
+.formula{text-align:center;padding:12px;border-radius:14px;background:var(--fill);border:1px solid var(--edge);font-size:16px;font-weight:600;margin-bottom:14px}
+.formula b{color:var(--blue)}
+.stepper{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 8px 8px 14px;border-radius:14px;background:var(--fill);margin-bottom:8px}
+.stepper .hint{display:block;font-size:12.5px;color:var(--text3)}
+.stepper .ctl{display:flex;align-items:center;gap:4px}
+.stepper button{width:42px;height:42px;border:1px solid var(--edge);border-radius:12px;background:var(--glass2);font-size:21px;cursor:pointer}
+.stepper output{width:34px;text-align:center;font-size:22px;font-weight:800}
+.lv1{--lc:var(--green)}.lv2{--lc:var(--yellow)}.lv3{--lc:var(--orange)}.lv4{--lc:var(--red)}
+.result{display:flex;align-items:center;gap:16px;padding:14px 16px;border-radius:18px;background:var(--glass2);border:1px solid var(--edge);margin:12px 0}
+.result .big{font-size:44px;font-weight:800;line-height:1;color:var(--lc);min-width:58px;text-align:center;font-variant-numeric:tabular-nums}
+.result .lvt{font-size:17px;font-weight:700;color:var(--lc)}
+.result p{font-size:14px;color:var(--text2)}
+.mtbl{width:100%;border-collapse:collapse;font-size:14px}
+.mtbl th{font-size:12.5px;color:var(--text3);font-weight:600;text-align:left;padding:6px 8px;border-bottom:1px solid var(--hair)}
+.mtbl td{padding:7px 8px;border-bottom:1px solid var(--hair)}
+.mtbl tr:last-child td{border-bottom:0}
+.mtbl .lvn{color:var(--lc);font-weight:700}
+.prog{height:14px;border-radius:99px;background:var(--fill);border:1px solid var(--edge);overflow:hidden;margin:8px 0}
+.prog span{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#0A7AFF,#22C55E);transition:width .4s ease}
+.warn{font-size:13px;color:var(--red);margin-top:4px}
+
+/* 資料夾匯入 */
+.pc-only{display:none}
+@media (min-width:1024px){.pc-only{display:inline-flex}}
+.hint{font-size:12.5px;color:var(--text3);margin:4px 0 0 4px}
+.steps{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px;font-size:14px}
+.steps span{padding:3px 10px;border-radius:99px;background:var(--glass2);border:1px solid var(--edge)}
+.steps i{font-style:normal;color:var(--text3)}
+.chk{display:flex;align-items:center;gap:10px;font-size:14.5px;padding:7px 4px;cursor:pointer}
+.chk input{width:20px;height:20px;accent-color:#0A7AFF;flex:none}
+.pv-sum{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}
+.pv-sum div{background:var(--fill);border:1px solid var(--edge);border-radius:14px;padding:10px 6px;text-align:center}
+.pv-sum b{display:block;font-size:22px;line-height:1.2}
+.pv-sum span{font-size:12.5px;color:var(--text2)}
+.pv-wrap{max-height:340px;overflow:auto;border:1px solid var(--edge);border-radius:14px;background:var(--fill)}
+.pv{width:100%;border-collapse:collapse;font-size:13.5px}
+.pv th{position:sticky;top:0;background:var(--glass2);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);text-align:left;padding:8px;font-weight:600;color:var(--text2);white-space:nowrap}
+.pv td{padding:7px 8px;border-top:1px solid var(--hair);vertical-align:top}
+.pv .new{color:var(--green);font-weight:700;white-space:nowrap}.pv .upd{color:var(--blue);font-weight:700;white-space:nowrap}
+.pv .mt{color:var(--text3);font-size:12px}
+.skip-list{font-size:13px;color:var(--text2);max-height:200px;overflow:auto;padding:4px 4px 4px 22px}
+.skip-list li{margin:3px 0;word-break:break-all}
+.ex{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+.ex td{padding:6px;border-top:1px solid var(--hair);word-break:break-all}
+.ex td:first-child{color:var(--text2);white-space:nowrap}
+.sh-file{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.sh-file .btn{height:44px;font-size:14.5px;background:var(--fill);border:1px solid var(--edge)}
+.att{display:inline-block;font-size:11.5px;font-weight:700;color:var(--blue);border:1px solid currentColor;border-radius:6px;padding:0 6px;margin-left:6px;vertical-align:1px;cursor:pointer}
+.att:hover{background:var(--blue);color:#fff}
+/* 連結檔案 */
+.lk-row{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:13px;background:var(--fill);border:1px solid var(--edge);margin-bottom:6px}
+.lk-txt{flex:1;min-width:0}
+.lk-txt b{display:block;font-size:14.5px;font-weight:600;overflow-wrap:anywhere;line-height:1.35}
+.lk-txt small{display:block;font-size:12px;color:var(--text3);overflow-wrap:anywhere;line-height:1.35}
+.tagk{flex:none;font-size:11.5px;font-weight:700;padding:2px 7px;border-radius:7px;background:rgba(10,122,255,.13);color:var(--blue)}
+.tagk.web{background:rgba(155,77,224,.15);color:var(--purple)}
+.lk-x{flex:none;width:34px;height:34px;border-radius:50%;border:0;background:transparent;color:var(--text3);font-size:20px;line-height:1;cursor:pointer}
+.lk-x:hover{background:rgba(255,59,48,.12);color:var(--red)}
+.lk-open,.lk-copy{flex:none;min-height:34px;padding:4px 12px;border-radius:10px;border:1px solid var(--edge);background:var(--glass2);font-size:13.5px;font-weight:700;cursor:pointer;line-height:1.3}
+.lk-open{background:linear-gradient(140deg,#0A7AFF,#5B5BF0);color:#fff;border-color:transparent}
+.lk-add{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.sh-sec{margin-top:12px}
+.sh-sec h4{font-size:13px;color:var(--text2);font-weight:600;margin:0 0 6px 4px}
+@media (max-width:420px){.sh-sec .lk-row{flex-wrap:wrap}.sh-sec .lk-txt{flex-basis:calc(100% - 60px)}.sh-sec .lk-open{margin-left:auto}}
+.top.glass,.tnav{background:var(--bar)}   /* 頂部列不透明一點，捲動時下方文字不會透出干擾 */
+
+/* 篩選列：標準按鈕在左，「清單｜文件櫃」切換在右 */
+.filterbar{display:flex;align-items:center;flex-wrap:wrap;gap:4px 12px}
+.filterbar .chips{flex:1 1 100%}
+.filterbar .viewbar{margin:8px 0 0 auto}
+.filterbar .viewbar .vinfo{order:-1}
+@media (min-width:1024px){
+  .filterbar{flex-wrap:nowrap;padding-top:16px}
+  .filterbar .chips{flex:1 1 auto;min-width:0;padding:0}
+  .filterbar .viewbar{margin:0 0 0 auto;flex:none;flex-wrap:nowrap}
+}
+/* ================= 文件櫃畫面 ================= */
+.viewbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px}
+.viewseg{display:inline-flex;gap:3px;padding:4px;border-radius:14px;background:var(--glass);border:1px solid var(--edge);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.viewseg button{border:0;background:transparent;min-height:34px;padding:4px 14px;border-radius:10px;font-size:14.5px;font-weight:700;color:var(--text2);cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.viewseg button svg{width:17px;height:17px}
+.viewseg button[aria-pressed="true"]{background:var(--glass2);color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.viewbar .vinfo{font-size:13px;color:var(--text2)}
+.cabs{display:grid;gap:18px;grid-template-columns:minmax(0,1fr);min-width:0}
+.cab,.cab-box,.main{min-width:0}
+
+.cab{border-radius:24px;padding:16px}
+.cab-h{display:flex;align-items:center;flex-wrap:wrap;gap:8px 10px;margin-bottom:12px}
+.cab-h h3{font-size:17px;font-weight:700}
+.cab-h small{font-size:13px;color:var(--text2);margin-left:auto}
+.cab-box{--wood1:#cdb48f;--wood2:#a3865e;border:7px solid #b49b77;border-radius:12px;background:linear-gradient(180deg,#2b2723,#1a1714);
+  box-shadow:inset 0 3px 12px rgba(0,0,0,.65),0 6px 18px rgba(40,30,10,.18);overflow:hidden}
+[data-theme="dark"] .cab-box{border-color:#7a6750;--wood1:#9a8162;--wood2:#6f5a40}
+.shelf{display:flex;align-items:flex-end;gap:6px;padding:30px 14px 0;overflow-x:auto;scrollbar-width:thin}
+.board{height:13px;background:linear-gradient(var(--wood1),var(--wood2));box-shadow:0 4px 7px rgba(0,0,0,.5);position:relative;z-index:1}
+.board span{position:absolute;left:10px;top:-1px;font-size:10.5px;font-weight:700;color:rgba(60,40,15,.75);letter-spacing:.1em}
+.spine{flex:none;position:relative;width:52px;height:236px;border:0;border-radius:4px 4px 1px 1px;cursor:pointer;padding:9px 5px 0;
+  background:linear-gradient(90deg,#121212,#2d2d2d 45%,#151515);box-shadow:inset -2px 0 0 rgba(255,255,255,.07),3px 0 5px rgba(0,0,0,.55);
+  display:flex;flex-direction:column;align-items:center;transition:transform .18s ease,opacity .2s,filter .2s}
+.spine{transform-origin:50% 100%}
+/* 滑鼠移上書背：浮起＋放大＋紅框（觸控裝置以按下時呈現） */
+@media (hover:hover){
+  .spine:not(.add):hover{transform:translateY(-14px) scale(1.07);box-shadow:0 0 0 3px #FF3B30,0 18px 28px rgba(0,0,0,.6);z-index:5}
+}
+.spine:not(.add):focus-visible,.spine:not(.add):active{transform:translateY(-14px) scale(1.07);box-shadow:0 0 0 3px #FF3B30,0 18px 28px rgba(0,0,0,.6);z-index:5;outline:none}
+.spine .tab{width:26px;height:11px;border-radius:2px;margin-bottom:5px;flex:none}
+.spine .tab.none{background:transparent}
+.spine .lbl{flex:none;width:40px;height:162px;border-radius:2px;padding:6px 1px;writing-mode:vertical-rl;text-orientation:mixed;
+  font-size:13px;font-weight:800;line-height:1.2;color:#000;overflow:hidden;border:1px solid rgba(0,0,0,.35);
+  background:linear-gradient(var(--lab,#f7f5ef) 0 var(--labh,0%),#f7f5ef var(--labh,0%));text-align:start}
+.spine .lbl.sm{font-size:11.5px}
+.spine .lbl.xs{font-size:10.5px}
+.spine .lbl .no{text-combine-upright:all;-webkit-text-combine:horizontal;margin-bottom:3px}
+.spine .lbl.ink-w{color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.55)}
+.spine .ring{width:22px;height:22px;border-radius:50%;border:2.5px solid #dcdcdc;box-shadow:inset 0 0 0 3px #0e0e0e;margin-top:12px;flex:none}
+.spine .cnt{position:absolute;top:-7px;right:-5px;min-width:21px;height:21px;padding:0 5px;border-radius:99px;background:#0A7AFF;color:#fff;
+  font-size:11.5px;font-weight:800;display:grid;place-items:center;box-shadow:0 2px 6px rgba(0,0,0,.5)}
+.spine .todo{position:absolute;top:4px;left:4px;width:9px;height:9px;border-radius:50%;background:#FF9500;box-shadow:0 0 0 2px #111}
+.spine.dim{opacity:1;filter:none}
+.spine.hit{transform:translateY(-10px)}
+
+.spine.hit{box-shadow:0 0 0 3px #FFD60A,0 0 20px rgba(255,214,10,.75)}
+.spine.pulse{animation:pulse .7s ease 4}
+@keyframes pulse{0%,100%{transform:none}50%{transform:translateY(-14px)}}
+.spine.add{background:transparent;border:2px dashed rgba(255,255,255,.28);box-shadow:none;color:rgba(255,255,255,.6);font-size:24px;justify-content:center;padding:0}
+.spine.add:hover{color:#fff;border-color:rgba(255,255,255,.6)}
+.sgap{flex:none;width:44px}
+.cab-foot{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;font-size:12.5px;color:var(--text3);margin-top:10px}
+@media (max-width:600px){
+  .spine{width:42px;height:206px}
+  .spine .lbl{width:34px;height:140px;font-size:12px}
+  .spine .lbl.sm{font-size:11px}.spine .lbl.xs{font-size:10px}
+  .sgap{width:24px}
+  .cab{padding:12px}
+}
+.binder-docs .lk-row{cursor:pointer}
+.binder-docs .lk-row:hover{border-color:var(--blue)}
+.bedit{display:none;margin-top:10px}
+.bedit.open{display:block}
+.bwarn{margin-top:10px;padding:9px 12px;border-radius:12px;background:rgba(255,149,0,.14);color:var(--orange);font-size:13.5px;font-weight:600}
+
+/* 目錄對照 */
+.map-cab{margin-top:16px}
+.map-cab h4{font-size:15px;font-weight:700;margin:0 0 8px 4px}
+.map-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr) auto;gap:8px 10px;align-items:center;padding:9px 10px;border-radius:14px;background:var(--fill);border:1px solid var(--edge);margin-bottom:6px}
+.map-row .mb b{display:block;font-size:14px;font-weight:700;line-height:1.35;overflow-wrap:anywhere}
+.map-row .mb small{display:block;font-size:12px;color:var(--text3)}
+.map-row .in{min-height:40px;font-size:14.5px;padding-top:7px;padding-bottom:7px}
+.map-row .mn{font-size:12.5px;font-weight:700;white-space:nowrap;color:var(--text2);text-align:right;min-width:4.5em}
+.map-row .mn.ok{color:var(--green)}.map-row .mn.no{color:var(--orange)}
+.map-row .auto{display:inline-block;font-size:11px;font-weight:700;color:var(--purple);border:1px solid currentColor;border-radius:6px;padding:0 5px;margin-left:6px}
+.map-row.flash{box-shadow:0 0 0 3px #FFD60A}
+@media (max-width:640px){.map-row{grid-template-columns:minmax(0,1fr) auto}.map-row .in{grid-column:1/-1;grid-row:2}}
+.file-list .lk-row{cursor:default}
+.file-list .lk-row small{font-size:11.5px}
+.dirbox{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:9px 12px;border-radius:12px;background:var(--fill);border:1px solid var(--edge);font-size:13.5px;overflow-wrap:anywhere}
+.dirbox b{flex:1;min-width:0}
+
+/* 自製確認／輸入視窗（取代瀏覽器內建視窗，預覽框與各瀏覽器都能用） */
+.dlg-bg{position:fixed;inset:0;z-index:90;background:rgba(10,14,30,.45);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:20px}
+.dlg-bg.open{display:flex}
+.dlg{width:100%;max-width:420px;border-radius:22px;padding:22px;background:var(--bar);animation:up .2s ease-out}
+.dlg p{font-size:16px;line-height:1.6;white-space:pre-line;overflow-wrap:anywhere;margin-bottom:14px}
+.dlg .in{margin-bottom:14px}
+.dlg .btns{margin-top:0}
+.btn.danger{background:linear-gradient(140deg,#FF3B30,#FF6B5E);box-shadow:0 10px 20px -10px #FF3B30}
+
+/* 文件夾視窗：標示搜尋關鍵字 */
+.lk-row.match{border:2px solid #FFD60A;background:rgba(255,214,10,.13);box-shadow:0 0 0 3px rgba(255,214,10,.28)}
+.lk-row.match .tagk{background:#FFD60A;color:#1d1d1f}
+.qhit{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0 2px;padding:10px 12px;border-radius:13px;background:rgba(255,214,10,.18);border:1px solid rgba(214,170,0,.45);font-size:14px;font-weight:600}
+.qhit.none{background:var(--fill);border-color:var(--edge);color:var(--text2);font-weight:500}
+.qhit mark{font-weight:800}
+
+/* 手機新增按鈕 */
+.fab{position:fixed;right:18px;bottom:calc(20px + env(safe-area-inset-bottom));z-index:40;height:56px;padding:0 20px;border:0;border-radius:99px;
+  background:linear-gradient(140deg,#0A7AFF,#5B5BF0);color:#fff;font-size:16px;font-weight:700;display:flex;align-items:center;gap:6px;
+  box-shadow:0 12px 28px -8px rgba(10,108,255,.7);cursor:pointer}
+
+/* 詳情 */
+.sheet-bg{position:fixed;inset:0;z-index:60;background:rgba(10,14,30,.35);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:none;align-items:flex-end;justify-content:center}
+.sheet-bg.open{display:flex}
+.sheet{width:100%;max-width:560px;max-height:88vh;overflow:auto;border-radius:26px 26px 0 0;padding:10px 20px calc(20px + env(safe-area-inset-bottom));
+  background:var(--glass2);animation:up .25s ease-out}
+@keyframes up{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
+@media (min-width:768px){.sheet-bg{align-items:center}.sheet{border-radius:26px;padding-bottom:22px}}
+.grab{width:40px;height:5px;border-radius:9px;background:var(--hair);margin:0 auto 12px}
+.sh-head{padding:16px;border-radius:18px;background:linear-gradient(140deg,var(--sc),var(--sc2));color:#fff;margin-bottom:12px}
+.sh-head small{font-size:13px;font-weight:700;opacity:.9}
+.sh-head h3{font-size:20px;line-height:1.3;margin:3px 0}
+.sh-head p{font-size:14px;opacity:.9}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.kv div{background:var(--fill);border:1px solid var(--edge);border-radius:13px;padding:9px 12px}
+.kv .full{grid-column:1/-1}
+.kv span{display:block;font-size:12.5px;color:var(--text2)}
+.kv b{font-size:15px;font-weight:600}
+.sh-act{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:16px}
+.sh-act .btn{height:46px;font-size:15px;background:var(--fill);border:1px solid var(--edge)}
+.sh-act .edit{background:linear-gradient(140deg,#0A7AFF,#5B5BF0);color:#fff;border:0}
+.sh-act .del{color:var(--red)}
+
+.toast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom));transform:translate(-50%,16px);opacity:0;z-index:70;
+  padding:11px 18px;border-radius:99px;font-size:14px;font-weight:600;pointer-events:none;transition:opacity .25s,transform .25s;max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media (min-width:1024px){.toast{bottom:28px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media print{
+  .bg,.top .act,.search,.chips,.tools,.fab,.foot,.colbar{display:none!important}
+  body{background:#fff;padding:0}.main{display:block}
+  .glass{background:#fff;box-shadow:none;border:0;backdrop-filter:none}
+  .top{position:static}
+}
+
+/* ================= 文字完整顯示修正 =================
+   原則：不用固定高度、不用省略號裁切；字型較寬（如 Windows 微軟正黑體）
+   或手機放大字級時，框會自動長高、文字自動換行，不會被切掉。 */
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang TC","Microsoft JhengHei UI","Microsoft JhengHei","Noto Sans TC","Noto Sans CJK TC","Helvetica Neue",Arial,sans-serif}
+.ibtn{height:auto;min-height:40px}
+.pbtn,.back{height:auto;min-height:40px;padding-top:6px;padding-bottom:6px;line-height:1.3}
+.chip{height:auto;min-height:38px;padding-top:6px;padding-bottom:6px;line-height:1.3}
+.ctog{height:auto;min-height:34px;padding:5px 12px;line-height:1.3}
+.smart{height:auto;min-height:32px;padding:5px 11px;line-height:1.3}
+.mini{height:auto;min-height:46px;padding-top:8px;padding-bottom:8px;line-height:1.3}
+.opt{height:auto;min-height:42px;padding:7px 4px;line-height:1.3;white-space:normal;word-break:break-word}
+.seg button{white-space:normal;line-height:1.3;word-break:break-word}
+.btn{height:auto;min-height:50px;padding:11px 12px;line-height:1.35}
+.btn.sub,.sh-act .btn,.sh-file .btn{min-height:44px}
+.stepper button{height:auto;min-height:42px}
+.quick button,.sugg button{line-height:1.35;white-space:normal;text-align:left}
+.in{height:auto;min-height:46px;padding-top:10px;padding-bottom:10px;line-height:1.4}
+select.in{padding:11px 28px 11px 11px;background-position:right 8px center;background-size:14px}
+@media (max-width:380px){.row2{gap:8px}}
+textarea.in.auto{min-height:46px;resize:none;overflow:hidden;overflow-wrap:anywhere}
+.ttl{white-space:normal;line-height:1.25;overflow:visible}
+@media (max-width:479px){.ttl{font-size:16px}}
+.snip{white-space:normal;overflow:visible}
+.title,.meta,.snip,.kv b,.pv td,.skip-list li,.preview,.result p,.ready-txt{overflow-wrap:anywhere}
+.pill,.st,.due{white-space:nowrap}
+.result .big{font-size:clamp(30px,10vw,44px);min-width:0}
+#rPct{font-size:clamp(24px,8vw,34px)}
+.result{flex-wrap:wrap}
+.result > div:last-child{flex:1;min-width:10em}
+.lhead span{white-space:nowrap}
+.head{flex-wrap:wrap}
+.head > div:nth-child(2){min-width:0;flex:1}
+.head h1,.head p{overflow-wrap:anywhere}
+.stepper{flex-wrap:wrap}
+.toast{white-space:normal}
+.tnav .d{white-space:normal}
+</style>
+</head>
+<body>
+<div class="bg" aria-hidden="true"></div>
+
+<!-- ===================== 頁面一：文件檢索 ===================== -->
+<div class="page" id="pageList">
+<header class="top glass">
+  <div class="wrap">
+    <div class="head">
+      <div class="logo" aria-hidden="true"><span></span></div>
+      <div><h1>ISO 文件檢索</h1><p>瓶膠事業部 製瓶廠</p></div>
+      <div class="act">
+        <button class="pbtn pri" id="goForm" title="新增文件"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span>新增文件</span></button>
+        <button class="pbtn" id="goCalc" title="計算工具"><svg class="i" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 11h.01M12 11h.01M16 11h.01M8 15h.01M12 15h.01M16 15h.01M8 18h8"/></svg><span>計算工具</span></button>
+        <button class="pbtn pc-only" id="goSync" title="從資料夾同步"><svg class="i" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M12 11v5M9.5 13.5 12 16l2.5-2.5"/></svg><span>資料夾同步</span></button>
+        <button class="ibtn" id="btnCsv" title="匯出 CSV" aria-label="匯出 CSV"><svg class="i" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg></button>
+        <button class="ibtn sndBtn" title="點擊音效：開／關" aria-label="切換點擊音效">
+          <svg class="i i-snd-on" viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+          <svg class="i i-snd-off" viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="m16 9 6 6M22 9l-6 6"/></svg>
+        </button>
+        <button class="ibtn themeBtn" title="切換淺色／深色" aria-label="切換淺色或深色模式">
+          <svg class="i i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+          <svg class="i i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        </button>
+      </div>
+    </div>
+    <label class="search">
+      <select class="scope" id="qScope" aria-label="搜尋範圍" title="選擇只在哪個欄位搜尋">
+        <option value="all">全部</option>
+        <option value="code">編號</option>
+        <option value="title">名稱</option>
+        <option value="clause">條款</option>
+        <option value="dept">單位</option>
+      </select>
+      <span class="sep-v"></span>
+      <svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="q" type="search" placeholder="搜尋編號、名稱、條款、單位，支援同義詞與錯字" aria-label="搜尋文件" enterkeyhint="search" autocomplete="off">
+      <span class="count" id="count"></span>
+      <button type="button" class="clear" id="qClear" hidden aria-label="清除搜尋"><svg class="i" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+      <button type="button" class="smart" id="smartBtn" title="智慧搜尋：自動比對同義詞、相關詞與近似字">✦ 智慧</button>
+    </label>
+    <div class="sugg" id="sugg" aria-live="polite"></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="filterbar">
+  <nav class="chips" aria-label="篩選">
+    <button class="chip" data-std="">全部 <span class="n" id="cAll">0</span></button>
+    <button class="chip s9001" data-std="9001"><span class="dot"></span>9001 <span class="n" id="c9001">0</span></button>
+    <button class="chip s14001 ehs" data-std="14001|45001"><span class="dot"></span>14001／45001 <span class="n" id="cEHSn">0</span></button>
+    <button class="chip s22000" data-std="22000"><span class="dot"></span>22000／HACCP <span class="n" id="c22000">0</span></button>
+  </nav>
+  <div class="viewbar">
+    <div class="viewseg" role="group" aria-label="檢視方式">
+      <button type="button" data-view="list"><svg class="i" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>清單</button>
+      <button type="button" data-view="cab"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 12h18M8 5v5M11 5v5M14 5v5M8 14v5M11 14v5"/></svg>文件櫃</button>
+    </div>
+    <span class="vinfo" id="vinfo"></span>
+  </div>
+  </div>
+
+  <main class="main">
+    <!-- ===== 文件清單 ===== -->
+    <section id="cabView" class="cabs" aria-label="文件櫃" hidden></section>
+    <section class="card glass" id="listCard" aria-label="文件清單">
+      <div class="colbar" role="group" aria-label="顯示欄位">
+        <span class="lbl">顯示欄位</span>
+        <button type="button" class="ctog" data-col="doc">文件</button>
+        <button type="button" class="ctog" data-col="std">標準</button>
+        <button type="button" class="ctog" data-col="st">狀態</button>
+        <button type="button" class="ctog" data-col="file">檔案</button>
+        <button type="button" class="lk" id="colReset" hidden>全部顯示</button>
+      </div>
+      <div class="lhead"><span class="c-doc">文件</span><span class="c-std">標準</span><span class="c-st">狀態</span><span class="c-file">檔案</span></div>
+      <div id="list"></div>
+      <div class="empty" id="empty" hidden><b>沒有符合的文件</b>試著減少關鍵字，或點「全部」清除篩選</div>
+      <div class="foot"><span>點任一筆可查看、編輯或複製編號</span><button class="lk" id="btnSample">重新載入 Excel 文件目錄</button></div>
+    </section>
+
+  </main>
+</div>
+<button class="fab" id="fab"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>新增文件</button>
+</div>
+
+<!-- ===================== 頁面二：新增與計算工具 ===================== -->
+<div class="page" id="pageTools" hidden>
+<header class="top glass">
+  <div class="wrap tw">
+    <div class="head" style="margin-bottom:0">
+      <button class="back" id="btnBack"><svg class="i" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>文件檢索</button>
+      <h1 class="ttl" id="toolTitle">新增文件</h1>
+      <div class="act">
+        <button class="ibtn sndBtn" title="點擊音效：開／關" aria-label="切換點擊音效">
+          <svg class="i i-snd-on" viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+          <svg class="i i-snd-off" viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="m16 9 6 6M22 9l-6 6"/></svg>
+        </button>
+        <button class="ibtn themeBtn" title="切換淺色／深色" aria-label="切換淺色或深色模式">
+          <svg class="i i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+          <svg class="i i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+<div class="wrap tw">
+  <div class="tlayout">
+    <nav class="seg tnav" id="toolSeg" aria-label="工具切換">
+      <button type="button" data-t="form"><b><span class="s">新增</span><span class="l">新增文件</span></b><span class="d">建立或編輯 ISO 文件</span></button>
+      <button type="button" data-t="risk"><b><span class="s">風險</span><span class="l">風險評估</span></b><span class="d">R = S × L</span></button>
+      <button type="button" data-t="ready"><b><span class="s">準備度</span><span class="l">稽核準備度</span></b><span class="d">符合 ÷ 評估 × 100%</span></button>
+      <button type="button" data-t="rev"><b><span class="s">審查日</span><span class="l">審查日試算</span></b><span class="d">生效日期 + 審查週期</span></button>
+      <button type="button" data-t="sync"><b><span class="s">資料夾</span><span class="l">資料夾匯入</span></b><span class="d">從 D:\J-ISO驗證文件 撈取</span></button>
+      <button type="button" data-t="map"><b><span class="s">對照</span><span class="l">目錄對照</span></b><span class="d">文件櫃書背 ↔ 電腦資料夾</span></button>
+    </nav>
+    <section class="card glass tools" id="tools" aria-label="工具內容">
+
+      <!-- 新增 / 編輯 -->
+      <div data-pane="form">
+        <div class="editbar" id="editBar" hidden><span id="formTitle">正在編輯</span><button type="button" class="lk" id="cancelEdit">取消編輯</button></div>
+        <form id="docForm" novalidate autocomplete="off">
+          <div class="f">
+            <span class="lab req">ISO 標準</span>
+            <div class="opts" id="stdSeg">
+              <button type="button" class="opt s9001" data-std="9001">9001</button>
+              <button type="button" class="opt s14001" data-std="14001">14001</button>
+              <button type="button" class="opt s22000" data-std="22000" title="ISO 22000／HACCP">22000<small style="display:block;font-size:11px;font-weight:600;opacity:.85">HACCP</small></button>
+              <button type="button" class="opt s45001" data-std="45001">45001</button>
+            </div>
+            <p class="err"></p>
+          </div>
+          <div class="f">
+            <label class="lab req" for="fCode">文件編號</label>
+            <div class="with-btn"><input class="in" id="fCode" placeholder="例如 QP-801"><button type="button" class="mini" id="btnSuggest">自動編號</button></div>
+            <p class="err"></p>
+          </div>
+          <div class="f">
+            <label class="lab req" for="fTitle">文件名稱</label>
+            <input class="in" id="fTitle" placeholder="例如 成型作業管制程序">
+            <p class="err"></p>
+          </div>
+          <div class="f">
+            <label class="lab" for="fClause">對應條款</label>
+            <input class="in" id="fClause" list="clauseList" placeholder="先選標準，再點此挑選">
+            <datalist id="clauseList"></datalist>
+          </div>
+          <div class="f">
+            <label class="lab" for="fDept">權責單位</label>
+            <input class="in" id="fDept" list="deptList" placeholder="例如 成型生產課">
+            <datalist id="deptList"></datalist>
+            <div class="quick" id="deptQuick"></div>
+          </div>
+          <div class="row2">
+            <div class="f"><label class="lab" for="fDate">生效日期</label><input class="in" id="fDate" type="date"></div>
+            <div class="f"><label class="lab" for="fCycle">審查週期</label>
+              <select class="in" id="fCycle"><option value="6">6 個月</option><option value="12" selected>12 個月</option><option value="24">24 個月</option><option value="36">36 個月</option></select></div>
+          </div>
+          <div class="preview" id="fPreview">下次審查日 = 生效日期 + 審查週期</div>
+          <div class="f">
+            <span class="lab">文件狀態</span>
+            <div class="opts three" id="statusSeg">
+              <button type="button" class="opt" data-v="現行有效">現行</button>
+              <button type="button" class="opt" data-v="審查中">審查中</button>
+              <button type="button" class="opt" data-v="已廢止">廢止</button>
+            </div>
+          </div>
+          <div class="f">
+            <span class="lab">連結檔案</span>
+            <div id="fLinks"></div>
+            <div class="with-btn">
+              <input class="in" id="fLinkIn" placeholder="貼上檔案路徑或網址" spellcheck="false" autocomplete="off">
+              <button type="button" class="mini" id="btnAddLink">加入</button>
+            </div>
+            <div class="lk-add"><button type="button" class="btn sub" id="btnPickFile">從電腦選擇檔案</button></div>
+            <input type="file" id="fPickInput" multiple hidden>
+            <p class="hint">小技巧：在檔案總管對檔案按 Shift＋右鍵 →「複製為路徑」，再貼到上面即可。可連結多個檔案或公司網址。</p>
+          </div>
+          <div class="f">
+            <label class="lab" for="fBinder">存放文件夾（實體位置）</label>
+            <select class="in" id="fBinder"></select>
+          </div>
+          <details class="more" id="more">
+            <summary>更多欄位（版次、保存年限、表單、備註）</summary>
+            <div class="row2" style="margin-top:8px">
+              <div class="f"><label class="lab" for="fVer">版次</label><input class="in" id="fVer" placeholder="V1.0"></div>
+              <div class="f"><label class="lab" for="fRet">保存年限</label>
+                <select class="in" id="fRet"><option>1年</option><option selected>3年</option><option>5年</option><option>10年</option><option>永久保存</option></select></div>
+            </div>
+            <div class="f">
+              <label class="lab" for="fForms">相關表單（以「、」分隔）</label>
+              <input class="in" id="fForms" placeholder="例如 成型條件設定表、生產日報表">
+              <div class="quick" id="formQuick"></div>
+            </div>
+            <div class="f"><label class="lab" for="fNote">管制重點／備註</label><textarea class="in" id="fNote"></textarea></div>
+          </details>
+          <button type="submit" class="btn pri" id="btnSave">儲存文件</button>
+          <div class="btns">
+            <button type="button" class="btn sub" id="btnLast">帶入上一筆</button>
+            <button type="button" class="btn sub" id="btnClear">清空表單</button>
+          </div>
+          <p class="note" id="draftNote">輸入內容會自動記憶，關閉後仍可接續填寫</p>
+        </form>
+      </div>
+
+      <!-- 風險 -->
+      <div data-pane="risk" hidden>
+        <div class="formula">風險值 <b>R</b> = 嚴重度 <b>S</b> × 可能性 <b>L</b></div>
+        <div class="stepper"><span>嚴重度 S<span class="hint">1 輕微 ～ 5 災難性</span></span>
+          <span class="ctl"><button type="button" data-k="S" data-d="-1" aria-label="嚴重度減一">−</button><output id="oS">3</output><button type="button" data-k="S" data-d="1" aria-label="嚴重度加一">+</button></span></div>
+        <div class="stepper"><span>可能性 L<span class="hint">1 極少 ～ 5 經常</span></span>
+          <span class="ctl"><button type="button" data-k="L" data-d="-1" aria-label="可能性減一">−</button><output id="oL">3</output><button type="button" data-k="L" data-d="1" aria-label="可能性加一">+</button></span></div>
+        <div class="result lv2" id="rResult">
+          <div class="big" id="rBig">9</div>
+          <div><div class="lvt" id="rLv">中風險</div><p id="rAct">列入管理方案，訂定期限改善</p></div>
+        </div>
+        <table class="mtbl">
+          <thead><tr><th>風險值</th><th>等級</th><th>建議措施</th></tr></thead>
+          <tbody>
+            <tr class="lv1"><td>1–4</td><td class="lvn">低</td><td>維持現行管制</td></tr>
+            <tr class="lv2"><td>5–9</td><td class="lvn">中</td><td>列入管理方案</td></tr>
+            <tr class="lv3"><td>10–14</td><td class="lvn">高</td><td>優先改善</td></tr>
+            <tr class="lv4"><td>15–25</td><td class="lvn">極高</td><td>立即停止作業</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 準備度 -->
+      <div data-pane="ready" hidden>
+        <div class="formula"><b>準備度</b> = 符合項目 ÷ 評估項目 × 100%</div>
+        <div class="row2">
+          <div class="f"><label class="lab" for="iOk">符合項目</label><input class="in" id="iOk" type="number" inputmode="numeric" min="0"></div>
+          <div class="f"><label class="lab" for="iTot">評估項目</label><input class="in" id="iTot" type="number" inputmode="numeric" min="1"></div>
+        </div>
+        <div class="result lv1" id="rdBox">
+          <div class="big" id="rPct">95%</div>
+          <div><div class="lvt" id="rdLv">優良</div><p id="rdTxt">可直接迎接稽核</p></div>
+        </div>
+        <div class="prog"><span id="rBar" style="width:95%"></span></div>
+        <p class="warn" id="rdWarn" hidden>符合項目不可大於評估項目</p>
+        <table class="mtbl" style="margin-top:8px">
+          <thead><tr><th>準備度</th><th>判定</th><th>建議</th></tr></thead>
+          <tbody>
+            <tr class="lv1"><td>≥ 95%</td><td class="lvn">優良</td><td>維持現況</td></tr>
+            <tr class="lv2"><td>85–94%</td><td class="lvn">可接受</td><td>補強差距項目</td></tr>
+            <tr class="lv3"><td>70–84%</td><td class="lvn">需加強</td><td>安排預稽核</td></tr>
+            <tr class="lv4"><td>&lt; 70%</td><td class="lvn">未就緒</td><td>優先整改</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 審查日 -->
+      <div data-pane="rev" hidden>
+        <div class="formula"><b>下次審查日</b> = 生效日期 + 審查週期</div>
+        <div class="row2">
+          <div class="f"><label class="lab" for="cDate">生效日期</label><input class="in" id="cDate" type="date"></div>
+          <div class="f"><label class="lab" for="cCycle">審查週期</label>
+            <select class="in" id="cCycle"><option value="6">6 個月</option><option value="12" selected>12 個月</option><option value="24">24 個月</option><option value="36">36 個月</option></select></div>
+        </div>
+        <div class="result" id="cRes" style="--lc:var(--text)"></div>
+        <table class="mtbl">
+          <thead><tr><th>剩餘天數</th><th>清單標示</th></tr></thead>
+          <tbody>
+            <tr class="lv1"><td>超過 30 天</td><td class="lvn">正常</td></tr>
+            <tr class="lv3"><td>30 天內</td><td class="lvn">即將到期</td></tr>
+            <tr class="lv4"><td>已超過</td><td class="lvn">逾期</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 資料夾匯入 -->
+      <div data-pane="sync" hidden>
+        <div class="formula steps"><span>選擇資料夾</span><i>→</i><span>自動讀取檔名</span><i>→</i><span>預覽確認</span><i>→</i><span>匯入清單</span></div>
+        <div class="f">
+          <label class="lab" for="sRoot">文件資料夾位置</label>
+          <textarea class="in auto" id="sRoot" rows="1" spellcheck="false">D:\J-ISO驗證文件</textarea>
+          <p class="hint">用於「複製路徑」，貼到檔案總管網址列即可開啟原始檔</p>
+        </div>
+        <div class="f">
+          <label class="lab" for="sMap">編號開頭對應標準</label>
+          <textarea class="in auto" id="sMap" rows="2" spellcheck="false"></textarea>
+          <p class="hint">檔名與資料夾都沒寫 9001 等標準號碼時，依編號開頭判斷</p>
+        </div>
+        <label class="chk"><input type="checkbox" id="sClearSample">匯入前清除範例資料</label>
+        <label class="chk"><input type="checkbox" id="sRemove">移除資料夾裡已經不存在的文件</label>
+        <button type="button" class="btn pri" id="sPick" style="margin-top:8px">選擇資料夾並掃描</button>
+        <button type="button" class="btn sub" id="sResync" style="margin-top:8px" hidden>重新同步上次的資料夾</button>
+        <input type="file" id="sDirInput" webkitdirectory multiple hidden>
+        <p class="note" id="sInfo">檔案只在這台電腦上讀取，不會上傳到任何地方</p>
+
+        <div id="sPreview" hidden>
+          <div class="pv-sum">
+            <div><b class="new" id="pvNew">0</b><span>新增</span></div>
+            <div><b class="upd" id="pvUpd">0</b><span>更新</span></div>
+            <div><b id="pvSkip">0</b><span>略過</span></div>
+          </div>
+          <div class="pv-wrap"><table class="pv"><thead><tr><th>動作</th><th>編號</th><th>名稱</th><th>標準</th><th>版次</th><th>日期</th></tr></thead><tbody id="pvBody"></tbody></table></div>
+          <details class="more" id="pvSkipBox"><summary>查看略過的檔案</summary><ul class="skip-list" id="pvSkipList"></ul></details>
+          <div class="btns">
+            <button type="button" class="btn pri" id="sImport" style="height:46px">匯入到清單</button>
+            <button type="button" class="btn sub" id="sCancel">取消</button>
+          </div>
+        </div>
+
+        <details class="more">
+          <summary>檔名怎麼取比較好辨識？</summary>
+          <table class="ex">
+            <tr><td>基本</td><td>QP-801 成型作業管制程序 V3.2.pdf</td></tr>
+            <tr><td>含日期</td><td>QP-801_成型作業管制程序_V3.2_2026-03-01.docx</td></tr>
+            <tr><td>民國日期</td><td>EP-801 廢塑料回收管制 第2版 115.02.10.pdf</td></tr>
+            <tr><td>依資料夾分標準</td><td>ISO45001\OH-601 成型機危害鑑別.xlsx</td></tr>
+            <tr><td>廢止文件</td><td>放在名稱含「廢止」或「作廢」的資料夾</td></tr>
+          </table>
+          <p class="hint" style="margin-top:8px">規則：檔名開頭是文件編號；版次寫 V3.2、Rev2 或「第2版」；檔名沒有日期時，改用檔案的修改日期當生效日。同一編號有多個版本時，只保留最新版。</p>
+        </details>
+      </div>
+
+      <!-- 目錄對照 -->
+      <div data-pane="map" hidden>
+        <div class="formula steps"><span>同步資料夾</span><i>→</i><span>自動對照書背</span><i>→</i><span>手動微調</span></div>
+        <p class="note" id="mapInfo" style="text-align:left;margin:0 4px 10px"></p>
+        <div class="btns" style="margin-top:0">
+          <button type="button" class="btn pri" id="mapAuto" style="min-height:46px">自動對照</button>
+          <button type="button" class="btn sub" id="mapSync">同步資料夾</button>
+        </div>
+        <p class="hint" style="margin-top:8px">每本書背對應 D:\J-ISO驗證文件 底下的一個資料夾。自動對照是比對資料夾名稱與書背文字、編號、標準；不對的可在右側欄位直接改，輸入關鍵字會出現候選資料夾。</p>
+        <div id="mapList"></div>
+        <button type="button" class="lk" id="mapClear" style="margin-top:12px">清除全部對照</button>
+      </div>
+    </section>
+  </div>
+</div>
+</div>
+
+<div class="sheet-bg" id="sheetBg" aria-hidden="true">
+  <div class="sheet glass" role="dialog" aria-modal="true" aria-label="文件詳情">
+    <div class="grab"></div>
+    <div id="sheetBody"></div>
+    <div class="sh-act">
+      <button class="btn edit" id="shEdit">編輯</button>
+      <button class="btn" id="shCopy">複製編號</button>
+      <button class="btn del" id="shDel">刪除</button>
+    </div>
+  </div>
+</div>
+<datalist id="dirList"></datalist>
+<div class="dlg-bg" id="dlgBg" aria-hidden="true">
+  <div class="dlg glass" role="alertdialog" aria-modal="true" aria-labelledby="dlgMsg">
+    <p id="dlgMsg"></p>
+    <input class="in" id="dlgIn" hidden autocomplete="off" spellcheck="false">
+    <div class="btns">
+      <button type="button" class="btn sub" id="dlgCancel">取消</button>
+      <button type="button" class="btn pri" id="dlgOk">確定</button>
+    </div>
+  </div>
+</div>
+<div class="sheet-bg" id="binderBg" aria-hidden="true">
+  <div class="sheet glass" role="dialog" aria-modal="true" aria-label="文件夾內容">
+    <div class="grab"></div>
+    <div id="binderBody"></div>
+  </div>
+</div>
+<div class="toast glass" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+  const KEY = {docs:'isoDocs_v3',draft:'isoDraft_v3',last:'isoLast_v3',hist:'isoHist_v3',calc:'isoCalc_v3',theme:'isoTheme_v3',filter:'isoFilterG_v3',tool:'isoToolG_v3',cols:'isoColsG_v3',sync:'isoSyncG_v3'};
+  const store = {
+    get(k,f){try{const v=localStorage.getItem(k);return v==null?f:JSON.parse(v)}catch(e){return f}},
+    set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}},
+    del(k){try{localStorage.removeItem(k)}catch(e){}}
+  };
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  /* ---------- 資料 ---------- */
+  const STD = {'9001':{name:'品質管理',prefix:'QP'},'14001':{name:'環境管理',prefix:'EP'},'22000':{name:'食品安全（HACCP）',prefix:'FS'},'45001':{name:'職業安全衛生',prefix:'OH'}};
+  const CLAUSES = {
+    '9001':['4.1 瞭解組織及其脈絡','5.1 領導與承諾','6.1 處理風險與機會之措施','7.1.3 基礎設施','7.1.5 監督與量測資源','7.2 適任性','7.5 文件化資訊','8.4 外部提供過程、產品及服務之管制','8.5.1 生產及服務提供之管制','8.6 產品及服務之放行','8.7 不符合產出之管制','9.2 內部稽核','10.2 不符合事項及矯正措施'],
+    '14001':['4.1 瞭解組織及其脈絡','6.1.2 環境考量面','6.1.3 守規性義務','6.2 環境目標','7.5 文件化資訊','8.1 運作之規劃及管制','8.2 緊急事件準備及應變','9.1.2 守規性評估','9.2 內部稽核','10.2 不符合事項及矯正措施'],
+    '22000':['7.5 文件化資訊','8.2 前提方案','8.3 追溯系統','8.4 緊急事件準備及應變','8.5 危害管制','8.7 監督及量測之管制','8.9 產品及過程不符合之管制','9.2 內部稽核','10.2 不符合事項及矯正措施'],
+    '45001':['5.4 工作者之諮詢及參與','6.1.2 危害鑑別與風險及機會之評估','6.1.3 法規要求事項','7.2 適任性','8.1.2 消除危害及降低安全衛生風險','8.1.4 採購（含承攬）','8.2 緊急事件準備及應變','9.2 內部稽核','10.2 事件、不符合事項及矯正措施']
+  };
+  const DEPTS = ['成型生產課','品保課','模具課','環安課','資材課','食安小組'];
+  const FORMS = ['成型條件設定表','生產日報表','首件檢驗表','巡檢紀錄表','不合格品處理單','模具保養履歷卡'];
+  const SAMPLE = [
+    {uid:'s01',std:'9001',code:'QP-801',title:'成型作業管制程序',clause:'8.5.1 生產及服務提供之管制',dept:'成型生產課',ver:'V3.2',date:'2026-03-01',cycle:12,status:'現行有效',retention:'3年',forms:'成型條件設定表、生產日報表',note:'成型條件變更須經課長核准並留存紀錄。'},
+    {uid:'s02',std:'9001',code:'QP-802',title:'模具管理與保養程序',clause:'7.1.3 基礎設施',dept:'模具課',ver:'V2.0',date:'2025-09-15',cycle:12,status:'現行有效',retention:'3年',forms:'模具保養履歷卡、模具異常報告',note:'依模次累計執行定期保養。'},
+    {uid:'s03',std:'9001',code:'QP-803',title:'首件檢驗與製程巡檢辦法',clause:'8.6 產品及服務之放行',dept:'品保課',ver:'V1.5',date:'2025-11-10',cycle:12,status:'現行有效',retention:'3年',forms:'首件檢驗表、巡檢紀錄表',note:'換模、換料、停機重啟後須完成首件確認才可量產。'},
+    {uid:'s04',std:'9001',code:'QP-804',title:'不合格品管制程序',clause:'8.7 不符合產出之管制',dept:'品保課',ver:'V2.3',date:'2025-06-20',cycle:12,status:'現行有效',retention:'5年',forms:'不合格品處理單、隔離標示卡',note:'不合格品須標示、隔離並記錄處置方式。'},
+    {uid:'s05',std:'9001',code:'QP-901',title:'量測儀器校正管理辦法',clause:'7.1.5 監督與量測資源',dept:'品保課',ver:'V1.8',date:'2026-01-05',cycle:12,status:'現行有效',retention:'5年',forms:'儀器校正清冊、校正報告',note:''},
+    {uid:'s06',std:'14001',code:'EP-601',title:'環境考量面鑑別程序',clause:'6.1.2 環境考量面',dept:'環安課',ver:'V2.1',date:'2025-12-01',cycle:12,status:'審查中',retention:'3年',forms:'環境考量面清冊',note:''},
+    {uid:'s07',std:'14001',code:'EP-801',title:'廢塑料與下腳料回收管制',clause:'8.1 運作之規劃及管制',dept:'成型生產課',ver:'V1.4',date:'2026-02-10',cycle:12,status:'現行有效',retention:'3年',forms:'下腳料秤重紀錄、廢棄物清運聯單',note:'下腳料依材質分類回收，避免混料。'},
+    {uid:'s08',std:'22000',code:'FS-801',title:'食品接觸容器前提方案（PRP）',clause:'8.2 前提方案',dept:'品保課',ver:'V3.0',date:'2026-04-01',cycle:12,status:'現行有效',retention:'5年',forms:'人員衛生檢查表、異物管制紀錄',note:'成型區禁止配戴飾品，入區前須洗手消毒。'},
+    {uid:'s09',std:'22000',code:'FS-805',title:'危害分析與管制計畫',clause:'8.5 危害管制',dept:'食安小組',ver:'V2.2',date:'2025-10-30',cycle:12,status:'現行有效',retention:'5年',forms:'危害分析表、管制點監測紀錄',note:''},
+    {uid:'s10',std:'45001',code:'OH-601',title:'成型機危害鑑別與風險評估',clause:'6.1.2 危害鑑別與風險及機會之評估',dept:'環安課',ver:'V3.1',date:'2025-08-15',cycle:24,status:'現行有效',retention:'10年',forms:'危害鑑別風險評估表',note:'重點：夾傷、燙傷、高壓液壓油噴濺。'},
+    {uid:'s11',std:'45001',code:'OH-801',title:'射出／吹瓶機安全作業標準',clause:'8.1.2 消除危害及降低安全衛生風險',dept:'成型生產課',ver:'V2.0',date:'2026-05-20',cycle:12,status:'現行有效',retention:'5年',forms:'安全檢點表、上鎖掛牌紀錄',note:'清模、換模須執行上鎖掛牌。'},
+    {uid:'s12',std:'45001',code:'OH-702',title:'新進人員安全衛生教育訓練',clause:'7.2 適任性',dept:'人資課',ver:'V1.2',date:'2024-03-01',cycle:12,status:'已廢止',retention:'5年',forms:'教育訓練簽到表',note:'已併入新版訓練程序。'}
+  ];
+
+  // 製瓶廠 ISO 文件目錄（由「ISO類別.xlsx」轉入，共 213 份；編號、名稱、日期皆照原表）
+  const EXCEL_DOCS = [{"uid":"xl000","code":"11-1100-001","title":"外售客訴作業辦法","std":"9001","binder":"9-0","dept":"新纖"},{"uid":"xl001","code":"11-3120-002","title":"下腳品入庫作業規定","std":"9001","binder":"9-0","dept":"新纖"},{"uid":"xl002","code":"11-3140-001","title":"成品入庫作業","std":"9001","binder":"9-0","stds":["9001","22000"],"binders":["9-0","22-16"],"dept":"新纖","date":"2006-01-04"},{"uid":"xl003","code":"11-3140-002","title":"成品出庫作業","std":"9001","binder":"9-0","stds":["9001","22000"],"binders":["9-0","22-16"],"dept":"新纖","date":"2009-04-06"},{"uid":"xl004","code":"11-3150-001","title":"請購作業","std":"9001","binder":"9-0","stds":["9001","45001","22000"],"binders":["9-0","45-1","22-13","22-15"],"dept":"新纖","date":"1997-12-08"},{"uid":"xl005","code":"11-3150-002","title":"內購驗收作業","std":"9001","binder":"9-0","stds":["9001","45001","22000"],"binders":["9-0","45-1","22-15"],"dept":"新纖","date":"2005-08-23"},{"uid":"xl006","code":"11-3150-003","title":"外購驗收作業","std":"9001","binder":"9-0","stds":["9001","45001","22000"],"binders":["9-0","45-1","22-15"],"dept":"新纖","date":"2005-08-24"},{"uid":"xl007","code":"11-3150-004","title":"儲存作業","std":"9001","binder":"9-0","stds":["9001","45001"],"binders":["9-0","45-1"],"dept":"新纖"},{"uid":"xl008","code":"11-3150-005","title":"領料作業","std":"9001","binder":"9-0","stds":["9001","45001"],"binders":["9-0","45-1"],"dept":"新纖"},{"uid":"xl009","code":"11-3350-008","title":"品管QC 七大手法統計技術","std":"9001","binder":"9-0","dept":"新纖"},{"uid":"xl010","code":"11-3350-009","title":"檢驗與測試","std":"9001","binder":"9-0","dept":"新纖"},{"uid":"xl011","code":"11-3350-010","title":"檢驗與測試狀況","std":"9001","binder":"9-0","stds":["9001","45001"],"binders":["9-0","45-1"],"dept":"新纖"},{"uid":"xl012","code":"11-3350-017","title":"客訴供應產品之管制","std":"9001","binder":"9-0","dept":"新纖"},{"uid":"xl013","code":"11-3350-011","title":"原物料品質異常通知處理","std":"9001","binder":"9-0","dept":"新纖"},{"uid":"xl014","code":"11-3350-003","title":"進料檢驗","std":"9001","binder":"9-0","dept":"新纖"},{"uid":"xl015","code":"11-3500-007","title":"噪音管制作業程序","std":"9001","binder":"9-0","stds":["9001","14001"],"binders":["9-0","14-3"],"dept":"新纖"},{"uid":"xl016","code":"11-6500-003","title":"瓶廠緊急應變措施","std":"9001","binder":"9-0","stds":["9001","14001"],"binders":["9-0","14-3"],"dept":"新纖"},{"uid":"xl017","code":"11-3100-004","title":"廢棄物管制與監測","std":"9001","binder":"9-0","stds":["9001","14001"],"binders":["9-0","14-3"],"dept":"新纖"},{"uid":"xl018","code":"11-3510-001","title":"消防設備之管理","std":"14001","binder":"14-3","dept":"新纖"},{"uid":"xl019","code":"11-1190-005","title":"資訊需求管制作業","std":"14001","binder":"14-3","dept":"新纖"},{"uid":"xl020","code":"11-1190-006","title":"電腦使用管制作業辦法","std":"14001","binder":"14-3","dept":"新纖"},{"uid":"xl021","code":"11-6520-004","title":"機械課各級幹部工程執掌","std":"14001","binder":"14-3","dept":"新纖"},{"uid":"xl022","code":"11-6530-024","title":"瓶生產課各級幹部工程執掌","std":"14001","binder":"14-3","stds":["14001","9001"],"binders":["14-3","9-9"],"dept":"新纖"},{"uid":"xl023","code":"11-6530-029","title":"寶特瓶處客戶滿意度調查制度","std":"14001","binder":"14-3","stds":["14001","9001"],"binders":["14-3","9-9"],"dept":"新纖"},{"uid":"xl024","code":"11-3110-001","title":"新進人員教育訓練","std":"14001","binder":"14-3","stds":["14001","22000"],"binders":["14-3","22-07"],"dept":"新纖","date":"2021-07-07"},{"uid":"xl025","code":"11-6530-031","title":"生產課各職級之勝任度與訓練需求評估","std":"14001","binder":"14-3","stds":["14001","9001"],"binders":["14-3","9-10"],"dept":"新纖"},{"uid":"xl026","code":"11-6520-008","title":"機械課各級之勝任度與訓練需求評估","std":"14001","binder":"14-3","dept":"新纖"},{"uid":"xl027","code":"11-2710-001","title":"第一事業群產銷管理","std":"14001","binder":"14-3","stds":["14001","45001","22000"],"binders":["14-3","45-1","22-06","22-13"],"dept":"新纖","date":"2009-12-03"},{"uid":"xl028","code":"11-6530-036","title":"品管組各級工作職掌","std":"14001","binder":"14-3","stds":["14001","9001"],"binders":["14-3","9-10"],"dept":"新纖"},{"uid":"xl029","code":"11-6530-037","title":"品管組各級之勝任度與訓練需求評估","std":"14001","binder":"14-3","stds":["14001","9001"],"binders":["14-3","9-10"],"dept":"新纖"},{"uid":"xl030","code":"11-3200-004","title":"能資源管理程序書","std":"14001","binder":"14-3","dept":"新纖"},{"uid":"xl031","code":"11-3500-008","title":"揮發性有機物管制作業程式","std":"14001","binder":"14-3","dept":"新纖"},{"uid":"xl032","code":"11-3500-009","title":"粉塵作業管制程序","std":"14001","binder":"14-3","dept":"新纖"},{"uid":"xl033","code":"11-3120-005","title":"儲槽管制","std":"14001","binder":"14-3","dept":"新纖"},{"uid":"xl034","code":"11-3200-006","title":"公用處廢水管制","std":"14001","binder":"14-3","stds":["14001","45001"],"binders":["14-3","45-1"],"dept":"新纖"},{"uid":"xl035","code":"11-3360-005","title":"有毒物質運作管制與監測 (危險物質及有害物質)","std":"14001","binder":"14-3","dept":"新纖"},{"uid":"xl036","code":"11-3500-010","title":"環境管理資訊之表達與溝通 (網路版)","std":"14001","binder":"14-3","dept":"新纖"},{"uid":"xl037","code":"11-3600-009","title":"儀電處緊急應變措施","std":"14001","binder":"14-3","stds":["14001","45001"],"binders":["14-3","45-1"],"dept":"新纖"},{"uid":"xl038","code":"01-6520-035","title":"事業廢棄物暫存作業","std":"9001","binder":"9-1","dept":"製瓶廠"},{"uid":"xl039","code":"01-6530-061","title":"PC-1 開車程序","std":"9001","binder":"9-1","dept":"製瓶廠"},{"uid":"xl040","code":"01-6530-063","title":"BT-1 開車程序","std":"9001","binder":"9-1","dept":"製瓶廠","note":"⚠ 此編號與「BT-1 停車程序」重複，請確認"},{"uid":"xl041","code":"01-6530-063","title":"BT-1 停車程序","std":"9001","binder":"9-1","dept":"製瓶廠","note":"⚠ 此編號與「BT-1 開車程序」重複，請確認"},{"uid":"xl042","code":"01-6530-064","title":"Husky-HyPET225 開車程序","std":"9001","binder":"9-1","dept":"製瓶廠"},{"uid":"xl043","code":"01-6530-065","title":"Husky-HyPET225 停車程序","std":"9001","binder":"9-1","dept":"製瓶廠"},{"uid":"xl044","code":"01-6530-066","title":"CP-1 M/C 開車程序","std":"9001","binder":"9-1","dept":"製瓶廠"},{"uid":"xl045","code":"01-6530-067","title":"CP-1 M/C 停車程序","std":"9001","binder":"9-1","dept":"製瓶廠"},{"uid":"xl046","code":"01-6530-068","title":"Husky-HyPET300 開車程序","std":"9001","binder":"9-1","dept":"製瓶廠"},{"uid":"xl047","code":"01-6530-069","title":"Husky-HyPET300 停車程序","std":"9001","binder":"9-1","dept":"製瓶廠"},{"uid":"xl048","code":"01-6530-070","title":"琮偉 JW-230 PETWSi40e 開車程序","std":"9001","binder":"9-1","dept":"製瓶廠"},{"uid":"xl049","code":"01-6530-071","title":"琮偉 JW-230 PETWSi40e 停車程序","std":"9001","binder":"9-1","dept":"製瓶廠"},{"uid":"xl050","code":"01-6530-072","title":"P＆S 檢查機開停車程序","std":"9001","binder":"9-1","dept":"製瓶廠"},{"uid":"xl051","code":"02-6530-002","title":"成品品管檢測","std":"9001","binder":"9-2","dept":"製瓶廠"},{"uid":"xl052","code":"02-6530-003","title":"檢測AA之取樣標準","std":"9001","binder":"9-2","dept":"製瓶廠"},{"uid":"xl053","code":"02-6540-002","title":"SHEET 成品送檢","std":"9001","binder":"9-2","dept":"製瓶廠"},{"uid":"xl054","code":"02-3350-001","title":"製瓶工程","std":"9001","binder":"9-2","dept":"製瓶廠"},{"uid":"xl055","code":"05-6530-003","title":"PERPEND ICULARITY 測定標準","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl056","code":"05-6530-004","title":"滿胃容量測定","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl057","code":"05-6530-006","title":"CO2 RETENTION 試驗方法","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl058","code":"05-6530-007","title":"CO2 配置法","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl059","code":"05-6530-010","title":"爆破試驗操作方法","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl060","code":"05-6530-011","title":"壓力瓶耐熱性試驗方法","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl061","code":"05-6530-012","title":"A-A 精餾操作方法","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl062","code":"05-6530-013","title":"A-A 標定操作方法","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl063","code":"05-6530-014","title":"紅外線厚度計操作方法","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl064","code":"05-6530-017","title":"耐熱瓶試驗操作基準","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl065","code":"05-6530-019","title":"偏心度測量方法","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl066","code":"05-6530-020","title":"DROP IMPACT 試驗方法","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl067","code":"05-6530-021","title":"耐熱瓶減壓強度試驗操作標準","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl068","code":"05-6530-022","title":"TOP LOAD 試驗操作標準","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl069","code":"05-6530-023","title":"ONE PIECE 汽水瓶CRACKING試驗操作標準","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl070","code":"05-6530-024","title":"ONE PIECE 汽水瓶 BASE ROLL OUT試驗操作標準","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl071","code":"05-6530-025","title":"AUTO SYSTEM XLGE 操作標準","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl072","code":"05-6530-026","title":"瓶胚粉碎方法測量 A-A","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl073","code":"05-6530-027","title":"比重天平測量結晶度操作方法","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl074","code":"05-6530-028","title":"碳酸飲料 CO2 GV 測試操作標準","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl075","code":"05-6530-029","title":"磁性鋼珠測厚計操作方法","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl076","code":"05-6530-030","title":"SECRE SEAL TESTER 操作方法","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl077","code":"05-6505-003","title":"UV CUT 操作標準","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl078","code":"05-6505-002","title":"碳酸飲料入庫 GV值檢驗","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl079","code":"05-6505-004","title":"瓶口尺寸測量儀操作標準","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl080","code":"05-6505-005","title":"水分測定儀操作方法","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl081","code":"05-6505-006","title":"瓶子、瓶胚留樣箱作業標準","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl082","code":"05-D550-001","title":"熱收縮率檢測","std":"9001","binder":"9-3","dept":"製瓶廠","note":"⚠ 此編號與「微生物檢驗方法」重複，請確認"},{"uid":"xl083","code":"05-D550-002","title":"CO2 壓力表校正","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl084","code":"05-D550-001","title":"微生物檢驗方法","std":"9001","binder":"9-3","dept":"製瓶廠","note":"⚠ 此編號與「熱收縮率檢測」重複，請確認"},{"uid":"xl085","code":"06-6530-016","title":"恆溫恆濕箱","std":"9001","binder":"9-4","dept":"製瓶廠"},{"uid":"xl086","code":"06-6530-017","title":"表面溫度計","std":"9001","binder":"9-4","dept":"製瓶廠"},{"uid":"xl087","code":"06-6530-019","title":"塊規","std":"9001","binder":"9-4","dept":"製瓶廠"},{"uid":"xl088","code":"06-6530-020","title":"熱水保溫箱","std":"9001","binder":"9-4","dept":"製瓶廠"},{"uid":"xl089","code":"06-6530-021","title":"Chaillon TCD200","std":"9001","binder":"9-4","dept":"製瓶廠"},{"uid":"xl090","code":"07-6530-053","title":"32g PCO-HR Preform","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xl091","code":"07-6530-054","title":"耐熱瓶 1.0L","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xl092","code":"07-6530-049","title":"28g 30g 32g 36.2g 45.5g","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xl093","code":"07-6530-052","title":"19g 21g (PCO-1810) 19.5g","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xl094","code":"07-6530-055","title":"醬油瓶(統萬)","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xl095","code":"07-6530-056","title":"35g 43g 52g PCO-38 Preform","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xl096","code":"07-6530-057","title":"24g 27.5g PCO-38 Preform","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xl097","code":"07-6530-058","title":"27g 中溫胚 Preform","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xl098","code":"07-6530-036","title":"ONE Piece Bottle 0.6L","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xl099","code":"07-6530-037","title":"ONE Piece Bottle 1.0L","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xl100","code":"07-6530-038","title":"ONE Piece Bottle 1.25L","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xl101","code":"07-6530-039","title":"ONE Piece Bottle 2.0L","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xl102","code":"07-6530-041","title":"ONE Piece Bottle 0.63L","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xl103","code":"07-6530-044","title":"ONE Piece Bottle 1.5L (Banaqua)","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xl104","code":"07-6530-045","title":"49.5-PCO-Preform / 50g-ALCOA-Preform","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xl105","code":"07-6530-046","title":"54.5-PCO-Preform / 56.5g-ALCOA-Preform","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xl106","code":"07-6530-047","title":"25g-PCO-Preform","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xl107","code":"07-6530-048","title":"54.5g-PCO-Preform","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xl108","code":"07-6530-050","title":"ONE-Piece Bottle 耐熱瓶","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xl109","code":"07-6530-051","title":"21g 23g 25g PCO-Preform","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xl110","code":"08-6530-001","title":"BT BOTTLE 檢驗標準","std":"9001","binder":"9-6","dept":"製瓶廠"},{"uid":"xl111","code":"08-6530-002","title":"PREFORM 檢驗標準","std":"9001","binder":"9-6","dept":"製瓶廠"},{"uid":"xl112","code":"08-6530-004","title":"製瓶課 1.6L把手檢驗標準","std":"9001","binder":"9-6","dept":"製瓶廠"},{"uid":"xl113","code":"08-6530-005","title":"SBO BOTTLE 檢驗標準","std":"9001","binder":"9-6","dept":"製瓶廠"},{"uid":"xl114","code":"08-6530-006","title":"HOT FILLING BOTTLE 檢驗標準","std":"9001","binder":"9-6","dept":"製瓶廠"},{"uid":"xl115","code":"09-3350-020","title":"瓶蓋","std":"9001","binder":"9-7","dept":"製瓶廠"},{"uid":"xl116","code":"09-3350-021","title":"PET 打包帶","std":"9001","binder":"9-7","dept":"製瓶廠"},{"uid":"xl117","code":"09-3350-029","title":"PET瓶 PVC標籤","std":"9001","binder":"9-7","dept":"製瓶廠"},{"uid":"xl118","code":"09-3350-031","title":"OPP標籤","std":"9001","binder":"9-7","dept":"製瓶廠"},{"uid":"xl119","code":"09-3350-032","title":"汽水瓶紙箱","std":"9001","binder":"9-7","dept":"製瓶廠"},{"uid":"xl120","code":"09-3350-011","title":"PET瓶珍珠模標籤","std":"9001","binder":"9-7","dept":"製瓶廠"},{"uid":"xl121","code":"09-3350-040","title":"塑膠棧板","std":"9001","binder":"9-7","dept":"製瓶廠"},{"uid":"xl122","code":"09-3350-033","title":"包裝用PE膜","std":"9001","binder":"9-7","dept":"製瓶廠"},{"uid":"xl123","code":"10-6530-001","title":"SBO BOTTLE","std":"9001","binder":"9-8","dept":"製瓶廠"},{"uid":"xl124","code":"10-6530-002","title":"BT BOTTLE","std":"9001","binder":"9-8","dept":"製瓶廠"},{"uid":"xl125","code":"10-6530-003","title":"PREFORM","std":"9001","binder":"9-8","dept":"製瓶廠"},{"uid":"xl126","code":"10-6530-004","title":"HOT FILLING BOTTLE","std":"9001","binder":"9-8","dept":"製瓶廠"},{"uid":"xl127","code":"10-6530-006","title":"耐熱瓶耐熱性判定標準","std":"9001","binder":"9-8","dept":"製瓶廠"},{"uid":"xl128","code":"11-6530-058","title":"成品留樣作業辦法","std":"9001","binder":"9-10","dept":"製瓶廠"},{"uid":"xl129","code":"11-6530-059","title":"SBO-4 標籤收縮爐作業辦法","std":"9001","binder":"9-10","dept":"製瓶廠"},{"uid":"xl130","code":"11-6530-060","title":"CP-1 Tornado 標籤收縮爐作業辦法","std":"9001","binder":"9-10","dept":"製瓶廠"},{"uid":"xl131","code":"11-6530-061","title":"作業變更","std":"9001","binder":"9-10","dept":"製瓶廠"},{"uid":"xl132","code":"11-6530-032","title":"原物料入廠檢驗流程","std":"9001","binder":"9-10","dept":"製瓶廠"},{"uid":"xl133","code":"11-6530-033","title":"製程檢驗","std":"9001","binder":"9-10","dept":"製瓶廠"},{"uid":"xl134","code":"11-6530-034","title":"熱販箱 Preform 射出及結晶作業程序","std":"9001","binder":"9-10","dept":"製瓶廠"},{"uid":"xl135","code":"11-6530-035","title":"機台異常檢修作業程序","std":"9001","binder":"9-10","dept":"製瓶廠"},{"uid":"xl136","code":"11-6530-038","title":"原物料與瓶胚異物控制管理","std":"9001","binder":"9-10","dept":"製瓶廠"},{"uid":"xl137","code":"11-6530-039","title":"線上TM菌檢出率過高時相關異常處理","std":"9001","binder":"9-10","stds":["9001","22000"],"binders":["9-10","22-17"],"dept":"製瓶廠","date":"2013-08-12"},{"uid":"xl138","code":"11-6530-040","title":"清潔、消毒用品及器具使用管理規範","std":"9001","binder":"9-10","stds":["9001","22000"],"binders":["9-10","22-10"],"dept":"製瓶廠","date":"2013-07-03"},{"uid":"xl139","code":"11-6530-041","title":"衛生檢查管理辦法","std":"9001","binder":"9-10","stds":["9001","22000"],"binders":["9-10","22-10"],"dept":"製瓶廠","date":"2013-07-03"},{"uid":"xl140","code":"11-6530-042","title":"飛蟲昆蟲及鼠類防治管理辦法","std":"9001","binder":"9-10","stds":["9001","22000"],"binders":["9-10","22-10"],"dept":"製瓶廠","date":"2013-07-03"},{"uid":"xl141","code":"11-6530-043","title":"清洗消毒作業辦法","std":"9001","binder":"9-10","stds":["9001","22000"],"binders":["9-10","22-10"],"dept":"製瓶廠","date":"2013-07-03"},{"uid":"xl142","code":"11-6530-056","title":"生產線異物管制管理","std":"9001","binder":"9-10","dept":"製瓶廠"},{"uid":"xl143","code":"11-6530-057","title":"暫訂管制標準制定與實施","std":"9001","binder":"9-10","dept":"製瓶廠"},{"uid":"xl144","code":"11-6530-016","title":"HTF區作業員巡機紀錄作業","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xl145","code":"11-6530-017","title":"檢驗，量測與試驗設備之管制","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xl146","code":"11-6530-018","title":"產品檢驗與分析","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xl147","code":"11-6530-019","title":"製程異常品管處理辦法","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xl148","code":"11-6530-020","title":"新產品開發試作程序","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xl149","code":"11-6530-023","title":"製瓶課 HTF YC-27D＆PB-6G M/C 換色程序","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xl150","code":"11-6530-025","title":"寶特瓶酯片評價作業","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xl151","code":"11-6530-026","title":"製瓶課 CM、Husky Injection M/C 換色程序","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xl152","code":"11-6530-027","title":"客戶所提供之產品管制作業程序","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xl153","code":"11-6530-028","title":"客戶退貨品處理程序","std":"9001","binder":"9-9","stds":["9001","22000"],"binders":["9-9","22-04"],"dept":"製瓶廠","date":"2004-12-29"},{"uid":"xl154","code":"11-6530-030","title":"QC工程圖","std":"9001","binder":"9-9","stds":["9001","22000"],"binders":["9-9","22-20"],"dept":"製瓶廠","date":"2021-10-15"},{"uid":"xl155","code":"11-6530-001","title":"股長巡機紀錄作業","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xl156","code":"11-6530-002","title":"原料供應","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xl157","code":"11-6530-003","title":"產品鑑別與追溯","std":"9001","binder":"9-9","stds":["9001","22000"],"binders":["9-9","22-21"],"dept":"製瓶廠","date":"2013-09-24"},{"uid":"xl158","code":"11-6530-004","title":"ASB區作業員巡機紀錄作業","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xl159","code":"11-6530-005","title":"班長值班巡機紀錄作業","std":"9001","binder":"9-9","stds":["9001","22000"],"binders":["9-9","22-13"],"dept":"製瓶廠","date":"2013-09-24"},{"uid":"xl160","code":"11-6530-007","title":"Preform 包裝與標示","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xl161","code":"11-6530-008","title":"製程異常處理","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xl162","code":"11-6530-009","title":"PFM區作業員巡機紀錄作業","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xl163","code":"11-6530-010","title":"ASB區包裝與標示","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xl164","code":"11-6530-011","title":"不合格品管制","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xl165","code":"11-6530-012","title":"PET 寶特瓶包裝與標示","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xl166","code":"11-6530-014","title":"SBO區作業員巡機紀錄作業","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xl167","code":"11-6530-015","title":"製瓶課製程管制程序","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xl168","code":"11-3501-012","title":"危險通識計畫","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xl169","code":"11-3501-013","title":"危險性機械級設備操作","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xl170","code":"11-3501-014","title":"各級主管巡檢","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xl171","code":"11-3501-015","title":"自動檢查計畫","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xl172","code":"11-3501-016","title":"作業環境檢測標準","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xl173","code":"11-3501-017","title":"局限空間危害防止計畫","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xl174","code":"11-3501-018","title":"個人防護具管理","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xl175","code":"11-3501-019","title":"採購管理標準","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xl176","code":"11-3501-020","title":"勞工安全衛生委員會之實施","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xl177","code":"11-3501-021","title":"勞工健康保護標準","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xl178","code":"11-3501-022","title":"感電危害預防標準","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xl179","code":"11-3501-023","title":"搬運車輛管理","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xl180","code":"11-3501-024","title":"墜落災害防止計畫","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xl181","code":"11-3501-025","title":"職安衛專責人員之管理","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xl182","code":"11-3501-026","title":"變更管理標準","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xl183","code":"11-2710-003","title":"塑膠群生產目標及目標換算率設定作業","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xl184","code":"11-2710-004","title":"塑膠群新增代號的審查作業","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xl185","code":"11-3400-002","title":"承攬工程者入廠管理作業","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xl186","code":"18-6500-003","title":"食品安全文件、資料與紀錄管制","std":"22000","binder":"22-01","date":"2016-11-03"},{"uid":"xl187","code":"11-6530-050","title":"環安衛、食品安全管理資訊溝通、參與諮詢","std":"22000","binder":"22-02","date":"2013-09-24"},{"uid":"xl188","code":"11-6500-004","title":"風險與營運管理標準作業程序","std":"22000","binder":"22-02","date":"2020-09-17"},{"uid":"xl189","code":"11-6530-051","title":"成品回收作業辦法","std":"22000","binder":"22-03","date":"2013-09-24"},{"uid":"xl190","code":"13-1100-001","title":"客戶服務與市場資訊調查","std":"22000","binder":"22-04","date":"2002-06-26"},{"uid":"xl191","code":"13-3300-004","title":"品質目標的計畫建立","std":"22000","binder":"22-05","date":"2006-07-25"},{"uid":"xl192","code":"11-2282-02","title":"寶特瓶營業處外銷合約審查","std":"22000","binder":"22-06","date":"2016-11-07"},{"uid":"xl193","code":"11-2282-03","title":"寶特瓶營業處內銷作業審查","std":"22000","binder":"22-06","date":"2016-11-07"},{"uid":"xl194","code":"13-1560-001","title":"人員在職教育訓練","std":"22000","binder":"22-07","date":"2026-09-06"},{"uid":"xl195","code":"13-3500-001","title":"緊急應變組織、計畫及處置方法","std":"22000","binder":"22-08","date":"2012-05-21"},{"uid":"xl196","code":"11-6530-045","title":"緊急產品異常回收演練計畫","std":"22000","binder":"22-08","date":"2019-11-14"},{"uid":"xl197","code":"11-6520-001","title":"設備保養","std":"22000","binder":"22-09","date":"1999-02-24"},{"uid":"xl198","code":"11-6530-052","title":"安全與衛生作業辦法","std":"22000","binder":"22-10","date":"2013-09-09"},{"uid":"xl199","code":"11-6530-044","title":"清洗消毒作業辦法","std":"22000","binder":"22-10","date":"2013-07-03"},{"uid":"xl200","code":"11-6530-053","title":"食品衛生相關法規查核作業辦法","std":"22000","binder":"22-14","date":"2013-09-10"},{"uid":"xl201","code":"13-1540-001","title":"採購流程規範","std":"22000","binder":"22-15","date":"2011-04-11"},{"uid":"xl202","code":"P-09","title":"採購管理程序","std":"22000","binder":"22-15"},{"uid":"xl203","code":"P-10","title":"供應商管理程序","std":"22000","binder":"22-15"},{"uid":"xl204","code":"11-3140-004","title":"成品退庫(退貨)作業","std":"22000","binder":"22-16","date":"2002-04-15"},{"uid":"xl205","code":"11-6530-054","title":"食品安全作業辦法","std":"22000","binder":"22-17","date":"2013-08-13"},{"uid":"xl206","code":"11-6530-047","title":"PET 瓶胚類 HACCP","std":"22000","binder":"22-17","date":"2020-09-17"},{"uid":"xl207","code":"11-6530-046","title":"PC-1 檢查機故障處理作業","std":"22000","binder":"22-17","date":"2020-08-17"},{"uid":"xl208","code":"11-6530-048","title":"PET瓶子類 HACCP","std":"22000","binder":"22-17","date":"2013-08-12"},{"uid":"xl209","code":"11-D530-062","title":"成型盒類HACCP計劃書","std":"22000","binder":"22-17","date":"2023-11-07"},{"uid":"xl210","code":"11-6530-055","title":"內部品質環安衛、食品安全全系統稽核","std":"22000","binder":"22-19","date":"2020-08-08","note":"備註：證書"},{"uid":"xl211","code":"18-6500-002","title":"矯正及預防措施","std":"22000","binder":"22-22","date":"2016-11-04"},{"uid":"xl212","code":"13-3300-009","title":"量測儀器設備之管制","std":"22000","binder":"22-23","date":"2005-08-01"}];
+  const EXCEL_DESC = {"9-A":["過程導向 / 環境考量"],"14-1":["過程導向 / 環境考量"],"14-2":["環境改善方案報告書 / 會議記錄"],"9-F":["標準及法規最新版本確認紀錄"],"22-00":["食品安全手冊"]};
+  const excelDoc = d => Object.assign({cycle:12, status:'現行有效', retention:'', clause:'', forms:'', note:'', dept:'', date:'', src:'excel'}, JSON.parse(JSON.stringify(d)), {binderAuto:false});
+  // 合併 Excel 目錄：已存在的同編號同名稱文件只補空白欄位與存放位置，不覆蓋手動資料
+  function mergeExcel(list){
+    let add = 0, upd = 0;
+    EXCEL_DOCS.forEach(x => {
+      const ex = list.find(d => d.code.toUpperCase() === x.code.toUpperCase() && (d.title === x.title || !EXCEL_DOCS.some(y => y !== x && y.code.toUpperCase() === x.code.toUpperCase())));
+      if (!ex){ list.push(excelDoc(x)); add++; return; }
+      const xb = x.binders || (x.binder ? [x.binder] : []), xs = x.stds || [x.std];
+      const bs = new Set([...(ex.binders || (ex.binder ? [ex.binder] : [])), ...xb]); ex.binders = [...bs];
+      if (!ex.binder || ex.binderAuto){ ex.binder = x.binder; ex.binderAuto = false; }
+      ex.stds = [...new Set([ex.std, ...(ex.stds || []), ...xs].filter(Boolean))];
+      ['date','dept'].forEach(k => { if (!ex[k] && x[k]) ex[k] = x[k]; });
+      upd++;
+    });
+    return {add, upd};
+  }
+  let docs = store.get(KEY.docs, null);
+  if (!Array.isArray(docs)) docs = EXCEL_DOCS.map(excelDoc);
+  else if (store.get('isoExcelV', 0) < 1){
+    // 第一次載入 Excel 目錄：移除虛構的範例文件（未連結檔案、未指定文件夾者），再合併真實目錄
+    docs = docs.filter(d => !(/^s\d+$/.test(d.uid) && !(d.links && d.links.length) && !d.binder));
+    mergeExcel(docs);
+    store.set(KEY.docs, docs);   // 立即存檔，避免合併結果遺失
+  }
+  store.set('isoExcelV', 1);
+  let filter = Object.assign({std:'',due:'',q:'',scope:'all'}, store.get(KEY.filter, {}));
+  filter.due = '';
+  if (filter.std === '14001' || filter.std === '45001') filter.std = '14001|45001';
+  let hist = Object.assign({dept:[],forms:[]}, store.get(KEY.hist, {}));
+  let editingId = null, formStd = '', formStatus = '現行有效', sheetId = null;
+  const saveDocs = () => store.set(KEY.docs, docs);
+
+  /* ---------- 日期 ---------- */
+  const pad = n => String(n).padStart(2,'0');
+  const fmt = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  const today0 = () => { const t = new Date(); return new Date(t.getFullYear(), t.getMonth(), t.getDate()); };
+  const parseD = s => { if (!s) return null; const [y,m,d] = s.split('-').map(Number); return y ? new Date(y, m-1, d) : null; };
+  const addMonths = (d, m) => { const r = new Date(d.getFullYear(), d.getMonth()+m, 1); r.setDate(Math.min(d.getDate(), new Date(r.getFullYear(), r.getMonth()+1, 0).getDate())); return r; };
+  function dueInfo(date, cycle){
+    const d = parseD(date); if (!d || !+cycle) return null;
+    const n = addMonths(d, +cycle), days = Math.round((n - today0()) / 86400000);
+    return {next:fmt(n), days, cls: days < 0 ? 'late' : days <= 30 ? 'soon' : 'ok', text: days < 0 ? `逾期 ${-days} 天` : days === 0 ? '今天到期' : `剩 ${days} 天`};
+  }
+  const docDue = d => d.status === '已廢止' ? null : dueInfo(d.date, d.cycle);
+
+  let tt;
+  function toast(m){ const t = $('#toast'); t.textContent = m; t.classList.add('show'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('show'), 2200); }
+
+  // 自製對話框：Claude 預覽視窗等環境會封鎖 confirm()／prompt()，導致按鈕「沒反應」
+  let dlgResolve = null, dlgInput = false;
+  function openDlg(msg, o = {}){
+    return new Promise(res => {
+      if (dlgResolve) dlgResolve(dlgInput ? null : false);
+      dlgResolve = res; dlgInput = !!o.input;
+      $('#dlgMsg').textContent = msg;
+      const inp = $('#dlgIn'); inp.hidden = !dlgInput; inp.value = o.def || ''; inp.placeholder = o.placeholder || '';
+      const ok = $('#dlgOk'); ok.textContent = o.ok || '確定'; ok.classList.toggle('danger', !!o.danger); ok.classList.toggle('pri', !o.danger);
+      $('#dlgBg').classList.add('open'); $('#dlgBg').setAttribute('aria-hidden', 'false');
+      setTimeout(() => (dlgInput ? inp : ok).focus(), 30);
+    });
+  }
+  function closeDlg(okPressed){
+    $('#dlgBg').classList.remove('open'); $('#dlgBg').setAttribute('aria-hidden', 'true');
+    const r = dlgResolve; dlgResolve = null;
+    if (r) r(dlgInput ? (okPressed ? $('#dlgIn').value : null) : !!okPressed);
+  }
+  const dlgOpen = () => $('#dlgBg').classList.contains('open');
+  const askConfirm = (msg, o = {}) => openDlg(msg, o);
+  const askText = (msg, def = '', o = {}) => openDlg(msg, Object.assign({}, o, {input:true, def}));
+  $('#dlgOk').onclick = () => closeDlg(true);
+  $('#dlgCancel').onclick = () => closeDlg(false);
+  $('#dlgBg').addEventListener('click', e => { if (e.target.id === 'dlgBg') closeDlg(false); });
+  $('#dlgIn').addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); closeDlg(true); } });
+
+  /* ---------- 主題 ---------- */
+  const mq = matchMedia('(prefers-color-scheme: dark)');
+  function applyTheme(){ const s = store.get(KEY.theme,''); document.documentElement.dataset.theme = s || (mq.matches ? 'dark' : 'light'); }
+  mq.addEventListener && mq.addEventListener('change', () => { if (!store.get(KEY.theme,'')) applyTheme(); });
+  $$('.themeBtn').forEach(b => b.onclick = () => { const n = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'; store.set(KEY.theme, n); applyTheme(); toast(n === 'dark' ? '已切換深色模式' : '已切換淺色模式'); });
+
+  /* ---------- 清單 ---------- */
+  /* ---------- 智慧搜尋 ---------- */
+  // 同義詞／相關詞庫：同一列的詞彼此視為相關（可依廠內用語自行增修）
+  const SYN = [
+    ['品質','品管','品保','QC','QA','9001','品質管理'],
+    ['環境','環保','環安','14001','環境管理'],
+    ['食安','食品安全','食品','食品衛生','22000','PRP','前提方案','HACCP','危害分析','管制點'],
+    ['職安','工安','安全衛生','安衛','職業安全','45001'],
+    ['模具','模治具','換模','修模','清模','模具保養'],
+    ['不合格','不良','NG','異常','不符合','不良品','報廢'],
+    ['首件','初件','首檢','首件檢驗'],
+    ['巡檢','巡迴檢驗','製程檢驗','自主檢查'],
+    ['檢驗','檢查','量測','測試','放行'],
+    ['校正','校驗','儀器','量具','量測儀器'],
+    ['稽核','內稽','內部稽核','審核','查核'],
+    ['矯正','矯正措施','預防措施','CAPA','8D','改善'],
+    ['客訴','顧客抱怨','客戶抱怨','抱怨','退貨'],
+    ['採購','供應商','外包','承攬','承攬商','協力廠'],
+    ['訓練','教育訓練','教育','適任性','證照','新進人員'],
+    ['文件管制','文件化資訊','紀錄','記錄','表單'],
+    ['緊急','緊急應變','緊急事件','消防','疏散','演練'],
+    ['風險','危害','危害鑑別','風險評估'],
+    ['廢棄物','下腳料','廢塑料','回收','廢料','清運'],
+    ['成型','成形','射出','吹瓶','瓶胚','製瓶'],
+    ['上鎖掛牌','LOTO','能源隔離'],
+    ['標示','隔離','識別','追溯','批號'],
+    ['設備','機台','基礎設施','保養','維修','點檢'],
+    ['包裝','包材','棧板','出貨'],
+    ['法規','守規','法令','法規要求','守規性']
+  ];
+  // 簡體字自動轉繁體（同仁用簡體輸入也找得到）
+  const S2T = new Map('质質 环環 检檢 验驗 审審 规規 训訓 练練 废廢 机機 险險 卫衛 设設 备備 证證 产產 业業 订訂 计計 划劃 录錄 记記 单單 标標 书書 编編 号號 办辦 构構 应應 变變 评評 鉴鑑 别別 签簽 实實 测測 试試 仪儀 维維 护護 养養 厂廠 课課 门門 处處 员員 层層 级級 态態 关關 联聯 页頁 资資 讯訊 药藥 绩績 预預 纠糾 矫矯 换換 洁潔 异異 报報 购購 货貨 运運 输輸 库庫 发發 码碼 类類 项項 确確 认認 诉訴 顾顧 户戶 职職 伤傷 灾災 劳勞 动動 装裝 电電 气氣 压壓 温溫 热熱 烫燙 夹夾 锁鎖 挂掛 导導 领領 会會 议議 论論 纪紀 范範 条條 术術 语語 说說 应應 胶膠 瓶瓶 组組 织織 统統 环環'.split(' ').map(p => [p[0], p[1]]));
+  const toTrad = s => String(s || '').replace(/[\uFF01-\uFF5E]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0)).replace(/\u3000/g, ' ').replace(/[\u4e00-\u9fff]/g, c => S2T.get(c) || c);
+  const norm = s => toTrad(s).toLowerCase();
+  const compact = s => norm(s).replace(/[\s\-_－.．·・/\\()（）]/g, '');
+  function expand(t){
+    const tn = norm(t), out = new Set();
+    SYN.forEach(g => {
+      const hit = g.some(w => { const wn = norm(w); return wn === tn || (tn.length >= 2 && wn.length >= 2 && (wn.includes(tn) || tn.includes(wn))); });
+      if (hit) g.forEach(w => { if (norm(w) !== tn) out.add(w); });
+    });
+    return [...out];
+  }
+  // 關鍵字裡含有同義詞時，替換成其他說法再找一次（例：成形作業 → 成型作業）
+  function variants(t){
+    const tt = toTrad(t), tn = norm(t), out = new Set();
+    SYN.forEach(g => g.forEach(w => {
+      const wn = norm(w);
+      if (wn.length >= 2 && wn !== tn && tn.includes(wn)){
+        const re = new RegExp(w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+        g.forEach(o => { if (o !== w) out.add(tt.replace(re, o)); });
+      }
+    }));
+    return [...out];
+  }
+  function osa(a, b){   // 編號打錯一碼或前後顛倒也能找到
+    if (Math.abs(a.length - b.length) > 1) return 9;
+    const d = Array.from({length:a.length + 1}, (_, i) => [i, ...Array(b.length).fill(0)]);
+    for (let j = 1; j <= b.length; j++) d[0][j] = j;
+    for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++){
+      d[i][j] = Math.min(d[i-1][j] + 1, d[i][j-1] + 1, d[i-1][j-1] + (a[i-1] === b[j-1] ? 0 : 1));
+      if (i > 1 && j > 1 && a[i-1] === b[j-2] && a[i-2] === b[j-1]) d[i][j] = Math.min(d[i][j], d[i-2][j-2] + 1);
+    }
+    return d[a.length][b.length];
+  }
+  function charOverlap(tc, v){ const chars = [...new Set(tc)]; return chars.filter(c => v.includes(c)).length / chars.length; }
+  function docFields(d){
+    return [
+      {v:norm(d.code), c:compact(d.code), w:10, k:'code'},
+      {v:norm(d.title), c:compact(d.title), w:6, k:'title'},
+      {v:norm(d.clause), c:compact(d.clause), w:4, k:'clause'},
+      {v:norm(d.dept), c:compact(d.dept), w:3, sc:'dept'},
+      {v:norm(d.forms), c:compact(d.forms), w:3},
+      {v:norm(d.note), c:compact(d.note), w:2},
+      {v:norm(linkText(d)), c:compact(linkText(d)), w:1.5},
+      {v:norm(binderText(d.binder)), c:'', w:2},
+      {v:norm(`iso${d.std} iso ${d.std} ${(STD[d.std]||{}).name}`), c:'', w:3},
+      {v:norm(d.status), c:'', w:1}
+    ];
+  }
+  function termScore(F, t, smart){
+    const tn = norm(t), tc = compact(t);
+    if (!tn) return {s:1, kind:'exact', words:[]};
+    let s = 0;
+    F.forEach(f => {
+      if (f.v.includes(tn) || (tc && f.c.includes(tc))) s += f.w * (f.k === 'code' && f.c === tc ? 3 : 1);
+    });
+    // 分數分級：完全相符 > 同義替換後相符 > 相關詞 > 近似字，確保最準的永遠排最前面
+    if (s) return {s:1000 + s, kind:'exact', words:[t, toTrad(t)]};
+    if (!smart) return {s:0};
+    const words = [];
+    variants(t).forEach(v => { const vn = norm(v); F.forEach(f => { if (f.v.includes(vn)){ s += f.w; words.push(v); } }); });
+    if (s) return {s:500 + s, kind:'syn', words:[...new Set(words)]};
+    expand(t).forEach(e => { const en = norm(e); F.forEach(f => { if (f.v.includes(en)){ s += f.w; words.push(e); } }); });
+    if (s) return {s:100 + Math.min(s, 50), kind:'syn', words:[...new Set(words)]};
+    if (tc.length >= 3){
+      F.filter(f => f.k).forEach(f => {
+        if (f.k === 'code' && /^[a-z]+\d/.test(tc) && osa(tc, f.c) <= 1) s += 4;
+        else if (f.k !== 'code'){ const r = charOverlap(tc, f.c); if (r >= 0.75) s += f.w * 0.35 * r; }
+      });
+      if (s) return {s:10 + Math.min(s, 9), kind:'fuzzy', words:[]};
+    }
+    return {s:0};
+  }
+  const splitQ = q => toTrad(q).trim().split(/[\s、,，]+/).filter(Boolean);
+  // 篩選值可為單一標準（9001）或合併（14001|45001）
+  const stdList = v => String(v || '').split('|').filter(Boolean);
+  const stdHit = (std, d) => !filter.std || stdList(filter.std).some(k => k === std || (d && (d.stds || []).includes(k)));
+  const hasStd = (d, ks) => ks.some(k => d.std === k || (d.stds || []).includes(k));
+  const stdLabel = v => stdList(v).map(k => 'ISO ' + k).join('／').replace(/／ISO /g, '／');
+  function searchDocs(ignoreFilters){
+    const terms = splitQ(filter.q), smart = filter.smart !== false, out = [];
+    docs.forEach(d => {
+      if (!ignoreFilters){
+        if (!stdHit(d.std, d)) return;
+        if (filter.due){ const i = docDue(d); if (!i || i.cls !== filter.due) return; }
+      }
+      if (!terms.length){ out.push({d, score:0, words:[], tag:''}); return; }
+      const sc = filter.scope || 'all';
+      const F = docFields(d).filter(f => sc === 'all' || (f.sc || f.k) === sc);   // 依搜尋範圍只比對指定欄位
+      let score = 0, words = [], tag = '';
+      for (const t of terms){
+        const r = termScore(F, t, smart);
+        if (!r.s) return;
+        score += r.s; words.push(...r.words);
+        if (r.kind === 'syn' && !tag) tag = `相關：${r.words[0]}`;
+        if (r.kind === 'fuzzy' && !tag) tag = '近似';
+      }
+      out.push({d, score, words, tag});
+    });
+    return out.sort((a, b) => b.score - a.score || a.d.code.localeCompare(b.d.code, 'zh-Hant', {numeric:true}));
+  }
+  let hlWords = [];
+  function hl(text){
+    const raw = String(text ?? '');
+    const words = [...new Set(hlWords.filter(Boolean))].sort((a, b) => b.length - a.length).map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+    if (!words.length) return esc(raw);
+    // 先在原文切出命中段落，再分段跳脫，避免破壞 HTML
+    return raw.split(new RegExp(`(${words.join('|')})`, 'gi')).map((seg, i) => i % 2 ? `<mark>${esc(seg)}</mark>` : esc(seg)).join('');
+  }
+  // 關鍵字出現在備註、表單等清單上看不到的欄位時，顯示一小段原文說明為何被找到
+  function snippet(d){
+    const ws = [...new Set(hlWords)].filter(Boolean).map(norm);
+    if (!ws.length) return '';
+    const shown = norm([d.code, d.title, d.dept, d.clause].join(' '));
+    if (ws.some(w => shown.includes(w))) return '';
+    for (const [lb, val] of [['表單', d.forms], ['備註', d.note], ['連結檔案', linkText(d)]]){
+      if (!val) continue;
+      const vn = norm(val), w = ws.find(x => vn.includes(x));
+      if (w === undefined) continue;
+      const i = vn.indexOf(w), a = Math.max(0, i - 10), b = Math.min(val.length, i + w.length + 14);
+      return `<span class="snip">${lb}：${a ? '…' : ''}${hl(val.slice(a, b))}${b < val.length ? '…' : ''}</span>`;
+    }
+    return '';
+  }
+  function renderSugg(results){
+    const box = $('#sugg'), terms = splitQ(filter.q), smart = filter.smart !== false;
+    if (!terms.length){ box.innerHTML = ''; return; }
+    let h = '';
+    if (smart){
+      const ex = [...new Set(terms.flatMap(expand))].slice(0, 10);
+      if (ex.length) h += `<span class="lb">也比對了</span>` + ex.map(w => `<button type="button" data-q="${esc(w)}">${esc(w)}</button>`).join('');
+    }
+    if (!results.length){
+      const all = searchDocs(true);
+      if (all.length && (filter.std || filter.due)) h += `<button type="button" class="go" data-reset="1">在全部標準中找到 ${all.length} 筆，點此查看</button>`;
+      else {
+        const tc = compact(filter.q);
+        const near = docs.map(d => ({d, r: Math.max(charOverlap(tc, compact(d.title)), tc.length >= 3 ? (osa(tc, compact(d.code)) <= 2 ? 0.8 : 0) : 0)}))
+          .filter(x => x.r >= 0.4).sort((a, b) => b.r - a.r).slice(0, 3);
+        if (near.length) h += `<span class="lb">您是不是要找</span>` + near.map(x => `<button type="button" class="go" data-q="${esc(x.d.code)}">${esc(x.d.code)} ${esc(x.d.title)}</button>`).join('');
+      }
+    }
+    box.innerHTML = h;
+  }
+  const ST = {'現行有效':['ok','現行'],'審查中':['rev','審查中'],'已廢止':['void','廢止']};
+  function rowHTML(d, tag){
+    const i = docDue(d), st = ST[d.status] || ST['現行有效'];
+    return `<button type="button" class="row s${esc(d.std)}" data-id="${esc(d.uid)}">
+      <span class="c-doc"><span class="code">${hl(d.code)}</span><span class="title">${hl(d.title)}</span><span class="meta">${hl(d.dept || '未指定單位')}｜${hl(d.clause || '未填條款')}${tag ? `<span class="rel">${esc(tag)}</span>` : ''}</span>${snippet(d)}</span>
+      <span class="c-std"><span class="pill" title="${esc(['ISO ' + d.std, ...(d.stds || []).filter(k => k !== d.std).map(k => 'ISO ' + k)].join('、'))}">ISO ${esc(d.std)}${(d.stds || []).filter(k => k !== d.std).length ? ' +' + (d.stds || []).filter(k => k !== d.std).length : ''}</span></span>
+      <span class="c-st st st-${st[0]}">${st[1]}</span>
+      <span class="c-file">${(() => { const n = getLinks(d).length; return n ? `<span class="fbtn" data-act="open" title="開啟連結的檔案">開啟${n > 1 ? ' ' + n : ''}</span>` : `<span class="fbtn add" data-act="link" title="為這份文件連結檔案">＋連結</span>`; })()}</span>
+    </button>`;
+  }
+  function renderList(){
+    $('#cAll').textContent = docs.length;
+    ['9001','22000'].forEach(k => $('#c'+k).textContent = docs.filter(d => hasStd(d, [k])).length);
+    $('#cEHSn').textContent = docs.filter(d => hasStd(d, ['14001','45001'])).length;
+    $$('.chip[data-std]').forEach(c => c.setAttribute('aria-pressed', String(c.dataset.std === filter.std)));
+    const res = searchDocs(), rows = res.map(r => r.d);
+    hlWords = res.flatMap(r => r.words);
+    $('#list').innerHTML = res.map(r => rowHTML(r.d, r.tag)).join('');
+    renderSugg(res);
+    $('#smartBtn').setAttribute('aria-pressed', String(filter.smart !== false));
+    $('#empty').hidden = rows.length > 0; $('.lhead').hidden = rows.length === 0;
+    $('#count').textContent = `${rows.length} 筆`;
+    store.set(KEY.filter, filter);
+    renderCabs(res);
+  }
+  $$('.chip[data-std]').forEach(c => c.onclick = () => { filter.std = c.dataset.std; renderList(); });
+
+  const qIn = $('#q');
+  const SCOPE_PH = {code:'輸入文件編號，例如 QP-801', title:'輸入文件名稱關鍵字', clause:'輸入條款，例如 8.5', dept:'輸入權責單位，例如 品保課'};
+  const SCOPE_SHORT = {code:'輸入編號', title:'輸入名稱', clause:'輸入條款', dept:'輸入單位'};
+  const setPh = () => {
+    const sc = filter.scope || 'all';
+    if (sc !== 'all'){ qIn.placeholder = innerWidth < 430 ? SCOPE_SHORT[sc] : SCOPE_PH[sc]; return; }
+    qIn.placeholder = innerWidth < 430 ? '搜尋文件或關鍵字' : innerWidth < 640 ? '搜尋文件、條款、單位' : '搜尋編號、名稱、條款、單位，支援同義詞與錯字';
+  };
+  const qScope = $('#qScope');
+  const syncScopeUI = () => { qScope.value = filter.scope || 'all'; qScope.classList.toggle('on', qScope.value !== 'all'); setPh(); };
+  qScope.addEventListener('change', () => {
+    filter.scope = qScope.value; syncScopeUI(); renderList(); qIn.focus();
+    toast(filter.scope === 'all' ? '搜尋範圍：全部欄位' : `搜尋範圍：只找「${qScope.options[qScope.selectedIndex].text}」`);
+  });
+  syncScopeUI();
+  setPh(); addEventListener('resize', setPh);
+  const autoGrow = el => { el.style.height = 'auto'; el.style.height = el.scrollHeight + 2 + 'px'; };
+  $$('textarea.auto').forEach(el => {
+    el.addEventListener('input', () => { if (el.id === 'sRoot') el.value = el.value.replace(/[\r\n]+/g, ''); autoGrow(el); });
+    addEventListener('resize', () => autoGrow(el));
+  });
+  window.__autoGrowAll = () => $$('textarea.auto').forEach(autoGrow);
+  qIn.value = filter.q; $('#qClear').hidden = !filter.q;
+  const setQ = v => { qIn.value = v; filter.q = v; $('#qClear').hidden = !v; renderList(); };
+  $('#sugg').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.reset){ filter.std = ''; filter.due = ''; renderList(); }
+    else setQ(b.dataset.q);
+  });
+  $('#smartBtn').onclick = () => { filter.smart = filter.smart === false; renderList(); toast(filter.smart ? '智慧搜尋：已開啟（含同義詞與近似字）' : '智慧搜尋：已關閉（只找完全相符）'); };
+  qIn.addEventListener('input', () => { filter.q = qIn.value; $('#qClear').hidden = !qIn.value; renderList(); });
+  $('#qClear').onclick = () => { qIn.value = ''; filter.q = ''; $('#qClear').hidden = true; renderList(); qIn.focus(); };
+  $('#list').addEventListener('click', e => {
+    const r = e.target.closest('.row'); if (!r) return;
+    const fb = e.target.closest('.fbtn');
+    if (fb){
+      const d = docs.find(x => x.uid === r.dataset.id), L = d ? getLinks(d) : [];
+      if (fb.dataset.act === 'open' && L.length === 1){ openLink(L[0]); return; }   // 只有一個檔案就直接開啟
+      openSheet(r.dataset.id);
+      if (fb.dataset.act === 'link') setTimeout(() => { const i = $('#shLinkIn'); if (i){ i.scrollIntoView({block:'center'}); i.focus(); } }, 80);
+      return;
+    }
+    openSheet(r.dataset.id);
+  });
+  $('#btnSample').onclick = async () => {
+    if (!(await askConfirm('重新載入「ISO類別.xlsx」的文件目錄？\n缺少的文件會補回，已存在的只補空白欄位，不會刪除或覆蓋您改過的資料。', {ok:'載入'}))) return;
+    const r = mergeExcel(docs); saveDocs(); renderList(); toast(`已載入：新增 ${r.add} 份、更新 ${r.upd} 份`);
+  };
+  document.addEventListener('keydown', e => {
+    if (e.key === '/' && !$('#pageList').hidden && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)){ e.preventDefault(); qIn.focus(); }
+    if (e.key === 'Escape'){ if (dlgOpen()){ closeDlg(false); return; } closeSheet(); closeBinder(); }
+  });
+
+  /* ---------- 可隱藏欄位 ---------- */
+  const COLS = [['doc','minmax(0,1fr)','文件'],['std','7.5rem','標準'],['st','5.2rem','狀態'],['file','5.8rem','檔案']];
+  let cols = Object.assign({doc:true,std:true,st:true,file:true}, store.get(KEY.cols, {})); delete cols.due;
+  function applyCols(){
+    const card = $('#listCard');
+    COLS.forEach(([k]) => {
+      card.classList.toggle('h-' + k, !cols[k]);
+      $(`.ctog[data-col="${k}"]`).setAttribute('aria-pressed', String(cols[k]));
+    });
+    const vis = COLS.filter(([k]) => cols[k]);
+    // 文件欄被隱藏時，其餘欄位平均分配寬度
+    card.style.setProperty('--cols', cols.doc ? vis.map(c => c[1]).join(' ') : vis.map(() => 'minmax(0,1fr)').join(' '));
+    $('#colReset').hidden = vis.length === COLS.length;
+    store.set(KEY.cols, cols);
+  }
+  $$('.ctog').forEach(b => b.onclick = () => {
+    const k = b.dataset.col, name = COLS.find(c => c[0] === k)[2];
+    if (cols[k] && COLS.filter(([c]) => cols[c]).length === 1){ toast('至少要保留一個欄位'); return; }
+    cols[k] = !cols[k]; applyCols();
+    toast(`${cols[k] ? '已顯示' : '已隱藏'}「${name}」欄位`);
+  });
+  $('#colReset').onclick = () => { COLS.forEach(([k]) => cols[k] = true); applyCols(); toast('已顯示全部欄位'); };
+  applyCols();
+
+  /* ---------- 頁面切換（網址 #form #risk #ready #rev = 工具頁） ---------- */
+  const TOOLS = {form:'新增文件', risk:'風險評估', ready:'稽核準備度', rev:'審查日試算', sync:'資料夾匯入', map:'目錄對照'};
+  let curTool = 'form', fromList = false;
+  function toolTitle(){ return curTool === 'form' && editingId ? `編輯 ${$('#fCode').value || ''}`.trim() : TOOLS[curTool]; }
+  function setTool(t){
+    curTool = TOOLS[t] ? t : 'form';
+    $$('#toolSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.t === curTool)));
+    $$('[data-pane]').forEach(p => p.hidden = p.dataset.pane !== curTool);
+    $('#toolTitle').textContent = toolTitle();
+    if (curTool === 'sync' && window.__autoGrowAll) requestAnimationFrame(window.__autoGrowAll);
+    if (curTool === 'map' && window.__renderMap) window.__renderMap();
+    if (curTool !== 'form') store.set(KEY.tool, curTool);
+  }
+  // 在預覽視窗（iframe / about:srcdoc）裡，修改網址可能被瀏覽器拒絕；
+  // 因此網址只當「輔助」，失敗時改用程式內部記錄的頁面，功能照常運作。
+  const IN_FRAME = (() => { try { return window.self !== window.top; } catch(e){ return true; } })();
+  let curHash = (location.hash || '').replace('#','');
+  function readHash(){ try { return (location.hash || '').replace('#',''); } catch(e){ return curHash; } }
+  function setHash(t, replace){
+    curHash = t;
+    const url = location.href.split('#')[0] + (t ? '#' + t : '');
+    try {
+      if (replace) history.replaceState(null, '', url);
+      else if (readHash() !== t) location.hash = t;   // 會觸發 hashchange → route()
+      else route();
+      return;
+    } catch(e){ /* 被拒絕時忽略，直接切換畫面 */ }
+    if (!replace) route(t);
+  }
+  function route(force){
+    const h = typeof force === 'string' ? force : readHash();
+    curHash = h;
+    const isTool = !!TOOLS[h];
+    $('#pageList').hidden = isTool; $('#pageTools').hidden = !isTool;
+    if (isTool) setTool(h);
+    document.title = isTool ? `${TOOLS[h]}｜ISO 文件檢索` : 'ISO 文件檢索｜瓶膠事業部 製瓶廠';
+    window.scrollTo(0, 0);
+  }
+  window.addEventListener('hashchange', route);
+  function goTools(t){ fromList = !TOOLS[curHash]; setHash(t); }
+  function goList(){
+    // 預覽視窗裡用「上一頁」可能會跳出整個頁面，所以只在獨立開啟時使用
+    if (fromList && !IN_FRAME){ fromList = false; try { history.back(); return; } catch(e){} }
+    fromList = false; setHash('');
+    if (curHash === '' && !$('#pageList').hidden) return;
+    route('');
+  }
+  $$('#toolSeg button').forEach(b => b.onclick = () => { setHash(b.dataset.t, true); setTool(b.dataset.t); window.scrollTo(0, 0); });
+  $('#btnBack').onclick = goList;
+  const openNew = () => { if (editingId) resetForm(false); goTools('form'); setTimeout(() => $('#fTitle').focus({preventScroll:true}), 300); };
+  $('#fab').onclick = openNew;
+  $('#goForm').onclick = openNew;
+  $('#goCalc').onclick = () => goTools(store.get(KEY.tool, 'risk'));
+
+  /* ---------- 表單 ---------- */
+  const FIELDS = {fCode:'code',fVer:'ver',fTitle:'title',fClause:'clause',fDept:'dept',fDate:'date',fCycle:'cycle',fRet:'retention',fForms:'forms',fNote:'note',fBinder:'binder'};
+  function readForm(){ const o = {std:formStd, status:formStatus, links:formLinks.map(l => ({...l}))}; for (const id in FIELDS) o[FIELDS[id]] = $('#'+id).value.trim(); return o; }
+  function setFormStd(k){
+    formStd = k || '';
+    $$('#stdSeg .opt').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.std === formStd)));
+    $('#clauseList').innerHTML = (CLAUSES[formStd] || []).map(c => `<option value="${esc(c)}">`).join('');
+  }
+  function setFormStatus(v){ formStatus = v || '現行有效'; $$('#statusSeg .opt').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === formStatus))); }
+  function fillForm(o){
+    setFormStd(o.std); setFormStatus(o.status);
+    for (const id in FIELDS){ const v = o[FIELDS[id]]; $('#'+id).value = v == null ? '' : v; }
+    if (!$('#fCycle').value) $('#fCycle').value = '12';
+    if (!$('#fRet').value) $('#fRet').value = '3年';
+    if (o.ver || o.forms || o.note) $('#more').open = true;
+    formLinks = getLinks(o).map(l => ({...l})); renderFormLinks();
+    updatePreview(); clearErrs();
+  }
+  function setEditMode(on, code){
+    $('#editBar').hidden = !on;
+    $('#formTitle').textContent = on ? `正在編輯 ${code}` : '';
+    $('#btnSave').textContent = on ? '更新文件' : '儲存文件';
+    $('#toolSeg button[data-t="form"] .s').textContent = on ? '編輯' : '新增';
+    $('#toolSeg button[data-t="form"] .l').textContent = on ? '編輯文件' : '新增文件';
+    if (curTool === 'form') $('#toolTitle').textContent = on ? `編輯 ${code}` : '新增文件';
+  }
+  function resetForm(keepStd){
+    editingId = null; setEditMode(false);
+    fillForm({std: keepStd ? formStd : '', status:'現行有效', date: fmt(today0()), cycle:'12', retention:'3年'});
+    $('#more').open = false;
+    store.del(KEY.draft); $('#draftNote').textContent = '輸入內容會自動記憶，關閉後仍可接續填寫';
+  }
+  function updatePreview(){ const i = dueInfo($('#fDate').value, $('#fCycle').value); $('#fPreview').innerHTML = i ? `下次審查日：<b>${i.next}</b>（${i.text}）` : '下次審查日 = 生效日期 + 審查週期'; }
+  function clearErrs(){ $$('#docForm .err').forEach(e => e.textContent = ''); $$('#docForm .bad').forEach(e => e.classList.remove('bad')); }
+  function markErr(id, msg){ const el = $('#'+id); if (el.classList.contains('in')) el.classList.add('bad'); const er = el.closest('.f').querySelector('.err'); if (er) er.textContent = msg; }
+  function suggestCode(std){
+    const p = (STD[std] || {}).prefix; if (!p) return '';
+    const nums = docs.filter(d => d.code.toUpperCase().startsWith(p + '-')).map(d => parseInt(d.code.split('-')[1], 10)).filter(n => !isNaN(n));
+    return `${p}-${nums.length ? Math.max(...nums) + 1 : 101}`;
+  }
+  const uniq = a => [...new Set(a.filter(Boolean))];
+  function renderQuick(){
+    const depts = uniq([...hist.dept, ...DEPTS]).slice(0, 6);
+    $('#deptList').innerHTML = depts.map(d => `<option value="${esc(d)}">`).join('');
+    $('#deptQuick').innerHTML = depts.map(d => `<button type="button" data-v="${esc(d)}">${esc(d)}</button>`).join('');
+    $('#formQuick').innerHTML = uniq([...hist.forms, ...FORMS]).slice(0, 6).map(f => `<button type="button" data-v="${esc(f)}">＋${esc(f)}</button>`).join('');
+  }
+  function pushHist(o){
+    if (o.dept) hist.dept = uniq([o.dept, ...hist.dept]).slice(0, 8);
+    hist.forms = uniq([...(o.forms || '').split(/[、,，;；]/).map(s => s.trim()), ...hist.forms]).slice(0, 12);
+    store.set(KEY.hist, hist); renderQuick();
+  }
+  function saveDraft(){ store.set(KEY.draft, {...readForm(), editingId}); const t = new Date(); $('#draftNote').textContent = `草稿已自動記憶（${pad(t.getHours())}:${pad(t.getMinutes())}）`; }
+
+  $('#deptQuick').onclick = e => { const b = e.target.closest('button'); if (!b) return; $('#fDept').value = b.dataset.v; saveDraft(); };
+  $('#formQuick').onclick = e => {
+    const b = e.target.closest('button'); if (!b) return;
+    const cur = $('#fForms').value.split(/[、,，]/).map(s => s.trim()).filter(Boolean);
+    if (!cur.includes(b.dataset.v)) cur.push(b.dataset.v);
+    $('#fForms').value = cur.join('、'); saveDraft();
+  };
+  $$('#stdSeg .opt').forEach(b => b.onclick = () => { setFormStd(b.dataset.std); $('#stdSeg').closest('.f').querySelector('.err').textContent = ''; saveDraft(); });
+  $$('#statusSeg .opt').forEach(b => b.onclick = () => { setFormStatus(b.dataset.v); saveDraft(); });
+  $('#docForm').addEventListener('input', e => {
+    if (e.target.classList.contains('bad')){ e.target.classList.remove('bad'); const er = e.target.closest('.f')?.querySelector('.err'); if (er) er.textContent = ''; }
+    updatePreview(); saveDraft();
+  });
+  $('#docForm').addEventListener('change', () => { updatePreview(); saveDraft(); });
+  $('#btnSuggest').onclick = () => { if (!formStd){ toast('請先選擇 ISO 標準'); return; } $('#fCode').value = suggestCode(formStd); saveDraft(); };
+  $('#btnLast').onclick = () => {
+    const last = store.get(KEY.last, null);
+    if (!last){ toast('還沒有上一筆紀錄'); return; }
+    editingId = null; setEditMode(false); fillForm({...last, code: suggestCode(last.std), links:[], path:''}); saveDraft();
+    toast('已帶入上一筆，編號已自動建議');
+  };
+  $('#btnClear').onclick = () => { resetForm(false); toast('已清空表單'); };
+  $('#cancelEdit').onclick = () => { resetForm(false); toast('已取消編輯'); };
+  $('#docForm').addEventListener('submit', e => {
+    e.preventDefault(); clearErrs();
+    const o = readForm(), errs = [];
+    if (!o.std) errs.push(['stdSeg','請選擇 ISO 標準']);
+    if (!o.code) errs.push(['fCode','請輸入文件編號']);
+    if (!o.title) errs.push(['fTitle','請輸入文件名稱']);
+    if (o.code && docs.some(d => d.code.toLowerCase() === o.code.toLowerCase() && d.title === o.title && d.uid !== editingId)) errs.push(['fCode',`編號 ${o.code}「${o.title}」已存在`]);
+    if (errs.length){ errs.forEach(([id, m]) => markErr(id, m)); toast(errs[0][1]); return; }
+    o.cycle = +o.cycle || 12;
+    setLinks(o, o.links || []);
+    const wasEdit = !!editingId;
+    const ei = editingId ? docs.findIndex(d => d.uid === editingId) : -1;
+    if (ei > -1){
+      const old = docs[ei];
+      if (old.binder !== o.binder){ o.binders = [...new Set([o.binder, ...(old.binders || []).filter(b => b !== old.binder)].filter(Boolean))]; o.binderAuto = false; }
+      docs[ei] = {...old, ...o}; toast(`已更新 ${o.code}`);
+    }
+    else { o.uid = 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2,6); docs.push(o); toast(editingId ? `原文件已不存在，已另存為新文件 ${o.code}` : `已儲存 ${o.code}`); }
+    saveDocs(); store.set(KEY.last, (({uid, ...rest}) => rest)(o)); pushHist(o);
+    resetForm(true); renderList();
+    if (wasEdit) goList();   // 編輯完成回到清單；新增則留在本頁方便連續建檔
+  });
+
+  /* ---------- 詳情 ---------- */
+  function openSheet(uid){
+    const d = docs.find(x => x.uid === uid); if (!d) return;
+    sheetId = uid;
+    const i = docDue(d), forms = (d.forms || '').split(/[、,，]/).map(s => s.trim()).filter(Boolean);
+    $('#sheetBody').innerHTML = `<div class="s${esc(d.std)}">
+      <div class="sh-head"><small>ISO ${esc(d.std)}　${esc((STD[d.std]||{}).name)}</small><h3>${esc(d.title)}</h3><p>${esc(d.code)}　${esc(d.ver)}</p></div>
+      <div class="kv">
+        ${d.binder && findBinder(d.binder) ? `<div class="full"><span>存放位置</span><b>${esc(binderText(d.binder, true))}</b><button type="button" class="lk-open" id="shGoCab" style="margin-top:8px">在文件櫃中查看</button></div>` : ''}
+        ${(d.binders || []).filter(b => b !== d.binder && findBinder(b)).length ? `<div class="full"><span>也收錄於</span><b>${(d.binders || []).filter(b => b !== d.binder && findBinder(b)).map(b => esc(binderText(b, true))).join('<br>')}</b></div>` : ''}
+        ${(d.stds || []).length > 1 ? `<div class="full"><span>適用標準</span><b>${d.stds.map(k => 'ISO ' + k).join('、')}</b></div>` : ''}
+        <div class="full"><span>對應條款</span><b>${esc(d.clause || '—')}</b></div>
+        <div><span>權責單位</span><b>${esc(d.dept || '—')}</b></div>
+        <div><span>文件狀態</span><b>${esc(d.status)}</b></div>
+        <div><span>${d.src === 'excel' ? '最終日期' : '生效日期'}</span><b>${esc(d.date || '—')}</b></div>
+        ${d.src === 'excel' ? '' : `<div><span>下次審查</span><b>${i ? `${i.next}（${i.text}）` : (d.status === '已廢止' ? '不需審查' : '未填生效日期')}</b></div>
+        <div><span>審查週期</span><b>${esc(d.cycle)} 個月</b></div>`}
+        <div><span>保存年限</span><b>${esc(d.retention || '—')}</b></div>
+        ${forms.length ? `<div class="full"><span>相關表單</span><b>${forms.map(esc).join('、')}</b></div>` : ''}
+        ${d.note ? `<div class="full"><span>管制重點／備註</span><b>${esc(d.note)}</b></div>` : ''}
+
+      </div>
+      ${(() => { const L = getLinks(d); return `<div class="sh-sec"><h4>連結檔案（${L.length}）</h4>${L.length ? L.map((l, i) => `<div class="lk-row"><span class="tagk${l.url ? ' web' : ''}">${l.url ? '網址' : '檔案'}</span><span class="lk-txt"><b>${esc(l.name)}</b><small>${esc(linkSub(l))}</small></span><button type="button" class="lk-open" data-i="${i}">開啟</button><button type="button" class="lk-copy" data-i="${i}">複製</button><button type="button" class="lk-del" data-i="${i}" aria-label="移除連結">×</button></div>`).join('') : '<p class="hint" style="margin:0 0 6px 4px">這份文件還沒有連結檔案，可在下方直接加入</p>'}
+        <div class="sh-quick"><input class="in" id="shLinkIn" placeholder="貼上檔案路徑或網址" spellcheck="false" autocomplete="off"><button type="button" class="mini" id="shAddLink">加入</button></div>
+        <button type="button" class="btn sub" id="shPickFile" style="margin-top:8px">從電腦選擇檔案</button></div>`; })()}
+      </div>`;
+    $('#sheetBg').classList.add('open'); $('#sheetBg').setAttribute('aria-hidden','false'); $('#shEdit').focus();
+  }
+  function closeSheet(){ $('#sheetBg').classList.remove('open'); $('#sheetBg').setAttribute('aria-hidden','true'); sheetId = null; }
+  const curDoc = () => docs.find(x => x.uid === sheetId);
+  $('#sheetBg').addEventListener('click', e => { if (e.target.id === 'sheetBg') closeSheet(); });
+  $('#shEdit').onclick = () => {
+    const d = curDoc(); if (!d) return;
+    closeSheet(); editingId = d.uid; fillForm(d); setEditMode(true, d.code); saveDraft();
+    goTools('form'); $('#fTitle').focus({preventScroll:true});
+  };
+  $('#shCopy').onclick = async () => {
+    const d = curDoc(); if (!d) return;
+    try { await navigator.clipboard.writeText(d.code); }
+    catch(e){ const a = document.createElement('textarea'); a.value = d.code; document.body.appendChild(a); a.select(); try{document.execCommand('copy')}catch(_){} a.remove(); }
+    toast(`已複製 ${d.code}`);
+  };
+  $('#shDel').onclick = async () => {
+    const d = curDoc(); if (!d || !(await askConfirm(`確定刪除「${d.code} ${d.title}」？`, {ok:'刪除', danger:true}))) return;
+    docs = docs.filter(x => x.uid !== d.uid); saveDocs();
+    if (editingId === d.uid) resetForm(false);
+    closeSheet(); renderList(); toast(`已刪除 ${d.code}`);
+  };
+
+  /* ---------- 匯出 ---------- */
+  $('#btnCsv').onclick = () => {
+    const head = ['文件編號','文件名稱','ISO標準','條款','權責單位','版次','生效日期','審查週期(月)','下次審查日','狀態','保存年限','相關表單','備註','連結檔案','存放位置'];
+    const rows = searchDocs().map(r => r.d).map(d => { const i = docDue(d); return [d.code,d.title,'ISO '+d.std,d.clause,d.dept,d.ver,d.date,d.cycle,i ? i.next : '',d.status,d.retention,d.forms,d.note,getLinks(d).map(linkTarget).join('；'),binderText(d.binder, true)]; });
+    const csv = [head, ...rows].map(r => r.map(v => `"${String(v ?? '').replace(/"/g,'""')}"`).join(',')).join('\r\n');
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob(['\ufeff' + csv], {type:'text/csv;charset=utf-8'}));
+    a.download = `ISO文件清單_${fmt(today0())}.csv`;
+    document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+    toast(`已匯出 ${rows.length} 筆`);
+  };
+
+  /* ---------- 計算 ---------- */
+  let calc = Object.assign({S:3,L:3,ok:19,total:20,rDate:fmt(today0()),rCycle:12}, store.get(KEY.calc, {}));
+  const saveCalc = () => store.set(KEY.calc, calc);
+  function level(r){
+    if (r <= 4)  return {n:1,t:'低風險',a:'維持現行管制，定期檢討即可'};
+    if (r <= 9)  return {n:2,t:'中風險',a:'列入管理方案，訂定期限改善'};
+    if (r <= 14) return {n:3,t:'高風險',a:'優先改善，由主管核定控制措施'};
+    return {n:4,t:'極高風險',a:'立即停止相關作業，採取緊急控制'};
+  }
+  function renderRisk(){
+    const r = calc.S * calc.L, lv = level(r);
+    $('#oS').textContent = calc.S; $('#oL').textContent = calc.L; $('#rBig').textContent = r;
+    $('#rResult').className = 'result lv' + lv.n; $('#rLv').textContent = `${lv.t}（${calc.S} × ${calc.L}）`; $('#rAct').textContent = lv.a;
+  }
+  $$('.stepper button').forEach(b => b.onclick = () => { const k = b.dataset.k; calc[k] = Math.min(5, Math.max(1, calc[k] + +b.dataset.d)); renderRisk(); saveCalc(); });
+  function renderReady(){
+    const ok = Math.max(0, +$('#iOk').value || 0), tot = Math.max(0, +$('#iTot').value || 0);
+    calc.ok = ok; calc.total = tot; saveCalc();
+    const pct = tot ? Math.min(100, ok / tot * 100) : 0;
+    const lv = pct >= 95 ? [1,'優良','可直接迎接稽核'] : pct >= 85 ? [2,'可接受','補強差距項目即可'] : pct >= 70 ? [3,'需加強','建議先安排預稽核'] : [4,'未就緒','請優先整改缺失'];
+    $('#rdBox').className = 'result lv' + lv[0]; $('#rPct').textContent = pct.toFixed(1) + '%';
+    $('#rdLv').textContent = lv[1]; $('#rdTxt').textContent = `${lv[2]}，差距 ${Math.max(0, tot - ok)} 項`;
+    $('#rBar').style.width = pct + '%'; $('#rdWarn').hidden = ok <= tot;
+  }
+  $('#iOk').value = calc.ok; $('#iTot').value = calc.total;
+  $('#iOk').addEventListener('input', renderReady); $('#iTot').addEventListener('input', renderReady);
+  function renderRev(){
+    calc.rDate = $('#cDate').value; calc.rCycle = +$('#cCycle').value; saveCalc();
+    const i = dueInfo(calc.rDate, calc.rCycle), box = $('#cRes');
+    box.className = 'result ' + (i ? {ok:'lv1',soon:'lv3',late:'lv4'}[i.cls] : '');
+    box.innerHTML = i ? `<div><div class="lvt" style="font-size:24px">${i.next}</div><p>${i.text}</p></div>` : '<p>請輸入生效日期</p>';
+  }
+  $('#cDate').value = calc.rDate; $('#cCycle').value = String(calc.rCycle);
+  $('#cDate').addEventListener('input', renderRev); $('#cCycle').addEventListener('change', renderRev);
+
+  /* ---------- 資料夾匯入（D:\J-ISO驗證文件\2026-ISO 資料） ---------- */
+  const DEFAULT_MAP = 'QP=9001, QM=9001, QW=9001, QR=9001, EP=14001, EW=14001, FS=22000, FP=22000, HC=22000, HACCP=22000, OH=45001, SP=45001';
+  const DEFAULT_ROOT = 'D:\\J-ISO驗證文件';
+  let sync = Object.assign({root:DEFAULT_ROOT, map:DEFAULT_MAP, last:null}, store.get(KEY.sync, {}));
+  if (sync.root === 'D:\\J-ISO驗證文件\\2026-ISO 資料' && !sync.last) sync.root = DEFAULT_ROOT;   // 尚未同步過就改用新的根目錄
+  // 選的資料夾和設定位置不一致時自動校正，確保「複製路徑」正確
+  function alignRoot(name){
+    if (!name) return;
+    const segs = sync.root.split(/[\\\/]+/).filter(Boolean);
+    if (segs[segs.length - 1] === name) return;
+    const i = segs.lastIndexOf(name);
+    if (i >= 0){ sync.root = segs.slice(0, i + 1).join('\\'); $('#sRoot').value = sync.root; window.__autoGrowAll && window.__autoGrowAll(); store.set(KEY.sync, sync); toast(`資料夾位置已自動調整為 ${sync.root}`); }
+    else toast(`提醒：選取的資料夾「${name}」與設定位置不同，請確認「文件資料夾位置」`);
+  }
+  let dirHandle = null, sessionFiles = new Map(), pending = null;
+  const fullPath = rel => (sync.root || '').replace(/[\\\/]+$/, '') + '\\' + rel;
+
+  // 用 IndexedDB 記住資料夾（下次只要按「重新同步」）
+  const idb = {
+    open(){ return new Promise((res, rej) => { const r = indexedDB.open('isoFinder', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }); },
+    async get(k){ try { const db = await this.open(); return await new Promise(res => { const q = db.transaction('kv').objectStore('kv').get(k); q.onsuccess = () => res(q.result); q.onerror = () => res(null); }); } catch(e){ return null; } },
+    async set(k, v){ try { const db = await this.open(); return await new Promise(res => { const q = db.transaction('kv','readwrite').objectStore('kv').put(v, k); q.onsuccess = () => res(true); q.onerror = () => res(false); }); } catch(e){ return false; } }
+  };
+  async function ensurePerm(h){
+    if (!h || !h.queryPermission) return false;
+    const o = {mode:'read'};
+    if (await h.queryPermission(o) === 'granted') return true;
+    return (await h.requestPermission(o)) === 'granted';
+  }
+
+  function parseMap(){
+    const m = {};
+    (sync.map || '').split(/[,，;；\s]+/).forEach(x => { const [k, v] = x.split(/[=:：]/); if (k && STD[(v || '').trim()]) m[k.trim().toUpperCase()] = v.trim(); });
+    return m;
+  }
+  const DOC_EXT = /\.(pdf|docx?|xlsx?|xlsm|pptx?|odt|ods|vsdx?|txt)$/i;
+  function validDate(y, m, d){ const t = new Date(y, m - 1, d); return t.getFullYear() === y && t.getMonth() === m - 1 && t.getDate() === d ? fmt(t) : ''; }
+  function parseFile(rel, mtime, map){
+    const segs = rel.split('\\'), fname = segs[segs.length - 1], folder = segs.slice(0, -1).join(' ');
+    if (fname.startsWith('~$') || fname.startsWith('.')) return null;           // Office 暫存檔
+    if (!DOC_EXT.test(fname)) return null;                                       // 非文件格式，不列入
+    const raw = fname.replace(DOC_EXT, '');
+    let base = raw.replace(/^ISO\s?\d{4,5}[\s_\-－]*/i, '');
+    const m = base.match(/^\s*([A-Za-z]{1,5})[\s_\-－]?(\d{2,4}(?:[\-_]\d{1,3})?)(?!\d)/);
+    if (!m) return {skip:'檔名開頭找不到文件編號', rel};
+    const prefix = m[1].toUpperCase(), code = `${prefix}-${m[2].replace('_','-')}`;
+    let rest = ' ' + base.slice(m[0].length) + ' ';
+
+    let ver = '', vm = rest.match(/[\s_\-(（\[](?:V|Ver\.?|Rev\.?|R)\s?(\d+(?:\.\d+)?)(?=[\s_\-)）\]])/i);
+    if (vm){ ver = 'V' + vm[1]; rest = rest.replace(vm[0], ' '); }
+    else if ((vm = rest.match(/第\s?(\d+)\s?版/))){ ver = 'V' + vm[1]; rest = rest.replace(vm[0], ' '); }
+
+    let date = '', dateFrom = 'name', dm = rest.match(/(20\d{2})(?:([.\-_\/])(\d{1,2})\2(\d{1,2})|(\d{2})(\d{2}))(?!\d)/);
+    if (dm){ date = validDate(+dm[1], +(dm[3] || dm[5]), +(dm[4] || dm[6])); if (date) rest = rest.replace(dm[0], ' '); }
+    if (!date && (dm = rest.match(/(^|\D)(1[01]\d)[.\-_\/](\d{1,2})[.\-_\/](\d{1,2})(?!\d)/))){ date = validDate(+dm[2] + 1911, +dm[3], +dm[4]); if (date) rest = rest.replace(dm[0], dm[1] + ' '); }
+    if (!date && mtime){ date = fmt(new Date(mtime)); dateFrom = 'mtime'; }
+
+    const title = rest.replace(/[()（）\[\]【】]/g, ' ').replace(/[_\-－]+/g, ' ').replace(/\s+/g, ' ').trim() || raw;
+    const hay = folder + ' ' + raw;
+    let std = (hay.match(/(9001|14001|22000|45001)/) || [])[1] || (/haccp/i.test(hay) ? '22000' : '');
+    if (!std) std = map[prefix] || '';
+    if (!std){
+      if (/品質|品保|品管/.test(folder)) std = '9001';
+      else if (/環境|環保/.test(folder)) std = '14001';
+      else if (/食品|食安|haccp/i.test(folder)) std = '22000';
+      else if (/職安|職業|安全衛生|安衛/.test(folder)) std = '45001';
+    }
+    if (!std) return {skip:`無法判斷標準（可在「編號開頭對應標準」加上 ${prefix}=9001 之類的設定）`, rel};
+    let status = '', st = rel;
+    if (/廢止|作廢|停用|obsolete/i.test(st)) status = '已廢止';
+    else if (/審查中|草稿|待審|draft/i.test(st)) status = '審查中';
+    return {code, title, ver, date, dateFrom, std, status, rel};
+  }
+  const verNum = v => parseFloat(String(v || '').replace(/[^\d.]/g, '')) || 0;
+
+  async function collectFromHandle(h){
+    const out = []; let n = 0; scanDirs = [];
+    async function walk(dir, base){
+      for await (const [name, child] of dir.entries()){
+        if (name.startsWith('.') || name.startsWith('~$') || /^(thumbs\.db|desktop\.ini)$/i.test(name)) continue;
+        const rel = base ? base + '\\' + name : name;
+        if (child.kind === 'directory'){ scanDirs.push(rel); await walk(child, rel); }
+        else if (out.length < 20000){
+          let mtime = 0; try { mtime = (await child.getFile()).lastModified; } catch(e){}
+          out.push({rel, mtime});
+          if (++n % 50 === 0) $('#sInfo').textContent = `掃描中…已讀取 ${n} 個檔案`;
+        }
+      }
+    }
+    await walk(h, '');
+    return out;
+  }
+  function analyze(files){
+    const map = parseMap(), best = new Map(), skips = []; let old = 0, docCount = 0;
+    files.forEach(f => {
+      const r = parseFile(f.rel, f.mtime, map);
+      if (!r) return;
+      docCount++;
+      if (r.skip){ skips.push(r); return; }
+      const k = r.code.toLowerCase(), cur = best.get(k);
+      if (!cur){ best.set(k, r); return; }
+      old++;
+      const newer = verNum(r.ver) > verNum(cur.ver) || (verNum(r.ver) === verNum(cur.ver) && r.date > cur.date);
+      if (newer){ best.set(k, r); skips.push({skip:`舊版本（已保留 ${r.rel.split('\\').pop()}）`, rel:cur.rel}); }
+      else skips.push({skip:`舊版本（已保留 ${cur.rel.split('\\').pop()}）`, rel:r.rel});
+    });
+    return {items:[...best.values()].sort((a,b) => a.code.localeCompare(b.code, 'zh-Hant', {numeric:true})), skips, total:docCount};
+  }
+  function showPreview(res){
+    pending = res;
+    const clearSample = $('#sClearSample').checked;
+    const base = clearSample ? docs.filter(d => !/^s\d+$/.test(d.uid)) : docs;
+    let nNew = 0, nUpd = 0;
+    $('#pvBody').innerHTML = res.items.map(it => {
+      const ex = base.some(d => d.code.toLowerCase() === it.code.toLowerCase());
+      ex ? nUpd++ : nNew++;
+      return `<tr class="s${it.std}"><td class="${ex ? 'upd' : 'new'}">${ex ? '更新' : '新增'}</td><td><b style="color:var(--ink)">${esc(it.code)}</b></td><td>${esc(it.title)}</td><td>${it.std}</td><td>${esc(it.ver || '—')}</td><td>${esc(it.date || '—')}${it.dateFrom === 'mtime' ? '<div class="mt">取自修改日</div>' : ''}</td></tr>`;
+    }).join('') || '<tr><td colspan="6" style="text-align:center;padding:20px">沒有可辨識的文件</td></tr>';
+    $('#pvNew').textContent = nNew; $('#pvUpd').textContent = nUpd; $('#pvSkip').textContent = res.skips.length;
+    $('#pvSkipBox').hidden = !res.skips.length;
+    $('#pvSkipList').innerHTML = res.skips.slice(0, 300).map(s => `<li>${esc(s.rel)}<br><span style="color:var(--orange)">${esc(s.skip)}</span></li>`).join('');
+    $('#sImport').disabled = !res.items.length;
+    $('#sPreview').hidden = false;
+    $('#sInfo').textContent = `共讀取 ${res.total} 個文件檔，辨識出 ${res.items.length} 份文件`;
+    $('#sPreview').scrollIntoView({behavior:'smooth', block:'start'});
+  }
+  function saveSyncSettings(){ sync.root = $('#sRoot').value.trim() || DEFAULT_ROOT; sync.map = $('#sMap').value.trim(); store.set(KEY.sync, sync); }
+  function syncInfoText(){
+    if (!sync.last) return '檔案只在這台電腦上讀取，不會上傳到任何地方';
+    return `上次同步：${sync.last.time}，資料夾「${sync.last.name}」，共 ${sync.last.count} 份文件`;
+  }
+
+  async function scanHandle(h){
+    saveSyncSettings();
+    $('#sInfo').textContent = '掃描中…';
+    try {
+      const files = await collectFromHandle(h);
+      await afterScan(files, scanDirs);
+      showPreview(analyze(files));
+    } catch(e){ $('#sInfo').textContent = '讀取資料夾失敗：' + (e.message || e); }
+  }
+  $('#sPick').onclick = async () => {
+    saveSyncSettings();
+    if (window.showDirectoryPicker && !IN_FRAME){
+      try {
+        const h = await window.showDirectoryPicker({id:'iso-docs', mode:'read'});
+        dirHandle = h; sessionFiles.clear(); await idb.set('dir', h);
+        alignRoot(h.name);
+        $('#sResync').hidden = false;
+        scanHandle(h);
+      } catch(e){ if (e.name !== 'AbortError') toast('無法開啟資料夾：' + e.message); }
+    } else {
+      $('#sDirInput').click();   // 不支援的瀏覽器改用一般資料夾上傳視窗
+    }
+  };
+  $('#sDirInput').addEventListener('change', e => {
+    const list = [...e.target.files]; if (!list.length) return;
+    sessionFiles.clear();
+    const files = list.map(f => {
+      const rel = (f.webkitRelativePath || f.name).split('/').slice(1).join('\\') || f.name;
+      sessionFiles.set(rel, f);
+      return {rel, mtime:f.lastModified};
+    });
+    pendingRootName = (list[0].webkitRelativePath || '').split('/')[0] || '資料夾';
+    alignRoot(pendingRootName);
+    const dset = new Set(); files.forEach(f => { const seg = f.rel.split('\\'); for (let k = 1; k < seg.length; k++) dset.add(seg.slice(0, k).join('\\')); });
+    afterScan(files.filter(f => !/^(thumbs\.db|desktop\.ini)$/i.test(baseName(f.rel))), [...dset]);
+    showPreview(analyze(files));
+    e.target.value = '';
+  });
+  let pendingRootName = '';
+  $('#sResync').onclick = async () => {
+    if (!dirHandle) return;
+    if (!(await ensurePerm(dirHandle))){ toast('需要允許讀取資料夾才能同步'); return; }
+    scanHandle(dirHandle);
+  };
+  $('#sCancel').onclick = () => { pending = null; $('#sPreview').hidden = true; $('#sInfo').textContent = syncInfoText(); };
+  $('#sClearSample').addEventListener('change', () => { if (pending) showPreview(pending); });
+  $('#sImport').onclick = () => {
+    if (!pending) return;
+    if ($('#sClearSample').checked) docs = docs.filter(d => !/^s\d+$/.test(d.uid));
+    let add = 0, upd = 0, rm = 0; const seen = new Set();
+    pending.items.forEach(it => {
+      const k = it.code.toLowerCase(); seen.add(k);
+      const ex = docs.find(d => d.code.toLowerCase() === k);
+      if (ex){
+        // 只更新檔名能得知的欄位；條款、單位、表單、備註等手動資料保留
+        Object.assign(ex, {title:it.title || ex.title, ver:it.ver || ex.ver, date:it.date || ex.date, std:it.std, src:'folder'});
+        const L = getLinks(ex).filter(l => l.src !== 'folder' && l.rel !== it.rel);
+        L.unshift({name:baseName(it.rel), rel:it.rel, src:'folder'}); setLinks(ex, L);
+        if (it.status) ex.status = it.status;
+        upd++;
+      } else {
+        docs.push({uid:'f' + Date.now().toString(36) + Math.random().toString(36).slice(2,6), std:it.std, code:it.code, title:it.title, clause:'', dept:'',
+          ver:it.ver, date:it.date, cycle:12, status:it.status || '現行有效', retention:'3年', forms:'', note:'', path:it.rel, links:[{name:baseName(it.rel), rel:it.rel, src:'folder'}], src:'folder'});
+        add++;
+      }
+    });
+    if ($('#sRemove').checked){ const before = docs.length; docs = docs.filter(d => d.src !== 'folder' || seen.has(d.code.toLowerCase())); rm = before - docs.length; }
+    assignDocsByDir(); saveDocs(); renderList();
+    const t = new Date();
+    sync.last = {time:`${fmt(t)} ${pad(t.getHours())}:${pad(t.getMinutes())}`, name:dirHandle ? dirHandle.name : (pendingRootName || '資料夾'), count:pending.items.length};
+    store.set(KEY.sync, sync);
+    pending = null; $('#sPreview').hidden = true; $('#sInfo').textContent = syncInfoText();
+    toast(`匯入完成：新增 ${add}、更新 ${upd}${rm ? `、移除 ${rm}` : ''}`);
+    goList();
+  };
+  $('#goSync').onclick = () => goTools('sync');
+
+  /* ---------- 連結檔案 ---------- */
+  // 連結格式：{name, rel}=資料夾內相對路徑、{name, abs}=完整路徑、{name, url}=網址、
+  //           {name, hid}=已記住的檔案(Chrome)、{name, tmp}=本次暫存
+  const safeDecode = x => { try { return decodeURIComponent(x); } catch(e){ return x; } };
+  function baseName(p){ return String(p || '').split(/[\\\/]/).filter(Boolean).pop() || String(p || ''); }
+  function getLinks(d){
+    if (Array.isArray(d.links)) return d.links;
+    return d.path ? [{name:baseName(d.path), rel:d.path, src:d.src === 'folder' ? 'folder' : ''}] : [];
+  }
+  function setLinks(d, arr){ d.links = arr.filter(l => !l.tmp); const r = d.links.find(l => l.rel); d.path = r ? r.rel : ''; }
+  function linkTarget(l){ return l.url || (l.rel ? fullPath(l.rel) : (l.abs || l.name)); }
+  function linkSub(l){ return l.hid ? '已記住此檔案（Chrome／Edge）' : l.tmp ? '僅本次開啟有效' : linkTarget(l); }
+  function linkText(d){ return getLinks(d).map(l => `${l.name} ${l.url || l.rel || l.abs || ''}`).join(' '); }
+  function parseLinkInput(raw){
+    let t = String(raw || '').trim().replace(/^["'「『]+|["'」』]+$/g, '').trim();
+    if (!t) return null;
+    if (/^https?:\/\//i.test(t)) return {name:safeDecode(baseName(t.split(/[?#]/)[0])) || t, url:t};
+    if (/^file:/i.test(t)) t = safeDecode(t.replace(/^file:\/*/i, (m) => m.length > 7 ? '' : '\\\\'));
+    t = t.replace(/\//g, '\\');
+    const root = (sync.root || '').replace(/[\\\/]+$/, '').replace(/\//g, '\\');
+    if (root && t.toLowerCase().startsWith(root.toLowerCase() + '\\')) return {name:baseName(t), rel:t.slice(root.length + 1)};
+    if (/^[a-z]:\\|^\\\\/i.test(t)) return {name:baseName(t), abs:t};
+    return {name:baseName(t), rel:t.replace(/^\\+/, '')};
+  }
+  async function copyText(t){
+    try { await navigator.clipboard.writeText(t); return true; }
+    catch(e){ const a = document.createElement('textarea'); a.value = t; document.body.appendChild(a); a.select(); let ok = false; try { ok = document.execCommand('copy'); } catch(_){} a.remove(); return ok; }
+  }
+  async function openLink(l){
+    if (l.url){ window.open(l.url, '_blank', 'noopener'); return; }
+    const viewable = /\.(pdf|png|jpe?g|gif|txt|html?)$/i.test(l.name || '');
+    try {
+      let f = null;
+      if (l.tmp) f = sessionFiles.get(l.tmp) || null;
+      if (!f && l.hid){ const h = await idb.get('fh:' + l.hid); if (h && await ensurePerm(h)) f = await h.getFile(); }
+      if (!f && l.rel){
+        f = sessionFiles.get(l.rel) || null;
+        if (!f && dirHandle && await ensurePerm(dirHandle)){
+          const segs = l.rel.split('\\'); let h = dirHandle;
+          for (const sn of segs.slice(0, -1)) h = await h.getDirectoryHandle(sn);
+          f = await (await h.getFileHandle(segs[segs.length - 1])).getFile();
+        }
+      }
+      if (!f) throw new Error('nofile');
+      const url = URL.createObjectURL(f);
+      let w = null;
+      if (viewable){ try { w = window.open(url, '_blank'); } catch(e){ w = null; } }   // PDF、圖片直接在新分頁顯示
+      if (!w){ const a = document.createElement('a'); a.href = url; a.download = f.name; document.body.appendChild(a); a.click(); a.remove(); toast(viewable ? `新分頁被瀏覽器擋下，已改為下載 ${f.name}` : `已開啟 ${f.name}（Word／Excel 會另存一份副本）`); }
+      setTimeout(() => URL.revokeObjectURL(url), 300000);
+    } catch(e){
+      // 網頁基於安全限制，無法直接打開電腦裡的路徑 → 自動複製路徑，貼到檔案總管即可
+      await copyText(linkTarget(l));
+      toast(l.hid || l.tmp ? '無法讀取這個檔案，可能已搬移，請重新連結' : '已複製檔案路徑，請貼到檔案總管網址列開啟');
+    }
+  }
+
+  // 詳情視窗：開啟／複製
+  function addDocLinks(d, list){
+    const key = x => (x.url || x.rel || x.abs || x.hid || '').toLowerCase();
+    const cur = getLinks(d).slice(), added = list.filter(l => l && !l.tmp && !cur.some(x => key(x) === key(l)));
+    if (!added.length){ toast('這個檔案已經連結過了'); return; }
+    setLinks(d, [...cur, ...added]); saveDocs(); renderList(); openSheet(d.uid);
+    toast(`已為 ${d.code} 連結 ${added.length} 個檔案`);
+  }
+  const sheetAddTyped = () => {
+    const d = curDoc(), inp = $('#shLinkIn'); if (!d || !inp) return;
+    if (!inp.value.trim()){ toast('請先貼上檔案路徑或網址'); inp.focus(); return; }
+    addDocLinks(d, inp.value.split(/\r?\n/).map(parseLinkInput).filter(Boolean));
+  };
+  $('#sheetBody').addEventListener('keydown', e => { if (e.target.id === 'shLinkIn' && e.key === 'Enter'){ e.preventDefault(); sheetAddTyped(); } });
+  $('#sheetBody').addEventListener('click', async e => {
+    if (e.target.closest('#shAddLink')){ sheetAddTyped(); return; }
+    if (e.target.closest('#shPickFile')){
+      const d = curDoc(); if (!d) return;
+      const got = await pickFiles('sheet'); if (got && got.length) addDocLinks(d, got);
+      return;
+    }
+    const b = e.target.closest('.lk-open,.lk-copy,.lk-del'); if (!b) return;
+    const d = curDoc(); if (!d) return;
+    const L = getLinks(d), l = L[+b.dataset.i]; if (!l) return;
+    if (b.classList.contains('lk-open')) openLink(l);
+    else if (b.classList.contains('lk-del')){
+      if (!(await askConfirm(`移除連結「${l.name}」？\n（不會刪除電腦裡的檔案）`, {ok:'移除', danger:true}))) return;
+      setLinks(d, L.filter((_, i) => i !== +b.dataset.i)); saveDocs(); renderList(); openSheet(d.uid); toast('已移除連結');
+    }
+    else { await copyText(l.url || linkTarget(l)); toast(l.url ? '已複製網址' : '已複製路徑，可貼到檔案總管開啟'); }
+  });
+
+  // 表單：連結清單
+  let formLinks = [];
+  function renderFormLinks(){
+    $('#fLinks').innerHTML = formLinks.length
+      ? formLinks.map((l, i) => `<div class="lk-row"><span class="tagk${l.url ? ' web' : ''}">${l.url ? '網址' : '檔案'}</span><span class="lk-txt"><b>${esc(l.name)}</b><small>${esc(linkSub(l))}</small></span><button type="button" class="lk-x" data-i="${i}" aria-label="移除 ${esc(l.name)}">×</button></div>`).join('')
+      : '<p class="hint" style="margin:0 0 8px 4px">尚未連結檔案</p>';
+  }
+  function addFormLink(l){
+    if (!l) return false;
+    const key = x => (x.url || x.rel || x.abs || x.hid || x.tmp || '').toLowerCase();
+    if (formLinks.some(x => key(x) === key(l))){ toast('這個檔案已經連結過了'); return false; }
+    formLinks.push(l); renderFormLinks(); saveDraft(); return true;
+  }
+  $('#fLinks').addEventListener('click', e => {
+    const b = e.target.closest('.lk-x'); if (!b) return;
+    formLinks.splice(+b.dataset.i, 1); renderFormLinks(); saveDraft();
+  });
+  const addTyped = () => {
+    const v = $('#fLinkIn').value; if (!v.trim()) { toast('請先貼上檔案路徑或網址'); return; }
+    // 一次貼上多行路徑也可以
+    let n = 0; v.split(/\r?\n/).forEach(line => { if (addFormLink(parseLinkInput(line))) n++; });
+    if (n){ $('#fLinkIn').value = ''; toast(`已加入 ${n} 個連結`); }
+  };
+  $('#btnAddLink').onclick = addTyped;
+  $('#fLinkIn').addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); addTyped(); } });
+  // 選擇檔案：Chrome／Edge 會記住檔案位置；其他瀏覽器只能暫時使用
+  async function pickFiles(target){
+    if (window.showOpenFilePicker && !IN_FRAME){
+      const out = [];
+      try {
+        const hs = await window.showOpenFilePicker(dirHandle ? {multiple:true, startIn:dirHandle} : {multiple:true});
+        for (const h of hs){
+          let rel = null;
+          if (dirHandle){ try { const segs = await dirHandle.resolve(h); if (segs && segs.length) rel = segs.join('\\'); } catch(e){} }
+          if (rel) out.push({name:h.name, rel});
+          else { const hid = Date.now().toString(36) + Math.random().toString(36).slice(2, 6); await idb.set('fh:' + hid, h); out.push({name:h.name, hid}); }
+        }
+      } catch(e){ if (e.name !== 'AbortError') toast('無法選擇檔案：' + e.message); }
+      return out;
+    }
+    if (target === 'sheet'){ toast('這個瀏覽器或預覽視窗無法記住檔案位置，請改用「貼上路徑」'); return []; }
+    $('#fPickInput').click(); return [];
+  }
+  $('#btnPickFile').onclick = async () => { (await pickFiles('form')).forEach(addFormLink); };
+  $('#fPickInput').addEventListener('change', e => {
+    [...e.target.files].forEach(f => { const key = 'tmp:' + Date.now() + ':' + f.name; sessionFiles.set(key, f); addFormLink({name:f.name, tmp:key}); });
+    if (e.target.files.length) toast('此瀏覽器無法記住檔案位置，儲存後請改用「貼上路徑」');
+    e.target.value = '';
+  });
+
+  // 初始化
+  if (!/HACCP\s*=/i.test(sync.map || '')){ sync.map = (sync.map ? sync.map + ', ' : '') + 'HC=22000, HACCP=22000'; store.set(KEY.sync, sync); }   // 舊設定自動補上
+  $('#sRoot').value = sync.root; $('#sMap').value = sync.map;
+  $('#sRoot').addEventListener('change', saveSyncSettings); $('#sMap').addEventListener('change', saveSyncSettings);
+  $('#sClearSample').checked = docs.some(d => /^s\d+$/.test(d.uid));
+  $('#sInfo').textContent = syncInfoText();
+  if (!window.showDirectoryPicker || IN_FRAME) $('#sResync').remove();
+  idb.get('dir').then(h => { if (h && h.kind === 'directory'){ dirHandle = h; const b = $('#sResync'); if (b) b.hidden = false; } });
+
+  // 依實際頂部列高度調整分頁列黏貼位置，避免中間露出縫隙
+  (() => {
+    const hdr = $('#pageTools .top'); if (!hdr) return;
+    const upd = () => { const h = hdr.getBoundingClientRect().height; if (h) document.documentElement.style.setProperty('--hdr', h + 'px'); };
+    if (window.ResizeObserver) new ResizeObserver(upd).observe(hdr); addEventListener('resize', upd); upd();
+  })();
+
+  /* ---------- 文件櫃（依製瓶廠實際文件櫃照片建立） ---------- */
+  // 每本文件夾：id、no(書背編號)、label(書背文字)、std(標準)、lab(標籤顏色)、tab(頂端色標)、todo(待確認)
+  const W = (id, no, label, o = {}) => Object.assign({id, no, label}, o);
+  const Y = {lab:'#FFE14D', labh:'38%'}, G = {lab:'#2E9E4F', labh:'100%', ink:'w', std:'45001'}, B = {lab:'#1E6FE0', labh:'100%', ink:'w', std:'14001'};
+  const TAB = {r:'#D9363E', b:'#2F6FD6', g:'#1F9D74', y:'#E9C21A'};
+  const CABS_DEFAULT = [
+    {id:'c9001', name:'ISO 9001 文件櫃', std:'9001', shelves:[
+      {name:'上層', items:[
+        W('9-0','0','作業標準程序書 ISO-9001（新纖制定）'), W('9-1','1','操作標準程序書 01類'), W('9-2','2','取樣送檢標準程序書 02類'),
+        W('9-3','3','試驗操作標準程序書 05類'), W('9-4','4','設備校正標準程序書 06類'), W('9-5','5','製造標準程序書 07類'),
+        W('9-6','6','檢驗標準程序書 08類'), W('9-7','7','原物料檢驗標準程序書 09類'), W('9-8','8','品質等級判等程序書 10類'),
+        W('9-9','9','作業標準程序書 11類（～30）'), W('9-10','10','作業標準程序書 11類（31～）')]},
+      {name:'下層', items:[
+        W('9-A','A','ISO-9001 過程導向', Y), W('9-B','B','ISO-9001 品質目標的與執行成效', Y), W('9-C','C','矯正預防措施結果報告', Y),
+        W('9-D','D','客訴處理報告表', Y), W('9-E','E','員工勝任度與訓練需求評估', Y), W('9-F','F','國家標準及政府法規目錄（每季）', Y),
+        W('9-G','G','供應商評鑑', Y), W('9-H','H','儀器校正', Y), W('9-I','I','客戶稽核文件', Y), W('9-J','J','教育訓練（檢驗課）', Y),
+        W('9-K','K','溶出＆相關委外試驗', Y), W('9-L','L','稽核用相關資料', Y)]}
+    ]},
+    {id:'c22000', name:'ISO 22000／HACCP 文件櫃', std:'22000', shelves:[
+      {name:'上層', items:[
+        W('22-00','00','食品安全手冊',{tab:TAB.r}), W('22-01','01','文件及記錄管理辦法',{tab:TAB.r}), W('22-02','02','溝通作業辦法',{tab:TAB.r}),
+        W('22-03','03','成品回收作業辦法',{tab:TAB.r}), W('22-04','04','客訴作業辦法',{tab:TAB.b}), W('22-05','05','目標及管理審查作業辦法',{tab:TAB.g}),
+        W('22-06','06','合約審查作業辦法',{tab:TAB.y}), W('22-07','07','員工教育訓練',{tab:TAB.r}), W('22-08','08','食品安全應變作業辦法',{tab:TAB.b}),
+        W('22-09','09','設備預防保養作業辦法',{tab:TAB.g}), W('22-10','10','安全與衛生作業辦法',{tab:TAB.y})]},
+      {name:'下層', items:[
+        W('22-13','13','生產管理作業辦法',{tab:TAB.r}), W('22-14','14','食品衛生相關法規查核作業辦法',{tab:TAB.b}), W('22-15','15','資材管理作業辦法',{tab:TAB.g}),
+        W('22-16','16','倉儲物流作業辦法',{tab:TAB.y}), W('22-17','17','食品安全作業辦法',{tab:TAB.r}), W('22-19','19','內部稽核作業辦法',{tab:TAB.g}),
+        W('22-20','20','品質管制作業辦法',{tab:TAB.y}), W('22-21','21','產品識別與追溯管制作業辦法',{tab:TAB.r}), W('22-22','22','矯正及預防措施作業辦法',{tab:TAB.r}),
+        W('22-23','23','儀器儀表校正作業辦法',{tab:TAB.g}), W('22-M','','食品安全會議')]}
+    ]},
+    {id:'cEHS', name:'ISO 14001／45001 文件櫃', std:'', stds:['14001','45001'], shelves:[
+      {name:'上層', items:[
+        W('45-1','','ISO-45001 作業標準程序書（新纖）', G), W('45-2','','ISO-45001 安全衛生資料', G), {gap:true},
+        W('x-1','','GRS相關文件', {std:'', lab:'#8E2C4A', labh:'100%', ink:'w'}), W('x-2','','欣泛亞製瓶生產課GRS總量平衡表相關資料', {std:'', lab:'#F2C200', labh:'100%'}), {gap:true},
+        W('14-1','','ISO 14001 環境考量面鑑別表', B), W('14-2','','ISO 14001 環境改善方案', B), W('14-3','','ISO 14001 作業程序書（新纖）', B)]},
+      {name:'下層', items:[
+        W('45-3','','工安相關資料', G), W('45-4','','證照人員名冊', G),
+        W('45-5','','SDS 安全資料表', G), W('45-6','','緊急應變演練紀錄表', G), {gap:true},
+        W('14-5','','固定污染源空氣污染物排放檢測報告', B), W('14-4','','作業環境監測報告', B)]}
+    ]}
+  ];
+  const KEY_CABS = 'isoCabs_v1', KEY_VIEW = 'isoViewG_v1';
+  let cabs = store.get(KEY_CABS, null);
+  if (!Array.isArray(cabs)) cabs = JSON.parse(JSON.stringify(CABS_DEFAULT));
+  // 依 14001／45001 文件櫃實拍照片（IMG_4420）更新書背；手動改過的書背不會被覆蓋
+  (function patchCabs(){
+    if (store.get('isoCabsPatch', 0) >= 2) return;
+    const OLD = {'45-1':'ISO 45001 作業標準程序書（新纖）'};
+    const NEW = {'45-1':['ISO-45001 作業標準程序書（新纖）',false], '45-2':['ISO-45001 安全衛生資料',false], '45-4':['？人員名冊',true],
+                 '45-5':['SDS 安全資料表',false], '45-6':['？紀錄表',true], '14-5':['固定污染源空氣污染物排放檢測報告',false]};
+    const ehs = cabs.find(c => c.id === 'cEHS');
+    if (ehs){
+      ehs.shelves.forEach(sh => sh.items.forEach(it => {
+        const n = NEW[it.id]; if (!n) return;
+        if (it.todo || it.label === OLD[it.id] || it.label === '待補名稱'){ it.label = n[0]; if (n[1]) it.todo = true; else delete it.todo; }
+      }));
+      const top = ehs.shelves[0], bot = ehs.shelves[1];
+      if (top && !top.items.some(it => it.id === 'x-3')){
+        const k = top.items.findIndex(it => it.id === 'x-1');
+        if (k > -1) top.items.splice(k + 1, 0, {id:'x-3', no:'', label:'待補名稱（藍色薄夾）', todo:true, std:'', lab:'#1E4FD0', labh:'100%', ink:'w'});
+      }
+      if (bot){   // 實拍照片中「固定污染源」在左、「作業環境監測報告」在右
+        const a = bot.items.findIndex(it => it.id === '14-4'), b = bot.items.findIndex(it => it.id === '14-5');
+        if (a > -1 && b > -1 && a < b){ const t = bot.items[a]; bot.items[a] = bot.items[b]; bot.items[b] = t; }
+      }
+      store.set(KEY_CABS, cabs);
+    }
+    store.set('isoCabsPatch', 2);
+  })();
+  (function patchCabs3(){
+    if (store.get('isoCabsPatch', 0) >= 3) return;
+    const NEW = {'x-1':'GRS相關文件', 'x-2':'欣泛亞製瓶生產課GRS總量平衡表相關資料', '45-3':'工安相關資料', '45-4':'證照人員名冊', '45-6':'緊急應變演練紀錄表'};
+    const PH = ['待補名稱', '？人員名冊', '？紀錄表'];
+    cabs.forEach(c => c.shelves.forEach(sh => sh.items.forEach(it => {
+      if (NEW[it.id] && (it.todo || PH.includes(it.label))){ it.label = NEW[it.id]; delete it.todo; }
+    })));
+    store.set(KEY_CABS, cabs); store.set('isoCabsPatch', 3);
+  })();
+  (function patchCabs4(){   // 9001 櫃 K、L（課長現場確認）
+    if (store.get('isoCabsPatch', 0) >= 4) return;
+    cabs.forEach(c => c.shelves.forEach(sh => sh.items.forEach(it => {
+      if (it.id === '9-K' && (it.todo || it.label === '？出＆相關委外試驗')){ it.label = '溶出＆相關委外試驗'; delete it.todo; }
+      if (it.id === '9-L' && it.label === '稽核用') it.label = '稽核用相關資料';
+    })));
+    store.set(KEY_CABS, cabs); store.set('isoCabsPatch', 4);
+  })();
+  (function patchCabs5(){   // 課長確認：藍色薄夾不是文件夾，移除（若已手動改名則保留）
+    if (store.get('isoCabsPatch', 0) >= 5) return;
+    cabs.forEach(c => c.shelves.forEach(sh => {
+      const k = sh.items.findIndex(it => it.id === 'x-3' && (it.todo || /^待補名稱/.test(it.label)));
+      if (k > -1){ sh.items.splice(k, 1); docs.forEach(d => { if (d.binder === 'x-3') d.binder = ''; }); }
+    }));
+    store.set(KEY_CABS, cabs); store.set('isoCabsPatch', 5);
+  })();
+  const saveCabs = () => store.set(KEY_CABS, cabs);
+  cabs.forEach(c => { if (c.id === 'cEHS' && !c.stds) c.stds = ['14001','45001']; });
+  function findBinder(id){
+    for (const c of cabs) for (const [si, sh] of c.shelves.entries()){
+      const list = sh.items.filter(x => !x.gap), i = list.findIndex(x => x.id === id);
+      if (i > -1) return {cab:c, shelf:sh, si, idx:i, item:list[i]};
+    }
+    return null;
+  }
+  const binderStd = (f) => f.item.std !== undefined ? f.item.std : f.cab.std;
+  const binderName = it => `${it.no ? it.no + '. ' : ''}${it.label}`;
+  function binderText(id, full){
+    const f = id && findBinder(id); if (!f) return '';
+    return full ? `${f.cab.name}／${f.shelf.name}／第 ${f.idx + 1} 本（${binderName(f.item)}）` : `${binderName(f.item)} ${f.cab.name}`;
+  }
+  const docsIn = id => docs.filter(d => d.binder === id || (d.binders || []).includes(id));
+
+  // 表單的「存放文件夾」選單
+  function fillBinderSelect(){
+    const sel = $('#fBinder'), cur = sel.value;
+    sel.innerHTML = '<option value="">未指定</option>' + cabs.map(c => c.shelves.map(sh =>
+      `<optgroup label="${esc(c.name)}／${esc(sh.name)}">${sh.items.filter(x => !x.gap).map(it => `<option value="${esc(it.id)}">${esc(binderName(it)).slice(0, 30)}</option>`).join('')}</optgroup>`).join('')).join('');
+    sel.value = cur;
+  }
+
+  // 檢視切換
+  let view = store.get(KEY_VIEW, 'list');
+  function setView(v){
+    view = v === 'cab' ? 'cab' : 'list'; store.set(KEY_VIEW, view);
+    $$('.viewseg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.view === view)));
+    $('#cabView').hidden = view !== 'cab'; $('#listCard').hidden = view === 'cab';
+    renderList();
+  }
+  $$('.viewseg button').forEach(b => b.onclick = () => setView(b.dataset.view));
+
+  function spineHTML(it, cnt, state){
+    const len = (it.label || '').length + (it.no ? 2 : 0);
+    const size = len > 22 ? 'xs' : len > 15 ? 'sm' : '';
+    const lab = it.lab ? `--lab:${it.lab};--labh:${it.labh || '100%'};` : '';
+    return `<button type="button" class="spine ${state}" data-bid="${esc(it.id)}" title="${esc(binderName(it))}${cnt ? `（${cnt} 份文件）` : ''}">
+      <span class="tab ${it.tab ? '' : 'none'}" style="${it.tab ? `background:${it.tab}` : ''}"></span>
+      <span class="lbl ${size} ${it.ink === 'w' ? 'ink-w' : ''}" style="${lab}">${it.no ? `<span class="no">${esc(it.no)}</span>` : ''}${esc(it.label)}</span>
+      <span class="ring"></span>
+      ${cnt ? `<span class="cnt">${cnt}</span>` : ''}${it.todo ? '<span class="todo" title="書背文字待確認"></span>' : ''}
+    </button>`;
+  }
+  function renderCabs(res){
+    if (view !== 'cab'){ $('#vinfo').textContent = ''; return; }
+    const terms = splitQ(filter.q), smart = filter.smart !== false;
+    const docHit = new Set((res || []).flatMap(r => [r.d.binder, ...(r.d.binders || [])]).filter(Boolean));
+    const fileHit = fileHitBinders(terms.length ? [...new Set(terms.concat(smart ? terms.flatMap(expand) : []))].map(norm) : []);
+    const words = terms.length ? [...new Set(terms.concat(smart ? terms.flatMap(expand) : []))].map(norm) : [];
+    // 點選標準按鈕時，只顯示歸屬該標準的「整座文件櫃」（櫃內擺放維持原樣）；按「全部」才顯示全部
+    // 14001／45001 文件櫃（含 GRS 文件夾）同時歸屬 14001 與 45001
+    const fstd = filter.std;
+    const cabStds = c => c.stds || (c.id === 'cEHS' ? ['14001','45001'] : (c.std ? [c.std] : []));
+    let hits = 0, shown = 0;
+    const html = cabs.map(c => {
+      const stds = cabStds(c);
+      const want = stdList(fstd);
+      const owns = !fstd || stds.some(k => want.includes(k)) || c.shelves.some(sh => sh.items.some(it => !it.gap && want.includes(it.std)));
+      if (!owns) return '';
+      let cabCount = 0;
+      const shelves = c.shelves.map((sh, si) => {
+        const sp = sh.items.map(it => {
+          if (it.gap) return '<span class="sgap"></span>';
+          cabCount++;
+          const lbl = norm(binderName(it));
+          const okQ = !terms.length || words.some(w => lbl.includes(w)) || docHit.has(it.id) || fileHit.has(it.id);
+          if (terms.length && okQ) hits++;
+          return spineHTML(it, it.dir ? filesIn(it.dir).length : docsIn(it.id).length, terms.length ? (okQ ? 'hit' : 'dim') : '');
+        }).join('');
+        return `<div class="shelf">${sp}<button type="button" class="spine add" data-add="${esc(c.id)}|${si}" title="在${esc(sh.name)}新增文件夾" aria-label="新增文件夾">＋</button></div><div class="board"><span>${esc(sh.name)}</span></div>`;
+      }).join('');
+      shown += cabCount;
+      return `<article class="cab glass">
+        <div class="cab-h"><h3>${esc(c.name)}</h3>${stds.map(k => `<span class="pill s${k}">ISO ${k}</span>`).join('')}<small>${cabCount} 本文件夾</small></div>
+        <div class="cab-box">${shelves}</div>
+      </article>`;
+    }).join('');
+    $('#cabView').innerHTML = html + `<div class="cab-foot" style="grid-column:1/-1"><span>點書背可查看文件夾內容；藍色數字＝對應資料夾裡的檔案數（未對照時為登錄文件數）；橘點＝書背文字待確認</span><button class="lk" id="cabReset">還原文件櫃預設</button></div>`;
+    if (!html) $('#cabView').innerHTML = `<div class="cab glass empty"><b>這個標準目前沒有文件夾</b>點「全部」可查看所有文件櫃</div>` + $('#cabView').innerHTML.slice(html.length);
+    $('#vinfo').textContent = terms.length ? `符合 ${hits}／${shown} 本文件夾` : (fstd ? `只顯示 ${stdLabel(fstd)} 文件櫃：${shown} 本（按「全部」顯示所有文件櫃）` : `共 ${shown} 本文件夾`);
+  }
+
+  // 點書背 → 文件夾內容
+  let curBinder = null;
+  function openBinder(id){
+    const f = findBinder(id); if (!f) return;
+    curBinder = id;
+    const it = f.item, std = binderStd(f);
+    // 有輸入搜尋關鍵字時：找出這本文件夾裡符合的文件與檔案，標示黃框並排在最前面
+    const q = filter.q.trim(), smart = filter.smart !== false;
+    const res = q ? searchDocs(true) : [];
+    const hitIds = new Set(res.map(r => r.d.uid));
+    const terms = q ? splitQ(q) : [];
+    const fwords = terms.length ? [...new Set(terms.concat(smart ? terms.flatMap(expand) : []))].map(norm) : [];
+    hlWords = q ? [...new Set(res.flatMap(r => r.words).concat(terms))] : [];
+    const all = docsIn(id);
+    const list = q ? [...all.filter(d => hitIds.has(d.uid)), ...all.filter(d => !hitIds.has(d.uid))] : all;
+    const nDocHit = all.filter(d => hitIds.has(d.uid)).length;
+    const fileHitK = new Set(); if (q && it.dir) filesIn(it.dir).forEach((x, k) => { const nm = norm(baseName(x.rel)); if (fwords.some(w => nm.includes(w))) fileHitK.add(k); });
+    $('#binderBody').innerHTML = `<div class="${std ? 's' + std : ''}">
+      <div class="sh-head" style="${std ? '' : 'background:linear-gradient(140deg,#6B7280,#374151)'}">
+        <small>${esc(f.cab.name)}／${esc(f.shelf.name)}／第 ${f.idx + 1} 本</small>
+        <h3>${esc(binderName(it))}</h3><p>${std ? 'ISO ' + std + '　' : ''}登錄文件 ${list.length} 份</p>
+      </div>
+      ${it.todo ? '<div class="bwarn">這本文件夾的書背文字是從照片判讀，可能不完整，請點「修改書背」更正</div>' : ''}
+      ${(EXCEL_DESC[it.id] || []).length ? `<div class="sh-sec"><h4>目錄內容</h4><div class="dirbox"><b>${EXCEL_DESC[it.id].map(esc).join('<br>')}</b></div></div>` : ''}
+      ${q ? (nDocHit || fileHitK.size
+        ? `<div class="qhit">🔍 符合「<mark>${esc(q)}</mark>」：${nDocHit ? `文件 ${nDocHit} 份` : ''}${nDocHit && fileHitK.size ? '、' : ''}${fileHitK.size ? `檔案 ${fileHitK.size} 個` : ''}（黃框標示${nDocHit ? '，文件已排在最前面' : ''}）</div>`
+        : `<div class="qhit none">這本文件夾沒有符合「${esc(q)}」的文件</div>`) : ''}
+      <div class="sh-sec binder-docs"><h4>文件夾內的文件${all.length ? `（${all.length}）` : ''}</h4>
+        ${list.length ? list.map(d => { const i = docDue(d); const hit = hitIds.has(d.uid); return `<div class="lk-row s${esc(d.std)}${hit ? ' match' : ''}" data-doc="${esc(d.uid)}"><span class="tagk">${hit ? hl(d.code) : esc(d.code)}</span><span class="lk-txt"><b>${hit ? hl(d.title) : esc(d.title)}</b><small>${d.date ? '最終日期 ' + esc(d.date) + '　' : ''}${d.binder !== id && d.binder ? '主要存放：' + esc(binderName(findBinder(d.binder)?.item || {label:''})) : esc(d.status)}</small></span>${getLinks(d).length ? '<span class="fbtn" data-act="open">開啟</span>' : ''}</div>`; }).join('')
+          : '<p class="hint" style="margin:0 0 6px 4px">還沒有文件登錄在這本文件夾，可按下方按鈕新增，或在文件的編輯頁選擇「存放文件夾」</p>'}
+      </div>
+      <div class="sh-sec"><h4>對應電腦資料夾</h4>
+        ${it.dir ? `<div class="dirbox"><b>${esc(fullPath(it.dir))}</b><button type="button" class="lk-copy" id="bCopyDir">複製路徑</button></div>
+          <div class="file-list" style="margin-top:8px">${(() => { const fl = filesIn(it.dir); return fl.length ? fl.slice(0, 150).map((x, k) => `<div class="lk-row${fileHitK.has(k) ? ' match' : ''}"><span class="tagk">${esc((x.rel.split('.').pop() || '').toUpperCase().slice(0, 4))}</span><span class="lk-txt"><b>${fileHitK.has(k) ? hl(baseName(x.rel)) : esc(baseName(x.rel))}</b><small>${esc(x.rel.slice(it.dir.length + 1).split('\\').slice(0, -1).join(' › ') || '')}${x.mtime ? '　修改 ' + fmt(new Date(x.mtime)) : ''}</small></span><button type="button" class="lk-open" data-f="${k}">開啟</button></div>`).join('') + (fl.length > 150 ? `<p class="hint">還有 ${fl.length - 150} 個檔案，請用搜尋縮小範圍</p>` : '') : '<p class="hint" style="margin:0 4px">資料夾裡目前沒有檔案（以上次同步為準）</p>'; })()}</div>`
+          : `<p class="hint" style="margin:0 0 6px 4px">尚未對應資料夾${fidx.dirs.length ? '' : '，請先同步 D:\\J-ISO驗證文件'}</p><button type="button" class="btn sub" id="bGoMap">前往目錄對照</button>`}
+      </div>
+      <button type="button" class="btn pri" id="bNewDoc" style="margin-top:12px">＋ 新增文件到這本文件夾</button>
+      <div class="btns">
+        <button type="button" class="btn sub" id="bEditTgl">修改書背</button>
+        <button type="button" class="btn sub" id="bDel" style="color:var(--red)">移除文件夾</button>
+      </div>
+      <div class="bedit" id="bEdit">
+        <div class="row2"><div class="f"><label class="lab" for="bNo">書背編號</label><input class="in" id="bNo" value="${esc(it.no)}"></div>
+          <div class="f"><label class="lab" for="bStd">標準</label><select class="in" id="bStd"><option value="">未分類</option>${Object.keys(STD).map(k => `<option value="${k}" ${k === std ? 'selected' : ''}>ISO ${k}</option>`).join('')}</select></div></div>
+        <div class="f"><label class="lab" for="bLabel">書背文字</label><input class="in" id="bLabel" value="${esc(it.label)}"></div>
+        <div class="f"><label class="lab" for="bDir">對應資料夾（D:\\J-ISO驗證文件 底下）</label><input class="in" id="bDir" list="dirList" value="${esc(it.dir || '')}" placeholder="輸入關鍵字挑選資料夾" spellcheck="false"></div>
+        <button type="button" class="btn pri" id="bSave" style="min-height:46px">儲存書背</button>
+      </div>
+    </div>`;
+    $('#binderBg').classList.add('open'); $('#binderBg').setAttribute('aria-hidden', 'false');
+    const sheet = $('#binderBg .sheet'); sheet.scrollTop = 0;
+    const first = $('#binderBody .lk-row.match');   // 自動捲到第一筆符合的項目
+    if (first) requestAnimationFrame(() => first.scrollIntoView({block:'center'}));
+  }
+  function closeBinder(){ $('#binderBg').classList.remove('open'); $('#binderBg').setAttribute('aria-hidden', 'true'); curBinder = null; }
+  $('#binderBg').addEventListener('click', async e => {
+    if (e.target.id === 'binderBg'){ closeBinder(); return; }
+    const f = curBinder && findBinder(curBinder); if (!f) return;
+    const row = e.target.closest('[data-doc]');
+    if (row){
+      const d = docs.find(x => x.uid === row.dataset.doc); if (!d) return;
+      if (e.target.closest('.fbtn')){ const L = getLinks(d); if (L.length === 1){ openLink(L[0]); return; } }
+      closeBinder(); openSheet(d.uid); return;
+    }
+    const fo = e.target.closest('.lk-open[data-f]');
+    if (fo){ const x = filesIn(f.item.dir)[+fo.dataset.f]; if (x) openLink({name:baseName(x.rel), rel:x.rel}); return; }
+    if (e.target.closest('#bCopyDir')){ copyText(fullPath(f.item.dir)).then(() => toast('已複製資料夾路徑，可貼到檔案總管開啟')); return; }
+    if (e.target.closest('#bGoMap')){ const id = f.item.id; closeBinder(); goTools('map'); setTimeout(() => flashMapRow(id), 250); return; }
+    if (e.target.closest('#bEditTgl')){ $('#bEdit').classList.toggle('open'); $('#bLabel').focus(); return; }
+    if (e.target.closest('#bSave')){
+      const label = $('#bLabel').value.trim(); if (!label){ toast('請輸入書背文字'); return; }
+      const dv = $('#bDir').value.trim().replace(/\//g, '\\').replace(/^\\+|\\+$/g, '');
+      if (dv && fidx.dirs.length && !fidx.dirs.includes(dv)){ toast('找不到這個資料夾，請從清單中挑選'); return; }
+      const dup = dv && allBinders().find(b => b.item !== f.item && b.item.dir === dv);
+      if (dup && !(await askConfirm(`這個資料夾已經對應到「${binderName(dup.item)}」。\n確定兩本文件夾都對應同一個資料夾嗎？`))) return;
+      Object.assign(f.item, {label, no:$('#bNo').value.trim(), std:$('#bStd').value}); delete f.item.todo;
+      if (dv !== (f.item.dir || '')){ if (dv) f.item.dir = dv; else delete f.item.dir; delete f.item.dirAuto; assignDocsByDir(); saveDocs(); }
+      saveCabs(); fillBinderSelect(); renderList(); openBinder(f.item.id); toast('書背已更新'); return;
+    }
+    if (e.target.closest('#bDel')){
+      const n = docsIn(f.item.id).length;
+      if (!(await askConfirm(`確定移除文件夾「${binderName(f.item)}」？${n ? `\n裡面登錄的 ${n} 份文件不會刪除，只會改為「未指定」存放位置。` : ''}`, {ok:'移除', danger:true}))) return;
+      if (!findBinder(f.item.id)) return;
+      docs.forEach(d => { if (d.binder === f.item.id) d.binder = ''; }); saveDocs();
+      f.shelf.items.splice(f.shelf.items.indexOf(f.item), 1); saveCabs(); fillBinderSelect(); closeBinder(); renderList(); toast('已移除文件夾'); return;
+    }
+    if (e.target.closest('#bNewDoc')){
+      const std = binderStd(f), id = f.item.id; closeBinder();
+      resetForm(false); if (std) setFormStd(std); $('#fBinder').value = id; saveDraft(); goTools('form');
+      setTimeout(() => $('#fCode').focus({preventScroll:true}), 300);
+    }
+  });
+  $('#cabView').addEventListener('click', async e => {
+    const add = e.target.closest('[data-add]');
+    if (add){
+      const [cid, si] = add.dataset.add.split('|'), c = cabs.find(x => x.id === cid); if (!c) return;
+      const label = ((await askText(`在「${c.name}／${c.shelves[+si].name}」新增文件夾\n請輸入書背文字：`, '', {ok:'新增', placeholder:'例如 GRS 稽核紀錄'})) || '').trim();
+      if (!label) return;
+      const sh = c.shelves[+si], last = sh.items.filter(x => !x.gap).pop();
+      sh.items.push({id:'u' + Date.now().toString(36), no:'', label, std: (last && last.std !== undefined ? last.std : c.std)});
+      saveCabs(); fillBinderSelect(); renderList(); toast('已新增文件夾'); return;
+    }
+    if (e.target.closest('#cabReset')){
+      if (!(await askConfirm('還原文件櫃為預設內容？\n您修改過的書背與新增的文件夾會清除（文件資料不受影響）。', {ok:'還原', danger:true}))) return;
+      cabs = JSON.parse(JSON.stringify(CABS_DEFAULT)); saveCabs(); fillBinderSelect(); renderList(); toast('文件櫃已還原'); return;
+    }
+    const sp = e.target.closest('.spine[data-bid]'); if (sp) openBinder(sp.dataset.bid);
+  });
+  // 從文件詳情跳到文件櫃中的位置
+  $('#sheetBody').addEventListener('click', e => {
+    if (!e.target.closest('#shGoCab')) return;
+    const d = curDoc(); if (!d || !d.binder) return;
+    closeSheet(); filter.std = ''; filter.q = ''; $('#q').value = ''; $('#qClear').hidden = true;
+    setView('cab');
+    requestAnimationFrame(() => {
+      const el = $(`.spine[data-bid="${CSS.escape(d.binder)}"]`); if (!el) return;
+      el.scrollIntoView({behavior:'smooth', block:'center', inline:'center'});
+      el.classList.add('hit', 'pulse'); setTimeout(() => el.classList.remove('pulse'), 3000);
+    });
+  });
+  fillBinderSelect();
+
+  /* ---------- 目錄對照：書背 ↔ D:\J-ISO驗證文件 內的資料夾 ---------- */
+  let fidx = {dirs:[], files:[], time:''}, scanDirs = [];
+  function allBinders(){ const out = []; cabs.forEach(c => c.shelves.forEach((sh, si) => sh.items.forEach(it => { if (!it.gap) out.push({cab:c, shelf:sh, si, item:it}); }))); return out; }
+  function filesIn(dir){ if (!dir) return []; const pre = dir + '\\'; return fidx.files.filter(x => x.rel.startsWith(pre)); }
+  function fillDirList(){ $('#dirList').innerHTML = fidx.dirs.map(d => `<option value="${esc(d)}">`).join(''); }
+  async function afterScan(files, dirs){
+    fidx = {dirs:[...new Set(dirs)].sort((a, b) => a.localeCompare(b, 'zh-Hant', {numeric:true})), files:files.map(f => ({rel:f.rel, mtime:f.mtime || 0})), time:new Date().toISOString()};
+    await idb.set('fidx', fidx);
+    fillDirList();
+    const n = autoMap(false);
+    assignDocsByDir(); saveDocs(); renderList();
+    if (n) toast(`已自動對照 ${n} 本文件夾，可到「目錄對照」確認`);
+  }
+  // 比對分數：書背文字與資料夾名稱的字重疊、書背編號、「01類」類別號、標準號碼是否一致
+  function matchScore(it, std, dir){
+    const segs = dir.split('\\'), name = segs[segs.length - 1], nn = compact(name);
+    if (!nn) return 0;
+    const lab = compact(String(it.label).replace(/[（(][^）)]*[）)]/g, '')).replace(/iso-?\d+/g, '');
+    const strip = x => [...new Set(x.replace(/[a-z0-9\-]/g, ''))];
+    const lc = strip(lab), nc = strip(nn), nset = new Set(nn), lset = new Set(lab);
+    if (!lc.length || !nc.length) return 0;
+    const r1 = lc.filter(c => nset.has(c)).length / lc.length, r2 = nc.filter(c => lset.has(c)).length / nc.length;
+    let sc = r1 * 0.6 + r2 * 0.4;
+    if (it.no !== undefined && it.no !== ''){
+      const m = name.match(/^\s*([0-9]{1,2}|[A-Za-z])(?=[\s._\-、．)）]|[\u4e00-\u9fff])/);
+      const z = v => String(v).toLowerCase().replace(/^0+(?=\d)/, '');
+      if (m && z(m[1]) === z(it.no)) sc += 0.25;
+    }
+    const cls = (String(it.label).match(/(\d{2})\s?類/) || [])[1];
+    if (cls && new RegExp(cls + '\\s?類').test(name)) sc += 0.2;
+    const range = (String(it.label).match(/[（(]([^）)]*)[）)]/) || [])[1];
+    if (range){ const rn = range.replace(/[～~\s]/g, ''); if (rn && compact(name).includes(compact(rn))) sc += 0.1; }
+    const ps = (dir.match(/(9001|14001|22000|45001)/) || [])[1] || (/haccp/i.test(dir) ? '22000' : '');
+    if (ps && std) sc += ps === std ? 0.1 : -0.6;
+    return sc - (segs.length - 1) * 0.02;
+  }
+  function autoMap(clearAuto){
+    if (!fidx.dirs.length) return 0;
+    const bl = allBinders();
+    bl.forEach(({item}) => { if (item.dirAuto || clearAuto === 'all'){ delete item.dir; delete item.dirAuto; } });
+    const usedB = new Set(), usedD = new Set();
+    bl.forEach(({item}) => { if (item.dir){ if (fidx.dirs.includes(item.dir)){ usedB.add(item.id); usedD.add(item.dir); } } });
+    const cand = [];
+    bl.forEach(({cab, item}) => {
+      if (usedB.has(item.id)) return;
+      const std = item.std !== undefined ? item.std : cab.std;
+      fidx.dirs.forEach(dir => { const sc = matchScore(item, std, dir); if (sc >= 0.55) cand.push({item, dir, sc}); });
+    });
+    cand.sort((a, b) => b.sc - a.sc);
+    let n = 0;
+    cand.forEach(c => { if (usedB.has(c.item.id) || usedD.has(c.dir)) return; c.item.dir = c.dir; c.item.dirAuto = true; usedB.add(c.item.id); usedD.add(c.dir); n++; });
+    saveCabs(); return n;
+  }
+  // 依資料夾位置，自動把文件歸到對應書背（手動指定的不更動）
+  function assignDocsByDir(){
+    const mapped = allBinders().filter(b => b.item.dir).sort((a, b) => b.item.dir.length - a.item.dir.length);
+    docs.forEach(d => {
+      if (d.binder && !d.binderAuto) return;
+      const rels = getLinks(d).map(l => l.rel).filter(Boolean);
+      const hit = mapped.find(b => rels.some(r => r.startsWith(b.item.dir + '\\')));
+      if (hit){ d.binder = hit.item.id; d.binderAuto = true; }
+      else if (d.binderAuto){ d.binder = ''; delete d.binderAuto; }
+    });
+  }
+  function fileHitBinders(words){
+    const out = new Set(); if (!words.length || !fidx.files.length) return out;
+    const mapped = allBinders().filter(b => b.item.dir);
+    if (!mapped.length) return out;
+    fidx.files.forEach(x => {
+      const nm = norm(baseName(x.rel)); if (!words.some(w => nm.includes(w))) return;
+      const b = mapped.find(b => x.rel.startsWith(b.item.dir + '\\')); if (b) out.add(b.item.id);
+    });
+    return out;
+  }
+  function renderMap(){
+    const mappedN = allBinders().filter(b => b.item.dir).length, total = allBinders().length;
+    $('#mapInfo').textContent = fidx.dirs.length
+      ? `上次同步讀到 ${fidx.dirs.length} 個資料夾、${fidx.files.length} 個檔案；已對照 ${mappedN}／${total} 本文件夾`
+      : '還沒有同步資料夾，請先按「同步資料夾」選擇 D:\\J-ISO驗證文件';
+    $('#mapList').innerHTML = cabs.map(c => `<div class="map-cab"><h4>${esc(c.name)}</h4>${c.shelves.map(sh => sh.items.filter(x => !x.gap).map((it, k) => {
+      const n = it.dir ? filesIn(it.dir).length : 0;
+      return `<div class="map-row" data-bid="${esc(it.id)}">
+        <span class="mb"><b>${esc(binderName(it))}${it.dirAuto ? '<span class="auto">自動</span>' : ''}</b><small>${esc(sh.name)} 第 ${k + 1} 本</small></span>
+        <input class="in map-in" list="dirList" value="${esc(it.dir || '')}" placeholder="${fidx.dirs.length ? '輸入關鍵字挑選資料夾' : '請先同步資料夾'}" spellcheck="false" aria-label="${esc(binderName(it))} 對應資料夾">
+        <span class="mn ${it.dir ? 'ok' : 'no'}">${it.dir ? n + ' 個檔案' : '未對照'}</span>
+      </div>`; }).join('')).join('')}</div>`).join('');
+  }
+  window.__renderMap = renderMap;
+  function flashMapRow(id){ const r = $(`.map-row[data-bid="${CSS.escape(id)}"]`); if (!r) return; r.scrollIntoView({block:'center'}); r.classList.add('flash'); r.querySelector('input').focus(); setTimeout(() => r.classList.remove('flash'), 2500); }
+  $('#mapList').addEventListener('change', async e => {
+    const inp = e.target.closest('.map-in'); if (!inp) return;
+    const f = findBinder(inp.closest('.map-row').dataset.bid); if (!f) return;
+    const v = inp.value.trim().replace(/\//g, '\\').replace(/^\\+|\\+$/g, '');
+    if (v && fidx.dirs.length && !fidx.dirs.includes(v)){ toast('找不到這個資料夾，請從清單中挑選'); inp.value = f.item.dir || ''; return; }
+    const dup = v && allBinders().find(b => b.item !== f.item && b.item.dir === v);
+    if (dup && !(await askConfirm(`這個資料夾已經對應到「${binderName(dup.item)}」。\n確定兩本文件夾都對應同一個資料夾嗎？`))){ inp.value = f.item.dir || ''; return; }
+    if (v){ f.item.dir = v; } else delete f.item.dir;
+    delete f.item.dirAuto; saveCabs(); assignDocsByDir(); saveDocs(); renderMap(); renderList();
+    toast(v ? `「${binderName(f.item)}」已對應到 ${baseName(v)}` : '已取消對照');
+  });
+  $('#mapAuto').onclick = () => {
+    if (!fidx.dirs.length){ toast('請先同步資料夾'); return; }
+    const n = autoMap(false); assignDocsByDir(); saveDocs(); renderMap(); renderList();
+    toast(n ? `自動對照了 ${n} 本文件夾（手動設定的不會被改動）` : '沒有找到更多可自動對照的資料夾');
+  };
+  $('#mapClear').onclick = async () => {
+    if (!(await askConfirm('清除全部書背的資料夾對照？\n（不會影響電腦裡的檔案）', {ok:'清除', danger:true}))) return;
+    allBinders().forEach(({item}) => { delete item.dir; delete item.dirAuto; });
+    saveCabs(); assignDocsByDir(); saveDocs(); renderMap(); renderList(); toast('已清除全部對照');
+  };
+  $('#mapSync').onclick = () => goTools('sync');
+  idb.get('fidx').then(x => { if (x && Array.isArray(x.dirs)){ fidx = x; fillDirList(); renderList(); if (curTool === 'map') renderMap(); } });
+
+  /* ---------- 點擊音效（Web Audio 即時合成，不需任何音效檔） ---------- */
+  let soundOn = store.get('isoSound', true), actx = null;
+  const setSoundUI = () => { document.documentElement.dataset.sound = soundOn ? 'on' : 'off'; };
+  function ac(){
+    if (!actx){ const C = window.AudioContext || window.webkitAudioContext; if (!C) return null; try { actx = new C(); } catch(e){ return null; } }
+    if (actx.state === 'suspended') actx.resume();
+    return actx;
+  }
+  function tone(f, t0, dur, type, vol, fEnd){
+    const a = ac(); if (!a) return;
+    const t = a.currentTime + t0, o = a.createOscillator(), g = a.createGain();
+    o.type = type || 'sine'; o.frequency.setValueAtTime(f, t);
+    if (fEnd) o.frequency.exponentialRampToValueAtTime(fEnd, t + dur);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol || 0.1, t + 0.006); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g); g.connect(a.destination); o.start(t); o.stop(t + dur + 0.03);
+  }
+  const SND = {
+    tap(){ tone(1500, 0, .045, 'sine', .07, 1000); },                                  // 一般按鈕：清脆「嗒」
+    toggle(){ tone(1100, 0, .035, 'sine', .07); tone(1650, .03, .04, 'sine', .05); },   // 切換、篩選
+    spine(){ tone(210, 0, .14, 'triangle', .2, 105); tone(2400, 0, .02, 'square', .02, 900); },   // 書背：抽出文件夾的木頭聲
+    open(){ tone(660, 0, .06, 'sine', .08); tone(990, .05, .09, 'sine', .07); },        // 開啟文件、檔案
+    ok(){ tone(784, 0, .07, 'sine', .09); tone(1175, .07, .13, 'sine', .09); },         // 確認、儲存
+    warn(){ tone(440, 0, .09, 'square', .045); tone(330, .09, .15, 'square', .045); }   // 刪除、移除等需注意的操作
+  };
+  function play(kind){
+    if (!soundOn) return;
+    try { (SND[kind] || SND.tap)(); } catch(e){}
+    if (navigator.vibrate && matchMedia('(pointer:coarse)').matches){ try { navigator.vibrate(kind === 'warn' ? [12, 40, 12] : 8); } catch(e){} }   // 手機輕震動
+  }
+  function soundFor(el){
+    if (el.matches('.spine.add')) return 'tap';
+    if (el.matches('.spine')) return 'spine';
+    if (el.matches('.btn.danger,#shDel,#bDel,.lk-del,.lk-x,#mapClear,#cabReset')) return 'warn';
+    if (el.matches('.lk-open,.fbtn,.att,.row,.lk-row[data-doc]')) return 'open';
+    if (el.matches('.btn.pri,#dlgOk')) return 'ok';
+    if (el.matches('.chip,.ctog,.opt,.viewseg button,.seg button,#smartBtn,.themeBtn,.tile,input[type="checkbox"],summary')) return 'toggle';
+    return 'tap';
+  }
+  const CLICKABLE = 'button,.spine,.row,.lk-row[data-doc],.chip,.fbtn,.att,summary,select,input[type="checkbox"],.tabbar button,a[href]';
+  document.addEventListener('click', e => {
+    const el = e.target.closest(CLICKABLE);
+    if (!el || el.disabled) return;
+    if (el.matches('.sndBtn')) return;   // 開關按鈕自己處理
+    play(soundFor(el));
+  }, true);
+  $$('.sndBtn').forEach(b => b.onclick = () => {
+    soundOn = !soundOn; store.set('isoSound', soundOn); setSoundUI();
+    if (soundOn) play('ok');
+    toast(soundOn ? '已開啟點擊音效' : '已關閉點擊音效');
+  });
+  setSoundUI();
+
+  /* ---------- 啟動 ---------- */
+  renderQuick();
+  const draft = store.get(KEY.draft, null);
+  if (draft && ['code','title','clause','dept','forms','note'].some(k => draft[k])){
+    fillForm(draft);
+    if (draft.editingId && docs.some(d => d.uid === draft.editingId)){ editingId = draft.editingId; setEditMode(true, draft.code); }
+    $('#draftNote').textContent = '已還原上次未完成的輸入';
+  } else resetForm(false);
+  route();
+  setView(view); renderRisk(); renderReady(); renderRev();
+})();
+</script>
+</body>
+</html>
