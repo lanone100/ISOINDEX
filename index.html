@@ -1859,16 +1859,33 @@ textarea.in.auto{min-height:46px;resize:none;overflow:hidden;overflow-wrap:anywh
     try { await navigator.clipboard.writeText(t); return true; }
     catch(e){ const a = document.createElement('textarea'); a.value = t; document.body.appendChild(a); a.select(); let ok = false; try { ok = document.execCommand('copy'); } catch(_){} a.remove(); return ok; }
   }
+  // 網頁本身是用「檔案」方式開啟時（網址是 file:///…），可以直接用 file:/// 開啟電腦裡的原始檔，不需授權
+  const canFileOpen = () => location.protocol === 'file:' && !IN_FRAME;
+  function fileUrl(p){
+    const t = String(p).replace(/\\/g, '/'), enc = x => encodeURI(x).replace(/#/g, '%23').replace(/\?/g, '%3F');
+    return t.startsWith('//') ? 'file:' + enc(t) : 'file:///' + enc(t);   // 網路磁碟 \\server\share 或 D:\…
+  }
+  function tryFileOpen(l){
+    const abs = l.abs || (l.rel ? fullPath(l.rel) : '');
+    if (!canFileOpen() || !abs || !/^[a-z]:\\|^\\\\/i.test(abs)) return false;
+    let w = null; try { w = window.open(fileUrl(abs), '_blank'); } catch(e){ w = null; }
+    if (!w) return false;
+    copyText(abs);
+    toast(/\.(pdf|png|jpe?g|gif|txt|html?)$/i.test(l.name || '') ? '已直接開啟原始檔（若顯示找不到檔案，請確認「文件資料夾位置」是否正確）' : 'Word／Excel 會由瀏覽器下載後開啟；路徑也已複製，可在檔案總管開原檔');
+    return true;
+  }
   async function openLink(l){
     if (l.url){ window.open(l.url, '_blank', 'noopener'); return; }
     const viewable = /\.(pdf|png|jpe?g|gif|txt|html?)$/i.test(l.name || '');
+    let permDenied = false;
     try {
       let f = null;
       if (l.tmp) f = sessionFiles.get(l.tmp) || null;
-      if (!f && l.hid){ const h = await idb.get('fh:' + l.hid); if (h && await ensurePerm(h)) f = await h.getFile(); }
+      if (!f && l.hid){ const h = await idb.get('fh:' + l.hid); if (h){ if (await ensurePerm(h)) f = await h.getFile(); else permDenied = true; } }
       if (!f && l.rel){
         f = sessionFiles.get(l.rel) || null;
-        if (!f && dirHandle && await ensurePerm(dirHandle)){
+        if (!f && dirHandle && !(await ensurePerm(dirHandle))) permDenied = true;
+        else if (!f && dirHandle){
           const segs = l.rel.split('\\'); let h = dirHandle;
           for (const sn of segs.slice(0, -1)) h = await h.getDirectoryHandle(sn);
           f = await (await h.getFileHandle(segs[segs.length - 1])).getFile();
@@ -1881,10 +1898,27 @@ textarea.in.auto{min-height:46px;resize:none;overflow:hidden;overflow-wrap:anywh
       if (!w){ const a = document.createElement('a'); a.href = url; a.download = f.name; document.body.appendChild(a); a.click(); a.remove(); toast(viewable ? `新分頁被瀏覽器擋下，已改為下載 ${f.name}` : `已開啟 ${f.name}（Word／Excel 會另存一份副本）`); }
       setTimeout(() => URL.revokeObjectURL(url), 300000);
     } catch(e){
-      // 網頁基於安全限制，無法直接打開電腦裡的路徑 → 自動複製路徑，貼到檔案總管即可
+      if (tryFileOpen(l)) return;   // 讀不到授權資料夾時，改用 file:/// 直接開原始檔
+      // 開不了檔時，用對話框說明「確切原因＋怎麼解決」，並先複製路徑當備用
       await copyText(linkTarget(l));
-      toast(l.hid || l.tmp ? '無法讀取這個檔案，可能已搬移，請重新連結' : '已複製檔案路徑，請貼到檔案總管網址列開啟');
+      const r = openFailReason(l, e, permDenied);
+      const go = await askConfirm(`無法開啟「${l.name}」\n\n原因：${r.msg}\n\n（已先幫您複製檔案路徑，也可以貼到檔案總管網址列直接開啟）`, {ok: r.fix || '知道了'});
+      if (go && r.act) r.act();
     }
+  }
+  function openFailReason(l, e, permDenied){
+    const toSync = () => goTools('sync');
+    if (l.abs) return {msg:'這是電腦上的完整路徑連結，網頁基於安全規定不能直接開啟本機路徑。若同步過的資料夾裡有這個檔案，系統會改用同步的檔案開啟。'};
+    if (IN_FRAME) return {msg:'目前是在 Claude 的預覽視窗中使用，預覽視窗無法讀取電腦裡的檔案。請把 HTML 檔下載到電腦，用 Chrome 或 Edge 直接開啟。'};
+    if (permDenied) return {msg:'瀏覽器詢問「是否允許讀取資料夾」時，沒有按「允許」（或已被封鎖）。請再按一次「開啟」，並在跳出的視窗按「允許」。若沒有跳出視窗，請到「資料夾匯入」重新選擇資料夾。', fix:'前往資料夾匯入', act:toSync};
+    if (e && e.name === 'NotFoundError') return {msg:`在目前授權的資料夾「${dirHandle ? dirHandle.name : ''}」裡找不到這個檔案。可能是檔案已搬移、改名，或目前授權的不是當初同步的那個資料夾。請重新同步正確的資料夾。`, fix:'前往資料夾匯入', act:toSync};
+    if (l.hid) return {msg:'這個檔案可能已搬移或刪除，請在文件詳情中移除後重新連結。'};
+    if (l.tmp) return {msg:'這個連結只在當次有效，重新整理網頁後就失效了。建議改用 Chrome／Edge，或貼上檔案路徑連結。'};
+    if (l.rel && !dirHandle){
+      if (!window.showDirectoryPicker) return {msg:'這個瀏覽器不支援「記住資料夾」，重新整理網頁後必須再選一次資料夾才能開檔。建議改用 Chrome 或 Edge。', fix:'前往資料夾匯入', act:toSync};
+      return {msg:'還沒有授權讀取文件資料夾（第一次使用、清除過瀏覽器資料，或換了電腦／瀏覽器）。請到「資料夾匯入」選擇資料夾，之後就能直接開檔。', fix:'前往資料夾匯入', act:toSync};
+    }
+    return {msg:'讀取檔案時發生問題' + (e && e.message && e.message !== 'nofile' ? `（${e.message}）` : '') + '，請到「資料夾匯入」按「重新同步上次的資料夾」後再試。', fix:'前往資料夾匯入', act:toSync};
   }
 
   // 詳情視窗：開啟／複製
