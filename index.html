@@ -220,7 +220,7 @@ mark{background:rgba(255,204,0,.45);color:inherit;border-radius:3px;padding:0 1p
 .pbtn{height:40px;padding:0 12px;border-radius:12px;border:1px solid var(--edge);background:var(--fill);display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap}
 .pbtn.pri{background:linear-gradient(140deg,#0A7AFF,#5B5BF0);color:#fff;border-color:transparent}
 .pbtn span{display:none}
-@media (min-width:768px){.pbtn span{display:inline}}
+@media (min-width:1100px){.pbtn span{display:inline}}   /* 平板寬度只顯示圖示，讓切換鈕與按鈕排在同一行 */
 @media (max-width:767px){#goForm{display:none}} /* 手機用右下角按鈕新增 */
 .back{display:inline-flex;align-items:center;gap:2px;height:40px;padding:0 12px 0 6px;border-radius:12px;border:1px solid var(--edge);background:var(--fill);
   color:var(--blue);font-size:15px;font-weight:600;cursor:pointer;flex:none;white-space:nowrap}
@@ -364,12 +364,21 @@ details.more[open] summary::before{content:"－ "}
 .cab-h{display:flex;align-items:center;flex-wrap:wrap;gap:8px 10px;margin-bottom:12px}
 .cab-h h3{font-size:17px;font-weight:700}
 .cab-h small{font-size:13px;color:var(--text2);margin-left:auto}
-.cab-box{--wood1:#cdb48f;--wood2:#a3865e;border:7px solid #b49b77;border-radius:12px;background:linear-gradient(180deg,#2b2723,#1a1714);
-  box-shadow:inset 0 3px 12px rgba(0,0,0,.65),0 6px 18px rgba(40,30,10,.18);overflow:hidden}
+.cab-box{--wood1:#cdb48f;--wood2:#a3865e;
+  border:9px solid #b49b77;border-radius:12px;overflow:hidden;
+  /* 深色木紋背板：SVG 雜訊產生自然的水平木紋（不需圖片檔），外加四周暗角營造櫃子深度 */
+  background:
+    radial-gradient(120% 90% at 50% 45%,transparent 55%,rgba(10,5,2,.55) 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='2400' height='640'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.0035 0.11' numOctaves='4' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.46  0 0 0 0 0.29  0 0 0 0 0.16  1.15 0 0 0 -0.45'/%3E%3C/filter%3E%3Cfilter id='k'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.02 0.5' numOctaves='2' seed='4' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.1  0 0 0 0 0.06  0 0 0 0 0.03  1.1 0 0 0 -0.55'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' fill='%23331f10'/%3E%3Crect width='100%25' height='100%25' filter='url%28%23g%29'/%3E%3Crect width='100%25' height='100%25' filter='url%28%23k%29'/%3E%3C/svg%3E") left top/2400px 640px repeat,
+    #331f10;
+  box-shadow:inset 0 0 0 1px rgba(255,220,170,.08),inset 0 4px 14px rgba(0,0,0,.6),0 10px 24px rgba(30,18,8,.35)}
 [data-theme="dark"] .cab-box{border-color:#7a6750;--wood1:#9a8162;--wood2:#6f5a40}
-.shelf{display:flex;align-items:flex-end;gap:6px;padding:30px 14px 0;overflow-x:auto;scrollbar-width:thin}
-.board{height:13px;background:linear-gradient(var(--wood1),var(--wood2));box-shadow:0 4px 7px rgba(0,0,0,.5);position:relative;z-index:1}
-.board span{position:absolute;left:10px;top:-1px;font-size:10.5px;font-weight:700;color:rgba(60,40,15,.75);letter-spacing:.1em}
+.shelf{display:flex;align-items:flex-end;gap:6px;padding:30px 14px 0;overflow-x:auto;scrollbar-width:thin;
+  /* 上層隔板投下的濃陰影＋兩側板的陰影＋底部微暗，讓每一層都有往內凹的深度 */
+  background:linear-gradient(180deg,rgba(0,0,0,.62) 0,rgba(0,0,0,.28) 34px,rgba(0,0,0,0) 90px,rgba(0,0,0,0) 70%,rgba(0,0,0,.22) 100%),
+             linear-gradient(90deg,rgba(0,0,0,.45) 0,rgba(0,0,0,0) 26px,rgba(0,0,0,0) calc(100% - 26px),rgba(0,0,0,.45) 100%)}
+.board{height:15px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='15'%3E%3Cfilter id='b'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.004 0.35' numOctaves='3' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.35  0 0 0 0 0.24  0 0 0 0 0.13  0.8 0 0 0 -0.3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url%28%23b%29'/%3E%3C/svg%3E") left top/1200px 15px repeat-x,linear-gradient(180deg,var(--wood1),var(--wood2));box-shadow:0 5px 9px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,235,200,.35);position:relative;z-index:1}
+.board span{position:absolute;left:10px;top:0;font-size:10.5px;font-weight:700;color:rgba(60,40,15,.8);letter-spacing:.1em}
 .spine{flex:none;position:relative;width:52px;height:236px;border:0;border-radius:4px 4px 1px 1px;cursor:pointer;padding:9px 5px 0;
   background:linear-gradient(90deg,#121212,#2d2d2d 45%,#151515);box-shadow:inset -2px 0 0 rgba(255,255,255,.07),3px 0 5px rgba(0,0,0,.55);
   display:flex;flex-direction:column;align-items:center;transition:transform .18s ease,opacity .2s,filter .2s}
@@ -398,8 +407,9 @@ details.more[open] summary::before{content:"－ "}
 .spine.hit{box-shadow:0 0 0 3px #FFD60A,0 0 20px rgba(255,214,10,.75)}
 .spine.pulse{animation:pulse .7s ease 4}
 @keyframes pulse{0%,100%{transform:none}50%{transform:translateY(-14px)}}
-.spine.add{background:transparent;border:2px dashed rgba(255,255,255,.28);box-shadow:none;color:rgba(255,255,255,.6);font-size:24px;justify-content:center;padding:0}
-.spine.add:hover{color:#fff;border-color:rgba(255,255,255,.6)}
+.spine.add{background:rgba(0,0,0,.25);border:2px dashed rgba(255,225,180,.28);box-shadow:none;color:rgba(255,225,180,.5);font-size:24px;justify-content:center;padding:0}
+.spine.add:hover{color:rgba(255,235,200,.9);border-color:rgba(255,225,180,.6)}
+[data-theme="dark"] .spine.add{background:rgba(0,0,0,.08);border-color:rgba(255,235,210,.3);color:rgba(255,235,210,.6)}
 .sgap{flex:none;width:44px}
 .cab-foot{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;font-size:12.5px;color:var(--text3);margin-top:10px}
 @media (max-width:600px){
@@ -457,6 +467,35 @@ details.more[open] summary::before{content:"－ "}
 .row.picked,.lk-row.picked{animation:rowpick .8s ease}
 @keyframes rowpick{0%{box-shadow:0 0 0 0 rgba(255,214,10,.9)}40%{box-shadow:0 0 0 3px #FFD60A,0 0 22px 4px rgba(255,214,10,.6)}100%{box-shadow:none}}
 @media (prefers-reduced-motion:reduce){.fx-ring{display:none}}
+
+/* 詳情最上方：電子檔 */
+.efile{margin:-2px 0 12px;padding:12px;border-radius:16px;background:rgba(10,122,255,.10);border:1px solid rgba(10,122,255,.28)}
+.efile h4{font-size:13.5px;font-weight:700;color:var(--blue);margin:0 0 8px 2px;display:flex;align-items:center;gap:6px}
+.efile .lk-row{background:var(--glass2);margin-bottom:6px}
+.efile .lk-row:last-child{margin-bottom:0}
+.efile .big-open{min-height:44px;padding:6px 16px;font-size:15px}
+.efile .auto{display:inline-block;white-space:nowrap;font-size:11px;font-weight:700;color:var(--purple);border:1px solid currentColor;border-radius:6px;padding:0 5px;margin-left:6px;vertical-align:1px}
+.efile.none{background:var(--fill);border-color:var(--edge)}
+.efile.none p{font-size:13.5px;color:var(--text2);margin:0 2px}
+.efile.none .lk{font-size:13.5px;margin-top:6px}
+
+/* 「清單｜文件櫃」切換：電腦／平板放在頁首標題右側，手機留在篩選列 */
+.head .viewseg{margin-left:18px;margin-right:auto;flex:none}
+@media (min-width:768px){#pageList .head > div:nth-child(2){flex:0 1 auto}}   /* 標題不撐滿，讓切換鈕緊接在標題右側 */
+.head .viewseg button{min-height:38px}
+/* 特殊色：沿用 SHINPAK 品牌紅，和頁面其他藍色按鈕明顯區分 */
+.viewseg{background:rgba(230,0,18,.07);border-color:rgba(230,0,18,.35)}
+.viewseg button{color:#C8102E}
+.viewseg button svg{stroke:currentColor}
+.viewseg button[aria-pressed="true"]{background:linear-gradient(140deg,#E60012,#FF5A3C);color:#fff;box-shadow:0 6px 14px -6px rgba(230,0,18,.7)}
+[data-theme="dark"] .viewseg{background:rgba(255,80,80,.10);border-color:rgba(255,90,90,.45)}
+[data-theme="dark"] .viewseg button{color:#FF8A8A}
+[data-theme="dark"] .viewseg button[aria-pressed="true"]{color:#fff}
+
+/* 資料夾匯入：選好資料夾後，主按鈕變成綠色「儲存」 */
+.btn.save{background:linear-gradient(140deg,#1FA855,#34C759);box-shadow:0 10px 20px -10px #1FA855}
+.in.flash{animation:inflash 1.6s ease}
+@keyframes inflash{0%,60%{border-color:#34C759;box-shadow:0 0 0 4px rgba(52,199,89,.3)}100%{}}
 
 /* 手機新增按鈕 */
 .fab{position:fixed;right:18px;bottom:calc(20px + env(safe-area-inset-bottom));z-index:40;height:56px;padding:0 20px;border:0;border-radius:99px;
@@ -818,7 +857,7 @@ textarea.in.auto{min-height:46px;resize:none;overflow:hidden;overflow-wrap:anywh
         </div>
         <label class="chk"><input type="checkbox" id="sClearSample">匯入前清除範例資料</label>
         <label class="chk"><input type="checkbox" id="sRemove">移除資料夾裡已經不存在的文件</label>
-        <button type="button" class="btn pri" id="sPick" style="margin-top:8px">選擇資料夾並掃描</button>
+        <button type="button" class="btn pri" id="sPick" style="margin-top:8px">選擇資料夾</button>
         <button type="button" class="btn sub" id="sResync" style="margin-top:8px" hidden>重新同步上次的資料夾</button>
         <input type="file" id="sDirInput" webkitdirectory multiple hidden>
         <p class="note" id="sInfo">檔案只在這台電腦上讀取，不會上傳到任何地方</p>
@@ -832,8 +871,8 @@ textarea.in.auto{min-height:46px;resize:none;overflow:hidden;overflow-wrap:anywh
           <div class="pv-wrap"><table class="pv"><thead><tr><th>動作</th><th>編號</th><th>名稱</th><th>標準</th><th>版次</th><th>日期</th></tr></thead><tbody id="pvBody"></tbody></table></div>
           <details class="more" id="pvSkipBox"><summary>查看略過的檔案</summary><ul class="skip-list" id="pvSkipList"></ul></details>
           <div class="btns">
-            <button type="button" class="btn pri" id="sImport" style="height:46px">匯入到清單</button>
-            <button type="button" class="btn sub" id="sCancel">取消</button>
+            <button type="button" class="btn pri save" id="sImport" style="height:46px">儲存</button>
+            <button type="button" class="btn sub" id="sCancel">取消，重新選擇</button>
           </div>
         </div>
 
@@ -1198,7 +1237,7 @@ textarea.in.auto{min-height:46px;resize:none;overflow:hidden;overflow-wrap:anywh
       <span class="c-doc"><span class="code">${hl(d.code)}</span><span class="title">${hl(d.title)}</span><span class="meta">${hl(d.dept || '未指定單位')}｜${hl(d.clause || '未填條款')}${tag ? `<span class="rel">${esc(tag)}</span>` : ''}</span>${snippet(d)}</span>
       <span class="c-std"><span class="pill" title="${esc(['ISO ' + d.std, ...(d.stds || []).filter(k => k !== d.std).map(k => 'ISO ' + k)].join('、'))}">ISO ${esc(d.std)}${(d.stds || []).filter(k => k !== d.std).length ? ' +' + (d.stds || []).filter(k => k !== d.std).length : ''}</span></span>
       <span class="c-st st st-${st[0]}">${st[1]}</span>
-      <span class="c-file">${(() => { const n = getLinks(d).length; return n ? `<span class="fbtn" data-act="open" title="開啟連結的檔案">開啟${n > 1 ? ' ' + n : ''}</span>` : `<span class="fbtn add" data-act="link" title="為這份文件連結檔案">＋連結</span>`; })()}</span>
+      <span class="c-file">${(() => { const n = allLinks(d).length; return n ? `<span class="fbtn" data-act="open" title="開啟連結的檔案">開啟${n > 1 ? ' ' + n : ''}</span>` : `<span class="fbtn add" data-act="link" title="為這份文件連結檔案">＋連結</span>`; })()}</span>
     </button>`;
   }
   function renderList(){
@@ -1254,7 +1293,7 @@ textarea.in.auto{min-height:46px;resize:none;overflow:hidden;overflow-wrap:anywh
     const r = e.target.closest('.row'); if (!r) return;
     const fb = e.target.closest('.fbtn');
     if (fb){
-      const d = docs.find(x => x.uid === r.dataset.id), L = d ? getLinks(d) : [];
+      const d = docs.find(x => x.uid === r.dataset.id), L = d ? allLinks(d) : [];
       if (fb.dataset.act === 'open' && L.length === 1){ openLink(L[0]); return; }   // 只有一個檔案就直接開啟
       openSheet(r.dataset.id);
       if (fb.dataset.act === 'link') setTimeout(() => { const i = $('#shLinkIn'); if (i){ i.scrollIntoView({block:'center'}); i.focus(); } }, 80);
@@ -1456,6 +1495,9 @@ textarea.in.auto{min-height:46px;resize:none;overflow:hidden;overflow-wrap:anywh
     const i = docDue(d), forms = (d.forms || '').split(/[、,，]/).map(s => s.trim()).filter(Boolean);
     $('#sheetBody').innerHTML = `<div class="s${esc(d.std)}">
       <div class="sh-head"><small>ISO ${esc(d.std)}　${esc((STD[d.std]||{}).name)}</small><h3>${esc(d.title)}</h3><p>${esc(d.code)}　${esc(d.ver)}</p></div>
+      ${(() => { const E = allLinks(d);
+        if (E.length) return `<div class="efile"><h4>📄 電子檔（${E.length}）</h4>${E.map((l, i) => `<div class="lk-row"><span class="tagk${l.url ? ' web' : ''}">${l.url ? '網址' : esc(((l.name || '').split('.').pop() || '檔案').toUpperCase().slice(0, 4))}</span><span class="lk-txt"><b>${esc(l.name)}${l.auto ? '<span class="auto">依編號自動找到</span>' : ''}</b><small>${esc(linkSub(l))}</small></span><button type="button" class="lk-open big-open" data-e="${i}">開啟</button><button type="button" class="lk-copy" data-e="${i}">複製</button></div>`).join('')}</div>`;
+        return `<div class="efile none"><p>${fidx.files.length ? `在已同步的資料夾中，找不到檔名含「${esc(d.code)}」的電子檔。` : '尚未同步 D:\\J-ISO驗證文件，同步後系統會依文件編號自動找出電子檔。'}</p>${fidx.files.length ? '' : '<button type="button" class="lk" id="shGoSync">前往同步資料夾</button>'}</div>`; })()}
       <div class="kv">
         ${d.binder && findBinder(d.binder) ? `<div class="full"><span>存放位置</span><b>${esc(binderText(d.binder, true))}</b><button type="button" class="lk-open" id="shGoCab" style="margin-top:8px">在文件櫃中查看</button></div>` : ''}
         ${(d.binders || []).filter(b => b !== d.binder && findBinder(b)).length ? `<div class="full"><span>也收錄於</span><b>${(d.binders || []).filter(b => b !== d.binder && findBinder(b)).map(b => esc(binderText(b, true))).join('<br>')}</b></div>` : ''}
@@ -1475,7 +1517,7 @@ textarea.in.auto{min-height:46px;resize:none;overflow:hidden;overflow-wrap:anywh
         <div class="sh-quick"><input class="in" id="shLinkIn" placeholder="貼上檔案路徑或網址" spellcheck="false" autocomplete="off"><button type="button" class="mini" id="shAddLink">加入</button></div>
         <button type="button" class="btn sub" id="shPickFile" style="margin-top:8px">從電腦選擇檔案</button></div>`; })()}
       </div>`;
-    $('#sheetBg').classList.add('open'); $('#sheetBg').setAttribute('aria-hidden','false'); $('#shEdit').focus();
+    $('#sheetBg').classList.add('open'); $('#sheetBg').setAttribute('aria-hidden','false'); $('#sheetBg .sheet').scrollTop = 0; $('#shEdit').focus({preventScroll:true});
   }
   function closeSheet(){ $('#sheetBg').classList.remove('open'); $('#sheetBg').setAttribute('aria-hidden','true'); sheetId = null; }
   const curDoc = () => docs.find(x => x.uid === sheetId);
@@ -1557,7 +1599,13 @@ textarea.in.auto{min-height:46px;resize:none;overflow:hidden;overflow-wrap:anywh
     if (segs[segs.length - 1] === name) return;
     const i = segs.lastIndexOf(name);
     if (i >= 0){ sync.root = segs.slice(0, i + 1).join('\\'); $('#sRoot').value = sync.root; window.__autoGrowAll && window.__autoGrowAll(); store.set(KEY.sync, sync); toast(`資料夾位置已自動調整為 ${sync.root}`); }
-    else toast(`提醒：選取的資料夾「${name}」與設定位置不同，請確認「文件資料夾位置」`);
+    else {
+      // 瀏覽器只能取得資料夾名稱、拿不到完整路徑 → 推定為原位置的同層資料夾（例：2025-ISO 資料 → 2026-ISO 資料）
+      sync.root = (segs.length > 1 ? segs.slice(0, -1) : segs).concat(name).join('\\');
+      $('#sRoot').value = sync.root; window.__autoGrowAll && window.__autoGrowAll(); store.set(KEY.sync, sync);
+      toast(`資料夾位置已更新為 ${sync.root}，若實際路徑不同請直接修改`);
+    }
+    const r = $('#sRoot'); r.classList.remove('flash'); void r.offsetWidth; r.classList.add('flash');
   }
   let dirHandle = null, sessionFiles = new Map(), pending = null;
   const fullPath = rel => (sync.root || '').replace(/[\\\/]+$/, '') + '\\' + rel;
@@ -1668,13 +1716,14 @@ textarea.in.auto{min-height:46px;resize:none;overflow:hidden;overflow-wrap:anywh
     $('#pvSkipList').innerHTML = res.skips.slice(0, 300).map(s => `<li>${esc(s.rel)}<br><span style="color:var(--orange)">${esc(s.skip)}</span></li>`).join('');
     $('#sImport').disabled = !res.items.length;
     $('#sPreview').hidden = false;
-    $('#sInfo').textContent = `共讀取 ${res.total} 個文件檔，辨識出 ${res.items.length} 份文件`;
+    $('#sInfo').textContent = `共讀取 ${res.total} 個文件檔，辨識出 ${res.items.length} 份文件。確認無誤請按「儲存」`;
+    updatePickBtn();
     $('#sPreview').scrollIntoView({behavior:'smooth', block:'start'});
   }
   function saveSyncSettings(){ sync.root = $('#sRoot').value.trim() || DEFAULT_ROOT; sync.map = $('#sMap').value.trim(); store.set(KEY.sync, sync); }
   function syncInfoText(){
     if (!sync.last) return '檔案只在這台電腦上讀取，不會上傳到任何地方';
-    return `上次同步：${sync.last.time}，資料夾「${sync.last.name}」，共 ${sync.last.count} 份文件`;
+    return `上次儲存：${sync.last.time}，${sync.last.root || sync.root}，共 ${sync.last.count} 份文件`;
   }
 
   async function scanHandle(h){
@@ -1686,7 +1735,13 @@ textarea.in.auto{min-height:46px;resize:none;overflow:hidden;overflow-wrap:anywh
       showPreview(analyze(files));
     } catch(e){ $('#sInfo').textContent = '讀取資料夾失敗：' + (e.message || e); }
   }
+  function updatePickBtn(){
+    const b = $('#sPick');
+    if (pending){ b.textContent = `儲存（匯入 ${pending.items.length} 份文件、更新資料夾位置）`; b.classList.add('save'); }
+    else { b.textContent = '選擇資料夾'; b.classList.remove('save'); }
+  }
   $('#sPick').onclick = async () => {
+    if (pending){ $('#sImport').click(); return; }   // 已選好資料夾 → 這顆按鈕就是「儲存」
     saveSyncSettings();
     if (window.showDirectoryPicker && !IN_FRAME){
       try {
@@ -1721,10 +1776,11 @@ textarea.in.auto{min-height:46px;resize:none;overflow:hidden;overflow-wrap:anywh
     if (!(await ensurePerm(dirHandle))){ toast('需要允許讀取資料夾才能同步'); return; }
     scanHandle(dirHandle);
   };
-  $('#sCancel').onclick = () => { pending = null; $('#sPreview').hidden = true; $('#sInfo').textContent = syncInfoText(); };
+  $('#sCancel').onclick = () => { pending = null; $('#sPreview').hidden = true; $('#sInfo').textContent = syncInfoText(); updatePickBtn(); };
   $('#sClearSample').addEventListener('change', () => { if (pending) showPreview(pending); });
   $('#sImport').onclick = () => {
     if (!pending) return;
+    saveSyncSettings();   // 一併儲存資料夾位置與編號對應設定
     if ($('#sClearSample').checked) docs = docs.filter(d => !/^s\d+$/.test(d.uid));
     let add = 0, upd = 0, rm = 0; const seen = new Set();
     pending.items.forEach(it => {
@@ -1746,13 +1802,34 @@ textarea.in.auto{min-height:46px;resize:none;overflow:hidden;overflow-wrap:anywh
     if ($('#sRemove').checked){ const before = docs.length; docs = docs.filter(d => d.src !== 'folder' || seen.has(d.code.toLowerCase())); rm = before - docs.length; }
     assignDocsByDir(); saveDocs(); renderList();
     const t = new Date();
-    sync.last = {time:`${fmt(t)} ${pad(t.getHours())}:${pad(t.getMinutes())}`, name:dirHandle ? dirHandle.name : (pendingRootName || '資料夾'), count:pending.items.length};
+    sync.last = {time:`${fmt(t)} ${pad(t.getHours())}:${pad(t.getMinutes())}`, name:dirHandle ? dirHandle.name : (pendingRootName || '資料夾'), count:pending.items.length, root:sync.root};
     store.set(KEY.sync, sync);
-    pending = null; $('#sPreview').hidden = true; $('#sInfo').textContent = syncInfoText();
+    pending = null; $('#sPreview').hidden = true; $('#sInfo').textContent = syncInfoText(); updatePickBtn();
     toast(`匯入完成：新增 ${add}、更新 ${upd}${rm ? `、移除 ${rm}` : ''}`);
     goList();
   };
   $('#goSync').onclick = () => goTools('sync');
+
+  /* ---------- 依文件編號自動找出電子檔 ---------- */
+  // 已同步 D:\J-ISO驗證文件 時，檔名含文件編號（例：11-6530-017 檢驗量測….pdf）就自動對應，免手動連結
+  let fkCache = null;
+  function fileKeys(){
+    if (fkCache && fkCache.src === fidx.files) return fkCache.keys;
+    fkCache = {src:fidx.files, keys:fidx.files.map(f => { const b = baseName(f.rel); return {f, c:compact(b), n:norm(b)}; })};
+    return fkCache.keys;
+  }
+  function autoFiles(d){
+    if (!d || !d.code || !fidx.files.length) return [];
+    const key = compact(d.code); if (key.length < 3) return [];
+    const linked = new Set(getLinks(d).map(l => (l.rel || '').toLowerCase()));
+    const long = key.length >= 6;   // 短編號（如 P-09）只比對檔名開頭，避免誤配
+    const hits = fileKeys().filter(k => (long ? k.c.includes(key) : k.c.startsWith(key)) && !linked.has(k.f.rel.toLowerCase()));
+    // 主文件排前面：PDF 優先，其次 Word、Excel；同類型檔名較短的（通常是本文而非附件）在前
+    const pri = n => /\.pdf$/i.test(n) ? 0 : /\.docx?$/i.test(n) ? 1 : /\.xls[xm]?$/i.test(n) ? 2 : 3;
+    hits.sort((a, b) => pri(a.n) - pri(b.n) || a.n.length - b.n.length);
+    return hits.slice(0, 12).map(k => ({name:baseName(k.f.rel), rel:k.f.rel, auto:true, mtime:k.f.mtime}));
+  }
+  const allLinks = d => [...getLinks(d), ...autoFiles(d)];
 
   /* ---------- 連結檔案 ---------- */
   // 連結格式：{name, rel}=資料夾內相對路徑、{name, abs}=完整路徑、{name, url}=網址、
@@ -1825,6 +1902,14 @@ textarea.in.auto{min-height:46px;resize:none;overflow:hidden;overflow-wrap:anywh
   };
   $('#sheetBody').addEventListener('keydown', e => { if (e.target.id === 'shLinkIn' && e.key === 'Enter'){ e.preventDefault(); sheetAddTyped(); } });
   $('#sheetBody').addEventListener('click', async e => {
+    const eb = e.target.closest('[data-e]');
+    if (eb){
+      const d = curDoc(); if (!d) return; const l = allLinks(d)[+eb.dataset.e]; if (!l) return;
+      if (eb.classList.contains('lk-open')) openLink(l);
+      else { await copyText(l.url || linkTarget(l)); toast(l.url ? '已複製網址' : '已複製路徑，可貼到檔案總管開啟'); }
+      return;
+    }
+    if (e.target.closest('#shGoSync')){ closeSheet(); goTools('sync'); return; }
     if (e.target.closest('#shAddLink')){ sheetAddTyped(); return; }
     if (e.target.closest('#shPickFile')){
       const d = curDoc(); if (!d) return;
@@ -1923,8 +2008,8 @@ textarea.in.auto{min-height:46px;resize:none;overflow:hidden;overflow-wrap:anywh
       {name:'下層', items:[
         W('9-A','A','ISO-9001 過程導向', Y), W('9-B','B','ISO-9001 品質目標的與執行成效', Y), W('9-C','C','矯正預防措施結果報告', Y),
         W('9-D','D','客訴處理報告表', Y), W('9-E','E','員工勝任度與訓練需求評估', Y), W('9-F','F','國家標準及政府法規目錄（每季）', Y),
-        W('9-G','G','供應商評鑑', Y), W('9-H','H','儀器校正', Y), W('9-I','I','客戶稽核文件', Y), W('9-J','J','教育訓練（檢驗課）', Y),
-        W('9-K','K','溶出＆相關委外試驗', Y), W('9-L','L','稽核用相關資料', Y)]}
+        W('9-G','G','供應商評鑑', Y), W('9-H','H','儀器校正', Y), W('9-I','I','客戶稽核文件', Y), W('9-J','J','教育訓練（全廠性、MMS、22000、50001）', {lab:'#FFE14D', labh:'86%'}),
+        W('9-K','K','溶出＆相關委外試驗', {lab:'#FFE14D', labh:'72%'}), W('9-L','L','其他相關資料（廠務、公用、工環、資材）', {bg:'linear-gradient(#FFE14D 0 22%,#3DB54A 22% 36%,#4FC3E8 36% 84%,#f7f5ef 84%)'})]}
     ]},
     {id:'c22000', name:'ISO 22000／HACCP 文件櫃', std:'22000', shelves:[
       {name:'上層', items:[
@@ -2002,6 +2087,15 @@ textarea.in.auto{min-height:46px;resize:none;overflow:hidden;overflow-wrap:anywh
     }));
     store.set(KEY_CABS, cabs); store.set('isoCabsPatch', 5);
   })();
+  (function patchCabs6(){   // 9001 櫃 J、K、L 依實拍照片更新（名稱只更新原本的預設值；顏色一律更新）
+    if (store.get('isoCabsPatch', 0) >= 6) return;
+    cabs.forEach(c => c.shelves.forEach(sh => sh.items.forEach(it => {
+      if (it.id === '9-J'){ if (it.label === '教育訓練（檢驗課）') it.label = '教育訓練（全廠性、MMS、22000、50001）'; it.lab = '#FFE14D'; it.labh = '86%'; }
+      if (it.id === '9-K'){ it.lab = '#FFE14D'; it.labh = '72%'; }
+      if (it.id === '9-L'){ if (['稽核用', '稽核用相關資料'].includes(it.label)) it.label = '其他相關資料（廠務、公用、工環、資材）'; delete it.lab; delete it.labh; it.bg = 'linear-gradient(#FFE14D 0 22%,#3DB54A 22% 36%,#4FC3E8 36% 84%,#f7f5ef 84%)'; }
+    })));
+    store.set(KEY_CABS, cabs); store.set('isoCabsPatch', 6);
+  })();
   const saveCabs = () => store.set(KEY_CABS, cabs);
   cabs.forEach(c => { if (c.id === 'cEHS' && !c.stds) c.stds = ['14001','45001']; });
   function findBinder(id){
@@ -2040,7 +2134,7 @@ textarea.in.auto{min-height:46px;resize:none;overflow:hidden;overflow-wrap:anywh
   function spineHTML(it, cnt, state){
     const len = (it.label || '').length + (it.no ? 2 : 0);
     const size = len > 22 ? 'xs' : len > 15 ? 'sm' : '';
-    const lab = it.lab ? `--lab:${it.lab};--labh:${it.labh || '100%'};` : '';
+    const lab = it.bg ? `background:${it.bg};` : it.lab ? `--lab:${it.lab};--labh:${it.labh || '100%'};` : '';
     return `<button type="button" class="spine ${state}" data-bid="${esc(it.id)}" title="${esc(binderName(it))}${cnt ? `（${cnt} 份文件）` : ''}">
       <span class="tab ${it.tab ? '' : 'none'}" style="${it.tab ? `background:${it.tab}` : ''}"></span>
       <span class="lbl ${size} ${it.ink === 'w' ? 'ink-w' : ''}" style="${lab}">${it.no ? `<span class="no">${esc(it.no)}</span>` : ''}${esc(it.label)}</span>
@@ -2115,7 +2209,7 @@ textarea.in.auto{min-height:46px;resize:none;overflow:hidden;overflow-wrap:anywh
         ? `<div class="qhit">🔍 符合「<mark>${esc(q)}</mark>」：${nDocHit ? `文件 ${nDocHit} 份` : ''}${nDocHit && fileHitK.size ? '、' : ''}${fileHitK.size ? `檔案 ${fileHitK.size} 個` : ''}（黃框標示${nDocHit ? '，文件已排在最前面' : ''}）</div>`
         : `<div class="qhit none">這本文件夾沒有符合「${esc(q)}」的文件</div>`) : ''}
       <div class="sh-sec binder-docs"><h4>文件夾內的文件${all.length ? `（${all.length}）` : ''}</h4>
-        ${list.length ? list.map(d => { const i = docDue(d); const hit = hitIds.has(d.uid); return `<div class="lk-row s${esc(d.std)}${hit ? ' match' : ''}" data-doc="${esc(d.uid)}"><span class="tagk">${hit ? hl(d.code) : esc(d.code)}</span><span class="lk-txt"><b>${hit ? hl(d.title) : esc(d.title)}</b><small>${d.date ? '最終日期 ' + esc(d.date) + '　' : ''}${d.binder !== id && d.binder ? '主要存放：' + esc(binderName(findBinder(d.binder)?.item || {label:''})) : esc(d.status)}</small></span>${getLinks(d).length ? '<span class="fbtn" data-act="open">開啟</span>' : ''}</div>`; }).join('')
+        ${list.length ? list.map(d => { const i = docDue(d); const hit = hitIds.has(d.uid); return `<div class="lk-row s${esc(d.std)}${hit ? ' match' : ''}" data-doc="${esc(d.uid)}"><span class="tagk">${hit ? hl(d.code) : esc(d.code)}</span><span class="lk-txt"><b>${hit ? hl(d.title) : esc(d.title)}</b><small>${d.date ? '最終日期 ' + esc(d.date) + '　' : ''}${d.binder !== id && d.binder ? '主要存放：' + esc(binderName(findBinder(d.binder)?.item || {label:''})) : esc(d.status)}</small></span>${allLinks(d).length ? '<span class="fbtn" data-act="open">開啟</span>' : ''}</div>`; }).join('')
           : '<p class="hint" style="margin:0 0 6px 4px">還沒有文件登錄在這本文件夾，可按下方按鈕新增，或在文件的編輯頁選擇「存放文件夾」</p>'}
       </div>
       <div class="sh-sec"><h4>對應電腦資料夾</h4>
@@ -2148,7 +2242,7 @@ textarea.in.auto{min-height:46px;resize:none;overflow:hidden;overflow-wrap:anywh
     const row = e.target.closest('[data-doc]');
     if (row){
       const d = docs.find(x => x.uid === row.dataset.doc); if (!d) return;
-      if (e.target.closest('.fbtn')){ const L = getLinks(d); if (L.length === 1){ openLink(L[0]); return; } }
+      if (e.target.closest('.fbtn')){ const L = allLinks(d); if (L.length === 1){ openLink(L[0]); return; } }
       closeBinder(); openSheet(d.uid); return;
     }
     const fo = e.target.closest('.lk-open[data-f]');
@@ -2321,6 +2415,18 @@ textarea.in.auto{min-height:46px;resize:none;overflow:hidden;overflow-wrap:anywh
   };
   $('#mapSync').onclick = () => goTools('sync');
   idb.get('fidx').then(x => { if (x && Array.isArray(x.dirs)){ fidx = x; fillDirList(); renderList(); if (curTool === 'map') renderMap(); } });
+
+  /* ---------- 「清單｜文件櫃」切換鈕的位置 ---------- */
+  (() => {
+    const seg = $('.viewseg'), head = $('#pageList .head'), act = head && head.querySelector('.act'), bar = $('.viewbar');
+    if (!seg || !head || !act || !bar) return;
+    const mq = matchMedia('(min-width:768px)');
+    const place = () => {
+      if (mq.matches){ if (seg.parentNode !== head) head.insertBefore(seg, act); }
+      else if (seg.parentNode !== bar) bar.appendChild(seg);
+    };
+    place(); mq.addEventListener ? mq.addEventListener('change', place) : mq.addListener(place);
+  })();
 
   /* ---------- 點擊音效（Web Audio 即時合成，不需任何音效檔） ---------- */
   let soundOn = store.get('isoSound', true), actx = null;
