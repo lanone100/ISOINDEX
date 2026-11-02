@@ -503,6 +503,18 @@ details.more[open] summary::before{content:"－ "}
 .dlg-choices button{text-align:left;border:1px solid var(--edge);background:var(--fill);border-radius:11px;padding:8px 12px;font-size:14px;cursor:pointer;overflow-wrap:anywhere;line-height:1.4}
 .dlg-choices button:hover,.dlg-choices button.on{border-color:var(--blue);background:rgba(10,122,255,.12)}
 
+/* 登錄檢查 */
+.reg-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;background:var(--fill);border:1px solid var(--edge);margin-bottom:6px}
+.reg-row .rt{flex:1;min-width:0}
+.reg-row .rt b{display:block;font-size:14.5px;font-weight:600;overflow-wrap:anywhere;line-height:1.35}
+.reg-row .rt small{display:block;font-size:12px;color:var(--text3);overflow-wrap:anywhere;line-height:1.4}
+.reg-row .rt .sug{color:var(--blue);font-weight:600}
+.reg-row input[type=checkbox]{width:20px;height:20px;accent-color:#1FA855;flex:none}
+.reg-row .act2{display:flex;gap:6px;flex:none}
+.reg-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;font-size:14px}
+.reg-bar .btn{width:auto;min-height:40px;padding:6px 16px;font-size:14.5px}
+@media (max-width:520px){.reg-row{flex-wrap:wrap}.reg-row .act2{margin-left:auto}}
+
 /* 手機新增按鈕 */
 .fab{position:fixed;right:18px;bottom:calc(20px + env(safe-area-inset-bottom));z-index:40;height:56px;padding:0 20px;border:0;border-radius:99px;
   background:linear-gradient(140deg,#0A7AFF,#5B5BF0);color:#fff;font-size:16px;font-weight:700;display:flex;align-items:center;gap:6px;
@@ -693,6 +705,7 @@ textarea.in.auto{min-height:46px;resize:none;overflow:hidden;overflow-wrap:anywh
       <button type="button" data-t="rev"><b><span class="s">審查日</span><span class="l">審查日試算</span></b><span class="d">生效日期 + 審查週期</span></button>
       <button type="button" data-t="sync"><b><span class="s">資料夾</span><span class="l">資料夾匯入</span></b><span class="d">從 D:\J-ISO驗證文件 撈取</span></button>
       <button type="button" data-t="map"><b><span class="s">對照</span><span class="l">目錄對照</span></b><span class="d">文件櫃書背 ↔ 電腦資料夾</span></button>
+      <button type="button" data-t="reg"><b><span class="s">登錄</span><span class="l">登錄檢查</span></b><span class="d">資料夾檔案 ↔ 目錄比對</span></button>
     </nav>
     <section class="card glass tools" id="tools" aria-label="工具內容">
 
@@ -855,6 +868,7 @@ textarea.in.auto{min-height:46px;resize:none;overflow:hidden;overflow-wrap:anywh
           <label class="lab" for="sRoot">文件資料夾位置</label>
           <textarea class="in auto" id="sRoot" rows="1" spellcheck="false">D:\J-ISO驗證文件</textarea>
           <p class="hint">用於「複製路徑」，貼到檔案總管網址列即可開啟原始檔</p>
+          <p class="bwarn" id="sRootWarn" hidden style="margin-top:8px"></p>
         </div>
         <div class="f">
           <label class="lab" for="sMap">編號開頭對應標準</label>
@@ -867,6 +881,7 @@ textarea.in.auto{min-height:46px;resize:none;overflow:hidden;overflow-wrap:anywh
         <button type="button" class="btn sub" id="sResync" style="margin-top:8px" hidden>重新同步上次的資料夾</button>
         <input type="file" id="sDirInput" webkitdirectory multiple hidden>
         <p class="note" id="sInfo">檔案只在這台電腦上讀取，不會上傳到任何地方</p>
+        <p class="note" style="opacity:.7">程式版本：2026-11-02 R3（資料夾位置確認版）</p>
 
         <div id="sPreview" hidden>
           <div class="pv-sum">
@@ -893,6 +908,20 @@ textarea.in.auto{min-height:46px;resize:none;overflow:hidden;overflow-wrap:anywh
           </table>
           <p class="hint" style="margin-top:8px">規則：檔名開頭是文件編號；版次寫 V3.2、Rev2 或「第2版」；檔名沒有日期時，改用檔案的修改日期當生效日。同一編號有多個版本時，只保留最新版。</p>
         </details>
+      </div>
+
+      <!-- 登錄檢查 -->
+      <div data-pane="reg" hidden>
+        <div class="formula steps"><span>同步資料夾</span><i>→</i><span>比對目錄</span><i>→</i><span>一鍵登錄</span></div>
+        <p class="note" id="regInfo" style="text-align:left;margin:0 4px 10px"></p>
+        <div class="pv-sum" id="regSum"></div>
+        <div class="seg" id="regSeg" style="margin:12px 0">
+          <button type="button" data-r="new" aria-pressed="true">未登錄的檔案</button>
+          <button type="button" data-r="miss">缺電子檔</button>
+          <button type="button" data-r="ok">已對應</button>
+        </div>
+        <div id="regBar"></div>
+        <div id="regList"></div>
       </div>
 
       <!-- 目錄對照 -->
@@ -979,11 +1008,44 @@ textarea.in.auto{min-height:46px;resize:none;overflow:hidden;overflow-wrap:anywh
     {uid:'s12',std:'45001',code:'OH-702',title:'新進人員安全衛生教育訓練',clause:'7.2 適任性',dept:'人資課',ver:'V1.2',date:'2024-03-01',cycle:12,status:'已廢止',retention:'5年',forms:'教育訓練簽到表',note:'已併入新版訓練程序。'}
   ];
 
-  // 製瓶廠 ISO 文件目錄（由「ISO類別.xlsx」轉入，共 213 份；編號、名稱、日期皆照原表）
-  const EXCEL_DOCS = [{"uid":"xl000","code":"11-1100-001","title":"外售客訴作業辦法","std":"9001","binder":"9-0","dept":"新纖"},{"uid":"xl001","code":"11-3120-002","title":"下腳品入庫作業規定","std":"9001","binder":"9-0","dept":"新纖"},{"uid":"xl002","code":"11-3140-001","title":"成品入庫作業","std":"9001","binder":"9-0","stds":["9001","22000"],"binders":["9-0","22-16"],"dept":"新纖","date":"2006-01-04"},{"uid":"xl003","code":"11-3140-002","title":"成品出庫作業","std":"9001","binder":"9-0","stds":["9001","22000"],"binders":["9-0","22-16"],"dept":"新纖","date":"2009-04-06"},{"uid":"xl004","code":"11-3150-001","title":"請購作業","std":"9001","binder":"9-0","stds":["9001","45001","22000"],"binders":["9-0","45-1","22-13","22-15"],"dept":"新纖","date":"1997-12-08"},{"uid":"xl005","code":"11-3150-002","title":"內購驗收作業","std":"9001","binder":"9-0","stds":["9001","45001","22000"],"binders":["9-0","45-1","22-15"],"dept":"新纖","date":"2005-08-23"},{"uid":"xl006","code":"11-3150-003","title":"外購驗收作業","std":"9001","binder":"9-0","stds":["9001","45001","22000"],"binders":["9-0","45-1","22-15"],"dept":"新纖","date":"2005-08-24"},{"uid":"xl007","code":"11-3150-004","title":"儲存作業","std":"9001","binder":"9-0","stds":["9001","45001"],"binders":["9-0","45-1"],"dept":"新纖"},{"uid":"xl008","code":"11-3150-005","title":"領料作業","std":"9001","binder":"9-0","stds":["9001","45001"],"binders":["9-0","45-1"],"dept":"新纖"},{"uid":"xl009","code":"11-3350-008","title":"品管QC 七大手法統計技術","std":"9001","binder":"9-0","dept":"新纖"},{"uid":"xl010","code":"11-3350-009","title":"檢驗與測試","std":"9001","binder":"9-0","dept":"新纖"},{"uid":"xl011","code":"11-3350-010","title":"檢驗與測試狀況","std":"9001","binder":"9-0","stds":["9001","45001"],"binders":["9-0","45-1"],"dept":"新纖"},{"uid":"xl012","code":"11-3350-017","title":"客訴供應產品之管制","std":"9001","binder":"9-0","dept":"新纖"},{"uid":"xl013","code":"11-3350-011","title":"原物料品質異常通知處理","std":"9001","binder":"9-0","dept":"新纖"},{"uid":"xl014","code":"11-3350-003","title":"進料檢驗","std":"9001","binder":"9-0","dept":"新纖"},{"uid":"xl015","code":"11-3500-007","title":"噪音管制作業程序","std":"9001","binder":"9-0","stds":["9001","14001"],"binders":["9-0","14-3"],"dept":"新纖"},{"uid":"xl016","code":"11-6500-003","title":"瓶廠緊急應變措施","std":"9001","binder":"9-0","stds":["9001","14001"],"binders":["9-0","14-3"],"dept":"新纖"},{"uid":"xl017","code":"11-3100-004","title":"廢棄物管制與監測","std":"9001","binder":"9-0","stds":["9001","14001"],"binders":["9-0","14-3"],"dept":"新纖"},{"uid":"xl018","code":"11-3510-001","title":"消防設備之管理","std":"14001","binder":"14-3","dept":"新纖"},{"uid":"xl019","code":"11-1190-005","title":"資訊需求管制作業","std":"14001","binder":"14-3","dept":"新纖"},{"uid":"xl020","code":"11-1190-006","title":"電腦使用管制作業辦法","std":"14001","binder":"14-3","dept":"新纖"},{"uid":"xl021","code":"11-6520-004","title":"機械課各級幹部工程執掌","std":"14001","binder":"14-3","dept":"新纖"},{"uid":"xl022","code":"11-6530-024","title":"瓶生產課各級幹部工程執掌","std":"14001","binder":"14-3","stds":["14001","9001"],"binders":["14-3","9-9"],"dept":"新纖"},{"uid":"xl023","code":"11-6530-029","title":"寶特瓶處客戶滿意度調查制度","std":"14001","binder":"14-3","stds":["14001","9001"],"binders":["14-3","9-9"],"dept":"新纖"},{"uid":"xl024","code":"11-3110-001","title":"新進人員教育訓練","std":"14001","binder":"14-3","stds":["14001","22000"],"binders":["14-3","22-07"],"dept":"新纖","date":"2021-07-07"},{"uid":"xl025","code":"11-6530-031","title":"生產課各職級之勝任度與訓練需求評估","std":"14001","binder":"14-3","stds":["14001","9001"],"binders":["14-3","9-10"],"dept":"新纖"},{"uid":"xl026","code":"11-6520-008","title":"機械課各級之勝任度與訓練需求評估","std":"14001","binder":"14-3","dept":"新纖"},{"uid":"xl027","code":"11-2710-001","title":"第一事業群產銷管理","std":"14001","binder":"14-3","stds":["14001","45001","22000"],"binders":["14-3","45-1","22-06","22-13"],"dept":"新纖","date":"2009-12-03"},{"uid":"xl028","code":"11-6530-036","title":"品管組各級工作職掌","std":"14001","binder":"14-3","stds":["14001","9001"],"binders":["14-3","9-10"],"dept":"新纖"},{"uid":"xl029","code":"11-6530-037","title":"品管組各級之勝任度與訓練需求評估","std":"14001","binder":"14-3","stds":["14001","9001"],"binders":["14-3","9-10"],"dept":"新纖"},{"uid":"xl030","code":"11-3200-004","title":"能資源管理程序書","std":"14001","binder":"14-3","dept":"新纖"},{"uid":"xl031","code":"11-3500-008","title":"揮發性有機物管制作業程式","std":"14001","binder":"14-3","dept":"新纖"},{"uid":"xl032","code":"11-3500-009","title":"粉塵作業管制程序","std":"14001","binder":"14-3","dept":"新纖"},{"uid":"xl033","code":"11-3120-005","title":"儲槽管制","std":"14001","binder":"14-3","dept":"新纖"},{"uid":"xl034","code":"11-3200-006","title":"公用處廢水管制","std":"14001","binder":"14-3","stds":["14001","45001"],"binders":["14-3","45-1"],"dept":"新纖"},{"uid":"xl035","code":"11-3360-005","title":"有毒物質運作管制與監測 (危險物質及有害物質)","std":"14001","binder":"14-3","dept":"新纖"},{"uid":"xl036","code":"11-3500-010","title":"環境管理資訊之表達與溝通 (網路版)","std":"14001","binder":"14-3","dept":"新纖"},{"uid":"xl037","code":"11-3600-009","title":"儀電處緊急應變措施","std":"14001","binder":"14-3","stds":["14001","45001"],"binders":["14-3","45-1"],"dept":"新纖"},{"uid":"xl038","code":"01-6520-035","title":"事業廢棄物暫存作業","std":"9001","binder":"9-1","dept":"製瓶廠"},{"uid":"xl039","code":"01-6530-061","title":"PC-1 開車程序","std":"9001","binder":"9-1","dept":"製瓶廠"},{"uid":"xl040","code":"01-6530-063","title":"BT-1 開車程序","std":"9001","binder":"9-1","dept":"製瓶廠","note":"⚠ 此編號與「BT-1 停車程序」重複，請確認"},{"uid":"xl041","code":"01-6530-063","title":"BT-1 停車程序","std":"9001","binder":"9-1","dept":"製瓶廠","note":"⚠ 此編號與「BT-1 開車程序」重複，請確認"},{"uid":"xl042","code":"01-6530-064","title":"Husky-HyPET225 開車程序","std":"9001","binder":"9-1","dept":"製瓶廠"},{"uid":"xl043","code":"01-6530-065","title":"Husky-HyPET225 停車程序","std":"9001","binder":"9-1","dept":"製瓶廠"},{"uid":"xl044","code":"01-6530-066","title":"CP-1 M/C 開車程序","std":"9001","binder":"9-1","dept":"製瓶廠"},{"uid":"xl045","code":"01-6530-067","title":"CP-1 M/C 停車程序","std":"9001","binder":"9-1","dept":"製瓶廠"},{"uid":"xl046","code":"01-6530-068","title":"Husky-HyPET300 開車程序","std":"9001","binder":"9-1","dept":"製瓶廠"},{"uid":"xl047","code":"01-6530-069","title":"Husky-HyPET300 停車程序","std":"9001","binder":"9-1","dept":"製瓶廠"},{"uid":"xl048","code":"01-6530-070","title":"琮偉 JW-230 PETWSi40e 開車程序","std":"9001","binder":"9-1","dept":"製瓶廠"},{"uid":"xl049","code":"01-6530-071","title":"琮偉 JW-230 PETWSi40e 停車程序","std":"9001","binder":"9-1","dept":"製瓶廠"},{"uid":"xl050","code":"01-6530-072","title":"P＆S 檢查機開停車程序","std":"9001","binder":"9-1","dept":"製瓶廠"},{"uid":"xl051","code":"02-6530-002","title":"成品品管檢測","std":"9001","binder":"9-2","dept":"製瓶廠"},{"uid":"xl052","code":"02-6530-003","title":"檢測AA之取樣標準","std":"9001","binder":"9-2","dept":"製瓶廠"},{"uid":"xl053","code":"02-6540-002","title":"SHEET 成品送檢","std":"9001","binder":"9-2","dept":"製瓶廠"},{"uid":"xl054","code":"02-3350-001","title":"製瓶工程","std":"9001","binder":"9-2","dept":"製瓶廠"},{"uid":"xl055","code":"05-6530-003","title":"PERPEND ICULARITY 測定標準","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl056","code":"05-6530-004","title":"滿胃容量測定","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl057","code":"05-6530-006","title":"CO2 RETENTION 試驗方法","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl058","code":"05-6530-007","title":"CO2 配置法","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl059","code":"05-6530-010","title":"爆破試驗操作方法","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl060","code":"05-6530-011","title":"壓力瓶耐熱性試驗方法","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl061","code":"05-6530-012","title":"A-A 精餾操作方法","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl062","code":"05-6530-013","title":"A-A 標定操作方法","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl063","code":"05-6530-014","title":"紅外線厚度計操作方法","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl064","code":"05-6530-017","title":"耐熱瓶試驗操作基準","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl065","code":"05-6530-019","title":"偏心度測量方法","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl066","code":"05-6530-020","title":"DROP IMPACT 試驗方法","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl067","code":"05-6530-021","title":"耐熱瓶減壓強度試驗操作標準","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl068","code":"05-6530-022","title":"TOP LOAD 試驗操作標準","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl069","code":"05-6530-023","title":"ONE PIECE 汽水瓶CRACKING試驗操作標準","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl070","code":"05-6530-024","title":"ONE PIECE 汽水瓶 BASE ROLL OUT試驗操作標準","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl071","code":"05-6530-025","title":"AUTO SYSTEM XLGE 操作標準","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl072","code":"05-6530-026","title":"瓶胚粉碎方法測量 A-A","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl073","code":"05-6530-027","title":"比重天平測量結晶度操作方法","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl074","code":"05-6530-028","title":"碳酸飲料 CO2 GV 測試操作標準","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl075","code":"05-6530-029","title":"磁性鋼珠測厚計操作方法","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl076","code":"05-6530-030","title":"SECRE SEAL TESTER 操作方法","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl077","code":"05-6505-003","title":"UV CUT 操作標準","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl078","code":"05-6505-002","title":"碳酸飲料入庫 GV值檢驗","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl079","code":"05-6505-004","title":"瓶口尺寸測量儀操作標準","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl080","code":"05-6505-005","title":"水分測定儀操作方法","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl081","code":"05-6505-006","title":"瓶子、瓶胚留樣箱作業標準","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl082","code":"05-D550-001","title":"熱收縮率檢測","std":"9001","binder":"9-3","dept":"製瓶廠","note":"⚠ 此編號與「微生物檢驗方法」重複，請確認"},{"uid":"xl083","code":"05-D550-002","title":"CO2 壓力表校正","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xl084","code":"05-D550-001","title":"微生物檢驗方法","std":"9001","binder":"9-3","dept":"製瓶廠","note":"⚠ 此編號與「熱收縮率檢測」重複，請確認"},{"uid":"xl085","code":"06-6530-016","title":"恆溫恆濕箱","std":"9001","binder":"9-4","dept":"製瓶廠"},{"uid":"xl086","code":"06-6530-017","title":"表面溫度計","std":"9001","binder":"9-4","dept":"製瓶廠"},{"uid":"xl087","code":"06-6530-019","title":"塊規","std":"9001","binder":"9-4","dept":"製瓶廠"},{"uid":"xl088","code":"06-6530-020","title":"熱水保溫箱","std":"9001","binder":"9-4","dept":"製瓶廠"},{"uid":"xl089","code":"06-6530-021","title":"Chaillon TCD200","std":"9001","binder":"9-4","dept":"製瓶廠"},{"uid":"xl090","code":"07-6530-053","title":"32g PCO-HR Preform","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xl091","code":"07-6530-054","title":"耐熱瓶 1.0L","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xl092","code":"07-6530-049","title":"28g 30g 32g 36.2g 45.5g","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xl093","code":"07-6530-052","title":"19g 21g (PCO-1810) 19.5g","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xl094","code":"07-6530-055","title":"醬油瓶(統萬)","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xl095","code":"07-6530-056","title":"35g 43g 52g PCO-38 Preform","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xl096","code":"07-6530-057","title":"24g 27.5g PCO-38 Preform","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xl097","code":"07-6530-058","title":"27g 中溫胚 Preform","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xl098","code":"07-6530-036","title":"ONE Piece Bottle 0.6L","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xl099","code":"07-6530-037","title":"ONE Piece Bottle 1.0L","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xl100","code":"07-6530-038","title":"ONE Piece Bottle 1.25L","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xl101","code":"07-6530-039","title":"ONE Piece Bottle 2.0L","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xl102","code":"07-6530-041","title":"ONE Piece Bottle 0.63L","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xl103","code":"07-6530-044","title":"ONE Piece Bottle 1.5L (Banaqua)","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xl104","code":"07-6530-045","title":"49.5-PCO-Preform / 50g-ALCOA-Preform","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xl105","code":"07-6530-046","title":"54.5-PCO-Preform / 56.5g-ALCOA-Preform","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xl106","code":"07-6530-047","title":"25g-PCO-Preform","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xl107","code":"07-6530-048","title":"54.5g-PCO-Preform","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xl108","code":"07-6530-050","title":"ONE-Piece Bottle 耐熱瓶","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xl109","code":"07-6530-051","title":"21g 23g 25g PCO-Preform","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xl110","code":"08-6530-001","title":"BT BOTTLE 檢驗標準","std":"9001","binder":"9-6","dept":"製瓶廠"},{"uid":"xl111","code":"08-6530-002","title":"PREFORM 檢驗標準","std":"9001","binder":"9-6","dept":"製瓶廠"},{"uid":"xl112","code":"08-6530-004","title":"製瓶課 1.6L把手檢驗標準","std":"9001","binder":"9-6","dept":"製瓶廠"},{"uid":"xl113","code":"08-6530-005","title":"SBO BOTTLE 檢驗標準","std":"9001","binder":"9-6","dept":"製瓶廠"},{"uid":"xl114","code":"08-6530-006","title":"HOT FILLING BOTTLE 檢驗標準","std":"9001","binder":"9-6","dept":"製瓶廠"},{"uid":"xl115","code":"09-3350-020","title":"瓶蓋","std":"9001","binder":"9-7","dept":"製瓶廠"},{"uid":"xl116","code":"09-3350-021","title":"PET 打包帶","std":"9001","binder":"9-7","dept":"製瓶廠"},{"uid":"xl117","code":"09-3350-029","title":"PET瓶 PVC標籤","std":"9001","binder":"9-7","dept":"製瓶廠"},{"uid":"xl118","code":"09-3350-031","title":"OPP標籤","std":"9001","binder":"9-7","dept":"製瓶廠"},{"uid":"xl119","code":"09-3350-032","title":"汽水瓶紙箱","std":"9001","binder":"9-7","dept":"製瓶廠"},{"uid":"xl120","code":"09-3350-011","title":"PET瓶珍珠模標籤","std":"9001","binder":"9-7","dept":"製瓶廠"},{"uid":"xl121","code":"09-3350-040","title":"塑膠棧板","std":"9001","binder":"9-7","dept":"製瓶廠"},{"uid":"xl122","code":"09-3350-033","title":"包裝用PE膜","std":"9001","binder":"9-7","dept":"製瓶廠"},{"uid":"xl123","code":"10-6530-001","title":"SBO BOTTLE","std":"9001","binder":"9-8","dept":"製瓶廠"},{"uid":"xl124","code":"10-6530-002","title":"BT BOTTLE","std":"9001","binder":"9-8","dept":"製瓶廠"},{"uid":"xl125","code":"10-6530-003","title":"PREFORM","std":"9001","binder":"9-8","dept":"製瓶廠"},{"uid":"xl126","code":"10-6530-004","title":"HOT FILLING BOTTLE","std":"9001","binder":"9-8","dept":"製瓶廠"},{"uid":"xl127","code":"10-6530-006","title":"耐熱瓶耐熱性判定標準","std":"9001","binder":"9-8","dept":"製瓶廠"},{"uid":"xl128","code":"11-6530-058","title":"成品留樣作業辦法","std":"9001","binder":"9-10","dept":"製瓶廠"},{"uid":"xl129","code":"11-6530-059","title":"SBO-4 標籤收縮爐作業辦法","std":"9001","binder":"9-10","dept":"製瓶廠"},{"uid":"xl130","code":"11-6530-060","title":"CP-1 Tornado 標籤收縮爐作業辦法","std":"9001","binder":"9-10","dept":"製瓶廠"},{"uid":"xl131","code":"11-6530-061","title":"作業變更","std":"9001","binder":"9-10","dept":"製瓶廠"},{"uid":"xl132","code":"11-6530-032","title":"原物料入廠檢驗流程","std":"9001","binder":"9-10","dept":"製瓶廠"},{"uid":"xl133","code":"11-6530-033","title":"製程檢驗","std":"9001","binder":"9-10","dept":"製瓶廠"},{"uid":"xl134","code":"11-6530-034","title":"熱販箱 Preform 射出及結晶作業程序","std":"9001","binder":"9-10","dept":"製瓶廠"},{"uid":"xl135","code":"11-6530-035","title":"機台異常檢修作業程序","std":"9001","binder":"9-10","dept":"製瓶廠"},{"uid":"xl136","code":"11-6530-038","title":"原物料與瓶胚異物控制管理","std":"9001","binder":"9-10","dept":"製瓶廠"},{"uid":"xl137","code":"11-6530-039","title":"線上TM菌檢出率過高時相關異常處理","std":"9001","binder":"9-10","stds":["9001","22000"],"binders":["9-10","22-17"],"dept":"製瓶廠","date":"2013-08-12"},{"uid":"xl138","code":"11-6530-040","title":"清潔、消毒用品及器具使用管理規範","std":"9001","binder":"9-10","stds":["9001","22000"],"binders":["9-10","22-10"],"dept":"製瓶廠","date":"2013-07-03"},{"uid":"xl139","code":"11-6530-041","title":"衛生檢查管理辦法","std":"9001","binder":"9-10","stds":["9001","22000"],"binders":["9-10","22-10"],"dept":"製瓶廠","date":"2013-07-03"},{"uid":"xl140","code":"11-6530-042","title":"飛蟲昆蟲及鼠類防治管理辦法","std":"9001","binder":"9-10","stds":["9001","22000"],"binders":["9-10","22-10"],"dept":"製瓶廠","date":"2013-07-03"},{"uid":"xl141","code":"11-6530-043","title":"清洗消毒作業辦法","std":"9001","binder":"9-10","stds":["9001","22000"],"binders":["9-10","22-10"],"dept":"製瓶廠","date":"2013-07-03"},{"uid":"xl142","code":"11-6530-056","title":"生產線異物管制管理","std":"9001","binder":"9-10","dept":"製瓶廠"},{"uid":"xl143","code":"11-6530-057","title":"暫訂管制標準制定與實施","std":"9001","binder":"9-10","dept":"製瓶廠"},{"uid":"xl144","code":"11-6530-016","title":"HTF區作業員巡機紀錄作業","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xl145","code":"11-6530-017","title":"檢驗，量測與試驗設備之管制","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xl146","code":"11-6530-018","title":"產品檢驗與分析","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xl147","code":"11-6530-019","title":"製程異常品管處理辦法","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xl148","code":"11-6530-020","title":"新產品開發試作程序","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xl149","code":"11-6530-023","title":"製瓶課 HTF YC-27D＆PB-6G M/C 換色程序","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xl150","code":"11-6530-025","title":"寶特瓶酯片評價作業","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xl151","code":"11-6530-026","title":"製瓶課 CM、Husky Injection M/C 換色程序","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xl152","code":"11-6530-027","title":"客戶所提供之產品管制作業程序","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xl153","code":"11-6530-028","title":"客戶退貨品處理程序","std":"9001","binder":"9-9","stds":["9001","22000"],"binders":["9-9","22-04"],"dept":"製瓶廠","date":"2004-12-29"},{"uid":"xl154","code":"11-6530-030","title":"QC工程圖","std":"9001","binder":"9-9","stds":["9001","22000"],"binders":["9-9","22-20"],"dept":"製瓶廠","date":"2021-10-15"},{"uid":"xl155","code":"11-6530-001","title":"股長巡機紀錄作業","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xl156","code":"11-6530-002","title":"原料供應","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xl157","code":"11-6530-003","title":"產品鑑別與追溯","std":"9001","binder":"9-9","stds":["9001","22000"],"binders":["9-9","22-21"],"dept":"製瓶廠","date":"2013-09-24"},{"uid":"xl158","code":"11-6530-004","title":"ASB區作業員巡機紀錄作業","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xl159","code":"11-6530-005","title":"班長值班巡機紀錄作業","std":"9001","binder":"9-9","stds":["9001","22000"],"binders":["9-9","22-13"],"dept":"製瓶廠","date":"2013-09-24"},{"uid":"xl160","code":"11-6530-007","title":"Preform 包裝與標示","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xl161","code":"11-6530-008","title":"製程異常處理","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xl162","code":"11-6530-009","title":"PFM區作業員巡機紀錄作業","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xl163","code":"11-6530-010","title":"ASB區包裝與標示","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xl164","code":"11-6530-011","title":"不合格品管制","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xl165","code":"11-6530-012","title":"PET 寶特瓶包裝與標示","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xl166","code":"11-6530-014","title":"SBO區作業員巡機紀錄作業","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xl167","code":"11-6530-015","title":"製瓶課製程管制程序","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xl168","code":"11-3501-012","title":"危險通識計畫","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xl169","code":"11-3501-013","title":"危險性機械級設備操作","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xl170","code":"11-3501-014","title":"各級主管巡檢","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xl171","code":"11-3501-015","title":"自動檢查計畫","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xl172","code":"11-3501-016","title":"作業環境檢測標準","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xl173","code":"11-3501-017","title":"局限空間危害防止計畫","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xl174","code":"11-3501-018","title":"個人防護具管理","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xl175","code":"11-3501-019","title":"採購管理標準","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xl176","code":"11-3501-020","title":"勞工安全衛生委員會之實施","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xl177","code":"11-3501-021","title":"勞工健康保護標準","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xl178","code":"11-3501-022","title":"感電危害預防標準","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xl179","code":"11-3501-023","title":"搬運車輛管理","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xl180","code":"11-3501-024","title":"墜落災害防止計畫","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xl181","code":"11-3501-025","title":"職安衛專責人員之管理","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xl182","code":"11-3501-026","title":"變更管理標準","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xl183","code":"11-2710-003","title":"塑膠群生產目標及目標換算率設定作業","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xl184","code":"11-2710-004","title":"塑膠群新增代號的審查作業","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xl185","code":"11-3400-002","title":"承攬工程者入廠管理作業","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xl186","code":"18-6500-003","title":"食品安全文件、資料與紀錄管制","std":"22000","binder":"22-01","date":"2016-11-03"},{"uid":"xl187","code":"11-6530-050","title":"環安衛、食品安全管理資訊溝通、參與諮詢","std":"22000","binder":"22-02","date":"2013-09-24"},{"uid":"xl188","code":"11-6500-004","title":"風險與營運管理標準作業程序","std":"22000","binder":"22-02","date":"2020-09-17"},{"uid":"xl189","code":"11-6530-051","title":"成品回收作業辦法","std":"22000","binder":"22-03","date":"2013-09-24"},{"uid":"xl190","code":"13-1100-001","title":"客戶服務與市場資訊調查","std":"22000","binder":"22-04","date":"2002-06-26"},{"uid":"xl191","code":"13-3300-004","title":"品質目標的計畫建立","std":"22000","binder":"22-05","date":"2006-07-25"},{"uid":"xl192","code":"11-2282-02","title":"寶特瓶營業處外銷合約審查","std":"22000","binder":"22-06","date":"2016-11-07"},{"uid":"xl193","code":"11-2282-03","title":"寶特瓶營業處內銷作業審查","std":"22000","binder":"22-06","date":"2016-11-07"},{"uid":"xl194","code":"13-1560-001","title":"人員在職教育訓練","std":"22000","binder":"22-07","date":"2026-09-06"},{"uid":"xl195","code":"13-3500-001","title":"緊急應變組織、計畫及處置方法","std":"22000","binder":"22-08","date":"2012-05-21"},{"uid":"xl196","code":"11-6530-045","title":"緊急產品異常回收演練計畫","std":"22000","binder":"22-08","date":"2019-11-14"},{"uid":"xl197","code":"11-6520-001","title":"設備保養","std":"22000","binder":"22-09","date":"1999-02-24"},{"uid":"xl198","code":"11-6530-052","title":"安全與衛生作業辦法","std":"22000","binder":"22-10","date":"2013-09-09"},{"uid":"xl199","code":"11-6530-044","title":"清洗消毒作業辦法","std":"22000","binder":"22-10","date":"2013-07-03"},{"uid":"xl200","code":"11-6530-053","title":"食品衛生相關法規查核作業辦法","std":"22000","binder":"22-14","date":"2013-09-10"},{"uid":"xl201","code":"13-1540-001","title":"採購流程規範","std":"22000","binder":"22-15","date":"2011-04-11"},{"uid":"xl202","code":"P-09","title":"採購管理程序","std":"22000","binder":"22-15"},{"uid":"xl203","code":"P-10","title":"供應商管理程序","std":"22000","binder":"22-15"},{"uid":"xl204","code":"11-3140-004","title":"成品退庫(退貨)作業","std":"22000","binder":"22-16","date":"2002-04-15"},{"uid":"xl205","code":"11-6530-054","title":"食品安全作業辦法","std":"22000","binder":"22-17","date":"2013-08-13"},{"uid":"xl206","code":"11-6530-047","title":"PET 瓶胚類 HACCP","std":"22000","binder":"22-17","date":"2020-09-17"},{"uid":"xl207","code":"11-6530-046","title":"PC-1 檢查機故障處理作業","std":"22000","binder":"22-17","date":"2020-08-17"},{"uid":"xl208","code":"11-6530-048","title":"PET瓶子類 HACCP","std":"22000","binder":"22-17","date":"2013-08-12"},{"uid":"xl209","code":"11-D530-062","title":"成型盒類HACCP計劃書","std":"22000","binder":"22-17","date":"2023-11-07"},{"uid":"xl210","code":"11-6530-055","title":"內部品質環安衛、食品安全全系統稽核","std":"22000","binder":"22-19","date":"2020-08-08","note":"備註：證書"},{"uid":"xl211","code":"18-6500-002","title":"矯正及預防措施","std":"22000","binder":"22-22","date":"2016-11-04"},{"uid":"xl212","code":"13-3300-009","title":"量測儀器設備之管制","std":"22000","binder":"22-23","date":"2005-08-01"}];
+  // 製瓶廠 ISO 文件目錄（由「ISO類別_1.xlsx」轉入，共 211 份；編號、名稱皆照原表，原表未填最終日期）
+  const EXCEL_DOCS = [{"uid":"xn000","code":"11-1100-001","title":"外售客訴作業辦法","std":"9001","binder":"9-0","dept":"新纖"},{"uid":"xn001","code":"11-3120-002","title":"下腳品入庫作業規定","std":"9001","binder":"9-0","dept":"新纖"},{"uid":"xn002","code":"11-3140-001","title":"成品入庫作業","std":"9001","binder":"9-0","stds":["9001","22000"],"binders":["9-0","22-16"],"dept":"新纖"},{"uid":"xn003","code":"11-3140-002","title":"成品出庫作業","std":"9001","binder":"9-0","stds":["9001","22000"],"binders":["9-0","22-16"],"dept":"新纖"},{"uid":"xn004","code":"11-3150-001","title":"請購作業","std":"9001","binder":"9-0","stds":["9001","45001","22000"],"binders":["9-0","45-1","22-13","22-15"],"dept":"新纖"},{"uid":"xn005","code":"11-3150-002","title":"內購驗收作業","std":"9001","binder":"9-0","stds":["9001","45001","22000"],"binders":["9-0","45-1","22-15"],"dept":"新纖"},{"uid":"xn006","code":"11-3150-003","title":"外購驗收作業","std":"9001","binder":"9-0","stds":["9001","45001","22000"],"binders":["9-0","45-1","22-15"],"dept":"新纖"},{"uid":"xn007","code":"11-3150-004","title":"儲存作業","std":"9001","binder":"9-0","stds":["9001","45001"],"binders":["9-0","45-1"],"dept":"新纖"},{"uid":"xn008","code":"11-3150-005","title":"領料作業","std":"9001","binder":"9-0","stds":["9001","45001"],"binders":["9-0","45-1"],"dept":"新纖"},{"uid":"xn009","code":"11-3350-008","title":"品管QC 七大手法統計技術","std":"9001","binder":"9-0","dept":"新纖"},{"uid":"xn010","code":"11-3350-009","title":"檢驗與測試","std":"9001","binder":"9-0","dept":"新纖"},{"uid":"xn011","code":"11-3350-010","title":"檢驗與測試狀況","std":"9001","binder":"9-0","stds":["9001","45001"],"binders":["9-0","45-1"],"dept":"新纖"},{"uid":"xn012","code":"11-3350-017","title":"客訴供應產品之管制","std":"9001","binder":"9-0","dept":"新纖"},{"uid":"xn013","code":"11-3350-011","title":"原物料品質異常通知處理","std":"9001","binder":"9-0","dept":"新纖"},{"uid":"xn014","code":"11-3350-003","title":"進料檢驗","std":"9001","binder":"9-0","dept":"新纖"},{"uid":"xn015","code":"11-3500-007","title":"噪音管制作業程序","std":"9001","binder":"9-0","stds":["9001","14001"],"binders":["9-0","14-3"],"dept":"新纖"},{"uid":"xn016","code":"11-6500-003","title":"瓶廠緊急應變措施","std":"9001","binder":"9-0","stds":["9001","14001"],"binders":["9-0","14-3"],"dept":"新纖"},{"uid":"xn017","code":"11-3100-004","title":"廢棄物管制與監測","std":"9001","binder":"9-0","stds":["9001","14001"],"binders":["9-0","14-3"],"dept":"新纖"},{"uid":"xn018","code":"11-3510-001","title":"消防設備之管理","std":"14001","binder":"14-3","dept":"新纖"},{"uid":"xn019","code":"11-1190-005","title":"資訊需求管制作業","std":"14001","binder":"14-3","dept":"新纖"},{"uid":"xn020","code":"11-1190-006","title":"電腦使用管制作業辦法","std":"14001","binder":"14-3","dept":"新纖"},{"uid":"xn021","code":"11-6520-004","title":"機械課各級幹部工程執掌","std":"14001","binder":"14-3","dept":"新纖"},{"uid":"xn022","code":"11-6530-024","title":"瓶生產課各級幹部工程執掌","std":"14001","binder":"14-3","stds":["14001","9001"],"binders":["14-3","9-9"],"dept":"新纖"},{"uid":"xn023","code":"11-6530-029","title":"寶特瓶處客戶滿意度調查制度","std":"14001","binder":"14-3","stds":["14001","9001"],"binders":["14-3","9-9"],"dept":"新纖"},{"uid":"xn024","code":"11-3110-001","title":"新進人員教育訓練","std":"14001","binder":"14-3","stds":["14001","22000"],"binders":["14-3","22-07"],"dept":"新纖"},{"uid":"xn025","code":"11-6530-031","title":"生產課各職級之勝任度與訓練需求評估","std":"14001","binder":"14-3","stds":["14001","9001"],"binders":["14-3","9-10"],"dept":"新纖"},{"uid":"xn026","code":"11-6520-008","title":"機械課各級之勝任度與訓練需求評估","std":"14001","binder":"14-3","dept":"新纖"},{"uid":"xn027","code":"11-2710-001","title":"第一事業群產銷管理","std":"14001","binder":"14-3","stds":["14001","45001","22000"],"binders":["14-3","45-1","22-06","22-13"],"dept":"新纖"},{"uid":"xn028","code":"11-6530-036","title":"品管組各級工作職掌","std":"14001","binder":"14-3","stds":["14001","9001"],"binders":["14-3","9-10"],"dept":"新纖"},{"uid":"xn029","code":"11-6530-037","title":"品管組各級之勝任度與訓練需求評估","std":"14001","binder":"14-3","stds":["14001","9001"],"binders":["14-3","9-10"],"dept":"新纖"},{"uid":"xn030","code":"11-3200-004","title":"能資源管理程序書","std":"14001","binder":"14-3","dept":"新纖"},{"uid":"xn031","code":"11-3500-008","title":"揮發性有機物管制作業程式","std":"14001","binder":"14-3","dept":"新纖"},{"uid":"xn032","code":"11-3500-009","title":"粉塵作業管制程序","std":"14001","binder":"14-3","dept":"新纖"},{"uid":"xn033","code":"11-3120-005","title":"儲槽管制","std":"14001","binder":"14-3","dept":"新纖"},{"uid":"xn034","code":"11-3200-006","title":"公用處廢水管制","std":"14001","binder":"14-3","stds":["14001","45001"],"binders":["14-3","45-1"],"dept":"新纖"},{"uid":"xn035","code":"11-3360-005","title":"有毒物質運作管制與監測 (危險物質及有害物質)","std":"14001","binder":"14-3","dept":"新纖"},{"uid":"xn036","code":"11-3500-010","title":"環境管理資訊之表達與溝通 (網路版)","std":"14001","binder":"14-3","dept":"新纖"},{"uid":"xn037","code":"11-3600-009","title":"儀電處緊急應變措施","std":"14001","binder":"14-3","stds":["14001","45001"],"binders":["14-3","45-1"],"dept":"新纖"},{"uid":"xn038","code":"01-6520-035","title":"事業廢棄物暫存作業","std":"9001","binder":"9-1","dept":"製瓶廠"},{"uid":"xn039","code":"01-6530-061","title":"PC-1 開車程序","std":"9001","binder":"9-1","dept":"製瓶廠"},{"uid":"xn040","code":"01-6530-063","title":"BT-1 開車程序","std":"9001","binder":"9-1","dept":"製瓶廠","note":"⚠ 此編號與「BT-1 停車程序」重複，請確認"},{"uid":"xn041","code":"01-6530-063","title":"BT-1 停車程序","std":"9001","binder":"9-1","dept":"製瓶廠","note":"⚠ 此編號與「BT-1 開車程序」重複，請確認"},{"uid":"xn042","code":"01-6530-064","title":"Husky-HyPET225 開車程序","std":"9001","binder":"9-1","dept":"製瓶廠"},{"uid":"xn043","code":"01-6530-065","title":"Husky-HyPET225 停車程序","std":"9001","binder":"9-1","dept":"製瓶廠"},{"uid":"xn044","code":"01-6530-066","title":"CP-1 M/C 開車程序","std":"9001","binder":"9-1","dept":"製瓶廠"},{"uid":"xn045","code":"01-6530-067","title":"CP-1 M/C 停車程序","std":"9001","binder":"9-1","dept":"製瓶廠"},{"uid":"xn046","code":"01-6530-068","title":"Husky-HyPET300 開車程序","std":"9001","binder":"9-1","dept":"製瓶廠"},{"uid":"xn047","code":"01-6530-069","title":"Husky-HyPET300 停車程序","std":"9001","binder":"9-1","dept":"製瓶廠"},{"uid":"xn048","code":"01-6530-070","title":"琮偉 JW-230 PETWSi40e 開車程序","std":"9001","binder":"9-1","dept":"製瓶廠"},{"uid":"xn049","code":"01-6530-071","title":"琮偉 JW-230 PETWSi40e 停車程序","std":"9001","binder":"9-1","dept":"製瓶廠"},{"uid":"xn050","code":"01-6530-072","title":"P＆S 檢查機開停車程序","std":"9001","binder":"9-1","dept":"製瓶廠"},{"uid":"xn051","code":"02-6530-002","title":"成品品管檢測","std":"9001","binder":"9-2","dept":"製瓶廠"},{"uid":"xn052","code":"02-6530-003","title":"檢測AA之取樣標準","std":"9001","binder":"9-2","dept":"製瓶廠"},{"uid":"xn053","code":"02-6540-002","title":"SHEET 成品送檢","std":"9001","binder":"9-2","dept":"製瓶廠"},{"uid":"xn054","code":"02-3350-001","title":"製瓶工程","std":"9001","binder":"9-2","dept":"製瓶廠"},{"uid":"xn055","code":"05-6530-003","title":"PERPEND ICULARITY 測定標準","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xn056","code":"05-6530-004","title":"滿胃容量測定","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xn057","code":"05-6530-006","title":"CO2 RETENTION 試驗方法","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xn058","code":"05-6530-007","title":"CO2 配置法","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xn059","code":"05-6530-010","title":"爆破試驗操作方法","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xn060","code":"05-6530-011","title":"壓力瓶耐熱性試驗方法","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xn061","code":"05-6530-012","title":"A-A 精餾操作方法","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xn062","code":"05-6530-013","title":"A-A 標定操作方法","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xn063","code":"05-6530-014","title":"紅外線厚度計操作方法","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xn064","code":"05-6530-017","title":"耐熱瓶試驗操作基準","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xn065","code":"05-6530-019","title":"偏心度測量方法","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xn066","code":"05-6530-020","title":"DROP IMPACT 試驗方法","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xn067","code":"05-6530-021","title":"耐熱瓶減壓強度試驗操作標準","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xn068","code":"05-6530-022","title":"TOP LOAD 試驗操作標準","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xn069","code":"05-6530-023","title":"ONE PIECE 汽水瓶CRACKING試驗操作標準","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xn070","code":"05-6530-024","title":"ONE PIECE 汽水瓶 BASE ROLL OUT試驗操作標準","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xn071","code":"05-6530-025","title":"AUTO SYSTEM XLGE 操作標準","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xn072","code":"05-6530-026","title":"瓶胚粉碎方法測量 A-A","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xn073","code":"05-6530-027","title":"比重天平測量結晶度操作方法","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xn074","code":"05-6530-028","title":"碳酸飲料 CO2 GV 測試操作標準","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xn075","code":"05-6530-029","title":"磁性鋼珠測厚計操作方法","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xn076","code":"05-6530-030","title":"SECRE SEAL TESTER 操作方法","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xn077","code":"05-6505-003","title":"UV CUT 操作標準","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xn078","code":"05-6505-002","title":"碳酸飲料入庫 GV值檢驗","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xn079","code":"05-6505-004","title":"瓶口尺寸測量儀操作標準","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xn080","code":"05-6505-005","title":"水分測定儀操作方法","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xn081","code":"05-6505-006","title":"瓶子、瓶胚留樣箱作業標準","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xn082","code":"05-D550-001","title":"熱收縮率檢測","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xn083","code":"05-D550-002","title":"CO2 壓力表校正","std":"9001","binder":"9-3","dept":"製瓶廠"},{"uid":"xn084","code":"06-6530-016","title":"恆溫恆濕箱","std":"9001","binder":"9-4","dept":"製瓶廠"},{"uid":"xn085","code":"06-6530-017","title":"表面溫度計","std":"9001","binder":"9-4","dept":"製瓶廠"},{"uid":"xn086","code":"06-6530-019","title":"塊規","std":"9001","binder":"9-4","dept":"製瓶廠"},{"uid":"xn087","code":"06-6530-020","title":"熱水保溫箱","std":"9001","binder":"9-4","dept":"製瓶廠"},{"uid":"xn088","code":"06-6530-021","title":"Chaillon TCD200","std":"9001","binder":"9-4","dept":"製瓶廠"},{"uid":"xn089","code":"07-6530-053","title":"32g PCO-HR Preform","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xn090","code":"07-6530-054","title":"耐熱瓶 1.0L","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xn091","code":"07-6530-049","title":"28g 30g 32g 36.2g 45.5g","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xn092","code":"07-6530-052","title":"19g 21g (PCO-1810) 19.5g","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xn093","code":"07-6530-055","title":"醬油瓶(統萬)","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xn094","code":"07-6530-056","title":"35g 43g 52g PCO-38 Preform","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xn095","code":"07-6530-057","title":"24g 27.5g PCO-38 Preform","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xn096","code":"07-6530-058","title":"27g 中溫胚 Preform","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xn097","code":"07-6530-036","title":"ONE Piece Bottle 0.6L","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xn098","code":"07-6530-037","title":"ONE Piece Bottle 1.0L","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xn099","code":"07-6530-038","title":"ONE Piece Bottle 1.25L","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xn100","code":"07-6530-039","title":"ONE Piece Bottle 2.0L","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xn101","code":"07-6530-041","title":"ONE Piece Bottle 0.63L","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xn102","code":"07-6530-044","title":"ONE Piece Bottle 1.5L (Banaqua)","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xn103","code":"07-6530-045","title":"49.5-PCO-Preform / 50g-ALCOA-Preform","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xn104","code":"07-6530-046","title":"54.5-PCO-Preform / 56.5g-ALCOA-Preform","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xn105","code":"07-6530-047","title":"25g-PCO-Preform","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xn106","code":"07-6530-048","title":"54.5g-PCO-Preform","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xn107","code":"07-6530-050","title":"ONE-Piece Bottle 耐熱瓶","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xn108","code":"07-6530-051","title":"21g 23g 25g PCO-Preform","std":"9001","binder":"9-5","dept":"製瓶廠"},{"uid":"xn109","code":"08-6530-001","title":"BT BOTTLE 檢驗標準","std":"9001","binder":"9-6","dept":"製瓶廠"},{"uid":"xn110","code":"08-6530-002","title":"PREFORM 檢驗標準","std":"9001","binder":"9-6","dept":"製瓶廠"},{"uid":"xn111","code":"08-6530-004","title":"製瓶課 1.6L把手檢驗標準","std":"9001","binder":"9-6","dept":"製瓶廠"},{"uid":"xn112","code":"08-6530-005","title":"SBO BOTTLE 檢驗標準","std":"9001","binder":"9-6","dept":"製瓶廠"},{"uid":"xn113","code":"08-6530-006","title":"HOT FILLING BOTTLE 檢驗標準","std":"9001","binder":"9-6","dept":"製瓶廠"},{"uid":"xn114","code":"09-3350-020","title":"瓶蓋","std":"9001","binder":"9-7","dept":"製瓶廠"},{"uid":"xn115","code":"09-3350-021","title":"PET 打包帶","std":"9001","binder":"9-7","dept":"製瓶廠"},{"uid":"xn116","code":"09-3350-029","title":"PET瓶 PVC標籤","std":"9001","binder":"9-7","dept":"製瓶廠"},{"uid":"xn117","code":"09-3350-031","title":"OPP標籤","std":"9001","binder":"9-7","dept":"製瓶廠"},{"uid":"xn118","code":"09-3350-032","title":"汽水瓶紙箱","std":"9001","binder":"9-7","dept":"製瓶廠"},{"uid":"xn119","code":"09-3350-011","title":"PET瓶珍珠模標籤","std":"9001","binder":"9-7","dept":"製瓶廠"},{"uid":"xn120","code":"09-3350-040","title":"塑膠棧板","std":"9001","binder":"9-7","dept":"製瓶廠"},{"uid":"xn121","code":"09-3350-033","title":"包裝用PE膜","std":"9001","binder":"9-7","dept":"製瓶廠"},{"uid":"xn122","code":"10-6530-001","title":"SBO BOTTLE","std":"9001","binder":"9-8","dept":"製瓶廠"},{"uid":"xn123","code":"10-6530-002","title":"BT BOTTLE","std":"9001","binder":"9-8","dept":"製瓶廠"},{"uid":"xn124","code":"10-6530-003","title":"PREFORM","std":"9001","binder":"9-8","dept":"製瓶廠"},{"uid":"xn125","code":"10-6530-004","title":"HOT FILLING BOTTLE","std":"9001","binder":"9-8","dept":"製瓶廠"},{"uid":"xn126","code":"10-6530-006","title":"耐熱瓶耐熱性判定標準","std":"9001","binder":"9-8","dept":"製瓶廠"},{"uid":"xn127","code":"11-6530-058","title":"成品留樣作業辦法","std":"9001","binder":"9-10","dept":"製瓶廠"},{"uid":"xn128","code":"11-6530-059","title":"SBO-4 標籤收縮爐作業辦法","std":"9001","binder":"9-10","dept":"製瓶廠"},{"uid":"xn129","code":"11-6530-060","title":"CP-1 Tornado 標籤收縮爐作業辦法","std":"9001","binder":"9-10","dept":"製瓶廠"},{"uid":"xn130","code":"11-6530-061","title":"作業變更","std":"9001","binder":"9-10","dept":"製瓶廠"},{"uid":"xn131","code":"11-6530-032","title":"原物料入廠檢驗流程","std":"9001","binder":"9-10","dept":"製瓶廠"},{"uid":"xn132","code":"11-6530-033","title":"製程檢驗","std":"9001","binder":"9-10","dept":"製瓶廠"},{"uid":"xn133","code":"11-6530-034","title":"熱販箱 Preform 射出及結晶作業程序","std":"9001","binder":"9-10","dept":"製瓶廠"},{"uid":"xn134","code":"11-6530-035","title":"機台異常檢修作業程序","std":"9001","binder":"9-10","dept":"製瓶廠"},{"uid":"xn135","code":"11-6530-038","title":"原物料與瓶胚異物控制管理","std":"9001","binder":"9-10","dept":"製瓶廠"},{"uid":"xn136","code":"11-6530-039","title":"線上TM菌檢出率過高時相關異常處理","std":"9001","binder":"9-10","stds":["9001","22000"],"binders":["9-10","22-17"],"dept":"製瓶廠"},{"uid":"xn137","code":"11-6530-040","title":"清潔、消毒用品及器具使用管理規範","std":"9001","binder":"9-10","stds":["9001","22000"],"binders":["9-10","22-10"],"dept":"製瓶廠"},{"uid":"xn138","code":"11-6530-041","title":"衛生檢查管理辦法","std":"9001","binder":"9-10","stds":["9001","22000"],"binders":["9-10","22-10"],"dept":"製瓶廠"},{"uid":"xn139","code":"11-6530-042","title":"飛蟲昆蟲及鼠類防治管理辦法","std":"9001","binder":"9-10","stds":["9001","22000"],"binders":["9-10","22-10"],"dept":"製瓶廠"},{"uid":"xn140","code":"11-6530-043","title":"清洗消毒作業辦法","std":"9001","binder":"9-10","stds":["9001","22000"],"binders":["9-10","22-10"],"dept":"製瓶廠"},{"uid":"xn141","code":"11-6530-056","title":"生產線異物管制管理","std":"9001","binder":"9-10","dept":"製瓶廠"},{"uid":"xn142","code":"11-6530-057","title":"暫訂管制標準制定與實施","std":"9001","binder":"9-10","dept":"製瓶廠"},{"uid":"xn143","code":"11-6530-016","title":"HTF區作業員巡機紀錄作業","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xn144","code":"11-6530-017","title":"檢驗，量測與試驗設備之管制","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xn145","code":"11-6530-018","title":"產品檢驗與分析","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xn146","code":"11-6530-019","title":"製程異常品管處理辦法","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xn147","code":"11-6530-020","title":"新產品開發試作程序","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xn148","code":"11-6530-023","title":"製瓶課 HTF YC-27D＆PB-6G M/C 換色程序","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xn149","code":"11-6530-025","title":"寶特瓶酯片評價作業","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xn150","code":"11-6530-026","title":"製瓶課 CM、Husky Injection M/C 換色程序","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xn151","code":"11-6530-027","title":"客戶所提供之產品管制作業程序","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xn152","code":"11-6530-028","title":"客戶退貨品處理程序","std":"9001","binder":"9-9","stds":["9001","22000"],"binders":["9-9","22-04"],"dept":"製瓶廠"},{"uid":"xn153","code":"11-6530-030","title":"QC工程圖","std":"9001","binder":"9-9","stds":["9001","22000"],"binders":["9-9","22-20"],"dept":"製瓶廠"},{"uid":"xn154","code":"11-6530-001","title":"股長巡機紀錄作業","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xn155","code":"11-6530-002","title":"原料供應","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xn156","code":"11-6530-003","title":"產品鑑別與追溯","std":"9001","binder":"9-9","stds":["9001","22000"],"binders":["9-9","22-21"],"dept":"製瓶廠"},{"uid":"xn157","code":"11-6530-004","title":"ASB區作業員巡機紀錄作業","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xn158","code":"11-6530-005","title":"班長值班巡機紀錄作業","std":"9001","binder":"9-9","stds":["9001","22000"],"binders":["9-9","22-13"],"dept":"製瓶廠"},{"uid":"xn159","code":"11-6530-007","title":"Preform 包裝與標示","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xn160","code":"11-6530-008","title":"製程異常處理","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xn161","code":"11-6530-009","title":"PFM區作業員巡機紀錄作業","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xn162","code":"11-6530-010","title":"ASB區包裝與標示","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xn163","code":"11-6530-011","title":"不合格品管制","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xn164","code":"11-6530-012","title":"PET 寶特瓶包裝與標示","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xn165","code":"11-6530-014","title":"SBO區作業員巡機紀錄作業","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xn166","code":"11-6530-015","title":"製瓶課製程管制程序","std":"9001","binder":"9-9","dept":"製瓶廠"},{"uid":"xn167","code":"11-3501-012","title":"危險通識計畫","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xn168","code":"11-3501-013","title":"危險性機械級設備操作","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xn169","code":"11-3501-014","title":"各級主管巡檢","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xn170","code":"11-3501-015","title":"自動檢查計畫","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xn171","code":"11-3501-016","title":"作業環境檢測標準","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xn172","code":"11-3501-017","title":"局限空間危害防止計畫","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xn173","code":"11-3501-018","title":"個人防護具管理","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xn174","code":"11-3501-019","title":"採購管理標準","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xn175","code":"11-3501-020","title":"勞工安全衛生委員會之實施","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xn176","code":"11-3501-021","title":"勞工健康保護標準","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xn177","code":"11-3501-022","title":"感電危害預防標準","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xn178","code":"11-3501-023","title":"搬運車輛管理","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xn179","code":"11-3501-024","title":"墜落災害防止計畫","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xn180","code":"11-3501-025","title":"職安衛專責人員之管理","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xn181","code":"11-3501-026","title":"變更管理標準","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xn182","code":"11-2710-003","title":"塑膠群生產目標及目標換算率設定作業","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xn183","code":"11-2710-004","title":"塑膠群新增代號的審查作業","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xn184","code":"11-3400-002","title":"承攬工程者入廠管理作業","std":"45001","binder":"45-1","dept":"工安組"},{"uid":"xn185","code":"18-6500-003","title":"食品安全文件、資料與紀錄管制","std":"22000","binder":"22-01"},{"uid":"xn186","code":"11-6530-050","title":"環安衛、食品安全管理資訊溝通、參與諮詢","std":"22000","binder":"22-02"},{"uid":"xn187","code":"11-6500-004","title":"風險與營運管理標準作業程序","std":"22000","binder":"22-02"},{"uid":"xn188","code":"11-6530-051","title":"成品回收作業辦法","std":"22000","binder":"22-03"},{"uid":"xn189","code":"13-1100-001","title":"客戶服務與市場資訊調查","std":"22000","binder":"22-04"},{"uid":"xn190","code":"13-3300-004","title":"品質目標的計畫建立","std":"22000","binder":"22-05"},{"uid":"xn191","code":"11-2282-02","title":"寶特瓶營業處外銷合約審查","std":"22000","binder":"22-06"},{"uid":"xn192","code":"11-2282-03","title":"寶特瓶營業處內銷作業審查","std":"22000","binder":"22-06"},{"uid":"xn193","code":"13-1560-001","title":"人員在職教育訓練","std":"22000","binder":"22-07"},{"uid":"xn194","code":"13-3500-001","title":"緊急應變組織、計畫及處置方法","std":"22000","binder":"22-08"},{"uid":"xn195","code":"11-6530-045","title":"緊急產品異常回收演練計畫","std":"22000","binder":"22-08"},{"uid":"xn196","code":"11-6520-001","title":"設備保養","std":"22000","binder":"22-09"},{"uid":"xn197","code":"11-6530-052","title":"安全與衛生作業辦法","std":"22000","binder":"22-10"},{"uid":"xn198","code":"11-6530-044","title":"清洗消毒作業辦法","std":"22000","binder":"22-10"},{"uid":"xn199","code":"11-6530-053","title":"食品衛生相關法規查核作業辦法","std":"22000","binder":"22-14"},{"uid":"xn200","code":"13-1540-001","title":"採購流程規範","std":"22000","binder":"22-15"},{"uid":"xn201","code":"P-09","title":"採購管理程序","std":"22000","binder":"22-15"},{"uid":"xn202","code":"P-10","title":"供應商管理程序","std":"22000","binder":"22-15"},{"uid":"xn203","code":"11-3140-004","title":"成品退庫(退貨)作業","std":"22000","binder":"22-16"},{"uid":"xn204","code":"11-6530-054","title":"食品安全作業辦法","std":"22000","binder":"22-17"},{"uid":"xn205","code":"11-6530-047","title":"PET 瓶胚類 HACCP","std":"22000","binder":"22-17"},{"uid":"xn206","code":"11-6530-046","title":"PC-1 檢查機故障處理作業","std":"22000","binder":"22-17"},{"uid":"xn207","code":"11-6530-048","title":"PET瓶子類 HACCP","std":"22000","binder":"22-17"},{"uid":"xn208","code":"11-6530-055","title":"內部品質環安衛、食品安全全系統稽核","std":"22000","binder":"22-19","note":"備註：證書"},{"uid":"xn209","code":"18-6500-002","title":"矯正及預防措施","std":"22000","binder":"22-22"},{"uid":"xn210","code":"13-3300-009","title":"量測儀器設備之管制","std":"22000","binder":"22-23"}];
   const EXCEL_DESC = {"9-A":["過程導向 / 環境考量"],"14-1":["過程導向 / 環境考量"],"14-2":["環境改善方案報告書 / 會議記錄"],"9-F":["標準及法規最新版本確認紀錄"],"22-00":["食品安全手冊"]};
   const excelDoc = d => Object.assign({cycle:12, status:'現行有效', retention:'', clause:'', forms:'', note:'', dept:'', date:'', src:'excel'}, JSON.parse(JSON.stringify(d)), {binderAuto:false});
   // 合併 Excel 目錄：已存在的同編號同名稱文件只補空白欄位與存放位置，不覆蓋手動資料
+  function excelMatch(list, x){
+    const c = x.code.toUpperCase(), titles = [x.title, ...(x.aka || [])];
+    const hit = list.find(d => d.code.toUpperCase() === c && titles.includes(d.title));
+    if (hit) return hit;
+    if (EXCEL_DOCS.filter(y => y.code.toUpperCase() === c).length === 1) return list.find(d => d.code.toUpperCase() === c && (d.src === 'excel' || /^x[lmn]/.test(d.uid || '')));
+    return null;
+  }
+  function syncExcel(list, prune){
+    let add = 0, upd = 0, rm = 0; const used = new Set();
+    EXCEL_DOCS.forEach(x => {
+      const ex = excelMatch(list, x);
+      if (!ex){ const nd = excelDoc(x); list.push(nd); used.add(nd); add++; return; }
+      used.add(ex);
+      const xb = x.binders || [x.binder], xs = x.stds || [x.std];
+      if (!ex.userEdited){
+        ex.title = x.title; ex.date = x.date || ''; ex.note = x.note || ''; ex.aka = x.aka || [];
+        ex.binders = [...xb]; if (!ex.binder || ex.binderAuto || !xb.includes(ex.binder)){ ex.binder = x.binder; ex.binderAuto = false; }
+        ex.std = xs.includes(ex.std) ? ex.std : x.std; ex.stds = [...new Set([ex.std, ...xs])];
+        if (x.dept && !ex.dept) ex.dept = x.dept; ex.src = 'excel';
+      } else {
+        ex.binders = [...new Set([...(ex.binders || (ex.binder ? [ex.binder] : [])), ...xb])];
+        ex.stds = [...new Set([ex.std, ...(ex.stds || []), ...xs])];
+      }
+      upd++;
+    });
+    if (prune){   // 舊目錄有、新目錄已刪除的文件：未手動修改、未連結檔案者移除
+      for (let i = list.length - 1; i >= 0; i--){
+        const d = list[i];
+        if ((d.src === 'excel' || /^x[lmn]/.test(d.uid || '')) && !used.has(d) && !d.userEdited && !(d.links && d.links.length)){ list.splice(i, 1); rm++; }
+      }
+    }
+    return {add, upd, rm};
+  }
   function mergeExcel(list){
     let add = 0, upd = 0;
     EXCEL_DOCS.forEach(x => {
@@ -1006,7 +1068,11 @@ textarea.in.auto{min-height:46px;resize:none;overflow:hidden;overflow-wrap:anywh
     mergeExcel(docs);
     store.set(KEY.docs, docs);   // 立即存檔，避免合併結果遺失
   }
-  store.set('isoExcelV', 1);
+  if (store.get('isoExcelV', 0) < 3 && store.get(KEY.docs, null)){
+    // 課長指示：改以「ISO類別_1.xlsx」完全取代目錄（名稱、日期、存放位置照新表；新表沒有的文件移除）
+    const r = syncExcel(docs, true); store.set(KEY.docs, docs); store.set('isoExcelR3', r);
+  }
+  store.set('isoExcelV', 3);
   let filter = Object.assign({std:'',due:'',q:'',scope:'all'}, store.get(KEY.filter, {}));
   filter.due = '';
   if (filter.std === '14001' || filter.std === '45001') filter.std = '14001|45001';
@@ -1134,7 +1200,7 @@ textarea.in.auto{min-height:46px;resize:none;overflow:hidden;overflow-wrap:anywh
   function docFields(d){
     return [
       {v:norm(d.code), c:compact(d.code), w:10, k:'code'},
-      {v:norm(d.title), c:compact(d.title), w:6, k:'title'},
+      {v:norm(d.title + ' ' + (d.aka || []).join(' ')), c:compact(d.title), w:6, k:'title'},   // 舊名稱也能搜尋
       {v:norm(d.clause), c:compact(d.clause), w:4, k:'clause'},
       {v:norm(d.dept), c:compact(d.dept), w:3, sc:'dept'},
       {v:norm(d.forms), c:compact(d.forms), w:3},
@@ -1312,8 +1378,8 @@ textarea.in.auto{min-height:46px;resize:none;overflow:hidden;overflow-wrap:anywh
     openSheet(r.dataset.id);
   });
   $('#btnSample').onclick = async () => {
-    if (!(await askConfirm('重新載入「ISO類別.xlsx」的文件目錄？\n缺少的文件會補回，已存在的只補空白欄位，不會刪除或覆蓋您改過的資料。', {ok:'載入'}))) return;
-    const r = mergeExcel(docs); saveDocs(); renderList(); toast(`已載入：新增 ${r.add} 份、更新 ${r.upd} 份`);
+    if (!(await askConfirm('重新載入「ISO類別_1.xlsx」的文件目錄？\n缺少的文件會補回，已存在的只補空白欄位，不會刪除或覆蓋您改過的資料。', {ok:'載入'}))) return;
+    const r = syncExcel(docs, false); saveDocs(); renderList(); toast(`已載入：新增 ${r.add} 份、更新 ${r.upd} 份`);
   };
   document.addEventListener('keydown', e => {
     if (e.key === '/' && !$('#pageList').hidden && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)){ e.preventDefault(); qIn.focus(); }
@@ -1345,7 +1411,7 @@ textarea.in.auto{min-height:46px;resize:none;overflow:hidden;overflow-wrap:anywh
   applyCols();
 
   /* ---------- 頁面切換（網址 #form #risk #ready #rev = 工具頁） ---------- */
-  const TOOLS = {form:'新增文件', risk:'風險評估', ready:'稽核準備度', rev:'審查日試算', sync:'資料夾匯入', map:'目錄對照'};
+  const TOOLS = {form:'新增文件', risk:'風險評估', ready:'稽核準備度', rev:'審查日試算', sync:'資料夾匯入', map:'目錄對照', reg:'登錄檢查'};
   let curTool = 'form', fromList = false;
   function toolTitle(){ return curTool === 'form' && editingId ? `編輯 ${$('#fCode').value || ''}`.trim() : TOOLS[curTool]; }
   function setTool(t){
@@ -1355,6 +1421,7 @@ textarea.in.auto{min-height:46px;resize:none;overflow:hidden;overflow-wrap:anywh
     $('#toolTitle').textContent = toolTitle();
     if (curTool === 'sync' && window.__autoGrowAll) requestAnimationFrame(window.__autoGrowAll);
     if (curTool === 'map' && window.__renderMap) window.__renderMap();
+    if (curTool === 'reg' && window.__renderReg) window.__renderReg();
     if (curTool !== 'form') store.set(KEY.tool, curTool);
   }
   // 在預覽視窗（iframe / about:srcdoc）裡，修改網址可能被瀏覽器拒絕；
@@ -1490,7 +1557,7 @@ textarea.in.auto{min-height:46px;resize:none;overflow:hidden;overflow-wrap:anywh
     if (ei > -1){
       const old = docs[ei];
       if (old.binder !== o.binder){ o.binders = [...new Set([o.binder, ...(old.binders || []).filter(b => b !== old.binder)].filter(Boolean))]; o.binderAuto = false; }
-      docs[ei] = {...old, ...o}; toast(`已更新 ${o.code}`);
+      docs[ei] = {...old, ...o, userEdited:true}; toast(`已更新 ${o.code}`);   // 標記為手動修改，之後更新目錄時不會覆蓋
     }
     else { o.uid = 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2,6); docs.push(o); toast(editingId ? `原文件已不存在，已另存為新文件 ${o.code}` : `已儲存 ${o.code}`); }
     saveDocs(); store.set(KEY.last, (({uid, ...rest}) => rest)(o)); pushHist(o);
@@ -1609,14 +1676,26 @@ textarea.in.auto{min-height:46px;resize:none;overflow:hidden;overflow-wrap:anywh
     sync.root = v; if (confirmed) sync.rootOk = true;
     $('#sRoot').value = v; window.__autoGrowAll && window.__autoGrowAll(); store.set(KEY.sync, sync);
     const r = $('#sRoot'); r.classList.remove('flash'); void r.offsetWidth; r.classList.add('flash');
+    updateRootWarn();
   }
-  async function alignRoot(name){
+  // 位置看起來不完整（只有「磁碟＋一層」，例：D:\2025-ISO 資料）或尚未確認過 → 顯示警示
+  const rootSuspicious = () => (sync.root || '').split(/[\\\/]+/).filter(Boolean).length <= 2;
+  function updateRootWarn(){
+    const w = $('#sRootWarn'); if (!w) return;
+    const bad = rootSuspicious();
+    w.hidden = !bad;
+    if (bad) w.textContent = `⚠ 目前的位置「${sync.root}」看起來不完整。請從檔案總管上方網址列複製正確路徑，貼到上方欄位（例：D:\\SK新纖\\J-ISO驗證文件\\2025-ISO 資料）。`;
+  }
+  async function alignRoot(name, force){
     if (!name) return;
     const segs = sync.root.split(/[\\\/]+/).filter(Boolean);
+    const segN = x => String(x || '').split(/[\\\/]+/).filter(Boolean).length;
     const known = (sync.known || {})[name];
-    if (known){ if (known !== sync.root){ setRoot(known, true); toast(`資料夾位置已更新為 ${known}`); } return; }
+    // 記住的位置必須完整（磁碟以下至少兩層），不完整的舊紀錄不採用、改為詢問
+    if (known && segN(known) > 2){ if (known !== sync.root){ setRoot(known, true); toast(`資料夾位置已更新為 ${known}`); } return; }
+    if (known){ delete sync.known[name]; store.set(KEY.sync, sync); }
     // 已確認過、且名稱相符 → 不用再問
-    if (segs[segs.length - 1] === name && sync.rootOk && segs.length > 2) return;
+    if (!force && segs[segs.length - 1] === name && sync.rootOk && segs.length > 2) return;
     const i = segs.lastIndexOf(name);
     const child = segs.concat(name).join('\\');
     const sib = (segs.length > 1 ? segs.slice(0, -1) : segs).concat(name).join('\\');
@@ -1630,7 +1709,7 @@ textarea.in.auto{min-height:46px;resize:none;overflow:hidden;overflow-wrap:anywh
     const val = String(v || '').trim().replace(/^["'「]+|["'」]+$/g, '').replace(/\//g, '\\').replace(/\\+$/, '');
     if (!val){ toast('未更新資料夾位置，請記得到「文件資料夾位置」欄位確認'); return; }
     setRoot(val, true);
-    sync.known = Object.assign({}, sync.known, {[name]: val}); store.set(KEY.sync, sync);
+    sync.known = Object.assign({}, sync.known, {[name]: val}); store.set(KEY.sync, sync); updateRootWarn();
     toast(baseName(val) === name ? `資料夾位置已更新為 ${val}` : `已更新為 ${val}（提醒：路徑最後一層和選取的資料夾「${name}」名稱不同）`);
   }
   let dirHandle = null, sessionFiles = new Map(), pending = null;
@@ -1662,9 +1741,14 @@ textarea.in.auto{min-height:46px;resize:none;overflow:hidden;overflow-wrap:anywh
     if (!DOC_EXT.test(fname)) return null;                                       // 非文件格式，不列入
     const raw = fname.replace(DOC_EXT, '');
     let base = raw.replace(/^ISO\s?\d{4,5}[\s_\-－]*/i, '');
-    const m = base.match(/^\s*([A-Za-z]{1,5})[\s_\-－]?(\d{2,4}(?:[\-_]\d{1,3})?)(?!\d)/);
-    if (!m) return {skip:'檔名開頭找不到文件編號', rel};
-    const prefix = m[1].toUpperCase(), code = `${prefix}-${m[2].replace('_','-')}`;
+    // 支援兩種編號：貴廠目錄格式「09-6530-001」「05-D550-001」，以及「QP-801」「P-09」這類英文開頭
+    let m = base.match(/^\s*((?:\d{2}|[A-Za-z]{1,2})[\-_－](?:[0-9A-Za-z]{4})[\-_－]\d{2,3})(?!\d)/), prefix, code;
+    if (m){ code = m[1].toUpperCase().replace(/[_－]/g, '-'); prefix = code.split('-')[0]; }
+    else {
+      m = base.match(/^\s*([A-Za-z]{1,5})[\s_\-－]?(\d{2,4}(?:[\-_]\d{1,3})?)(?!\d)/);
+      if (!m) return {skip:'檔名開頭找不到文件編號', rel};
+      prefix = m[1].toUpperCase(); code = `${prefix}-${m[2].replace('_','-')}`;
+    }
     let rest = ' ' + base.slice(m[0].length) + ' ';
 
     let ver = '', vm = rest.match(/[\s_\-(（\[](?:V|Ver\.?|Rev\.?|R)\s?(\d+(?:\.\d+)?)(?=[\s_\-)）\]])/i);
@@ -1749,7 +1833,8 @@ textarea.in.auto{min-height:46px;resize:none;overflow:hidden;overflow-wrap:anywh
   function saveSyncSettings(){ sync.root = $('#sRoot').value.trim() || DEFAULT_ROOT; sync.map = $('#sMap').value.trim(); store.set(KEY.sync, sync); }
   $('#sRoot').addEventListener('change', () => {
     const v = $('#sRoot').value.trim().replace(/\\+$/, ''); if (!v) return;
-    sync.rootOk = true; sync.known = Object.assign({}, sync.known, {[baseName(v)]: v}); store.set(KEY.sync, sync);
+    const full = v.split(/[\\\/]+/).filter(Boolean).length > 2;
+    sync.rootOk = full; if (full) sync.known = Object.assign({}, sync.known, {[baseName(v)]: v}); store.set(KEY.sync, sync); updateRootWarn();
   });
   function syncInfoText(){
     if (!sync.last) return '檔案只在這台電腦上讀取，不會上傳到任何地方';
@@ -1803,13 +1888,16 @@ textarea.in.auto{min-height:46px;resize:none;overflow:hidden;overflow-wrap:anywh
   let pendingRootName = '';
   $('#sResync').onclick = async () => {
     if (!dirHandle) return;
-    if (!(await ensurePerm(dirHandle))){ toast('需要允許讀取資料夾才能同步'); return; }
+    if (!(await ensurePerm(dirHandle))){ toast('需要允許讀取資料夾才能同步'); return; }   // 先取得授權（需在點擊當下）
+    await alignRoot(dirHandle.name);
     scanHandle(dirHandle);
   };
   $('#sCancel').onclick = () => { pending = null; $('#sPreview').hidden = true; $('#sInfo').textContent = syncInfoText(); updatePickBtn(); };
   $('#sClearSample').addEventListener('change', () => { if (pending) showPreview(pending); });
-  $('#sImport').onclick = () => {
+  $('#sImport').onclick = async () => {
     if (!pending) return;
+    saveSyncSettings();
+    if (!sync.rootOk || rootSuspicious()) await alignRoot(dirHandle ? dirHandle.name : pendingRootName, true);
     saveSyncSettings();   // 一併儲存資料夾位置與編號對應設定
     if ($('#sClearSample').checked) docs = docs.filter(d => !/^s\d+$/.test(d.uid));
     let add = 0, upd = 0, rm = 0; const seen = new Set();
@@ -2056,7 +2144,7 @@ textarea.in.auto{min-height:46px;resize:none;overflow:hidden;overflow-wrap:anywh
 
   // 初始化
   if (!/HACCP\s*=/i.test(sync.map || '')){ sync.map = (sync.map ? sync.map + ', ' : '') + 'HC=22000, HACCP=22000'; store.set(KEY.sync, sync); }   // 舊設定自動補上
-  $('#sRoot').value = sync.root; $('#sMap').value = sync.map;
+  $('#sRoot').value = sync.root; $('#sMap').value = sync.map; updateRootWarn();
   $('#sRoot').addEventListener('change', saveSyncSettings); $('#sMap').addEventListener('change', saveSyncSettings);
   $('#sClearSample').checked = docs.some(d => /^s\d+$/.test(d.uid));
   $('#sInfo').textContent = syncInfoText();
@@ -2468,6 +2556,97 @@ textarea.in.auto{min-height:46px;resize:none;overflow:hidden;overflow-wrap:anywh
       </div>`; }).join('')).join('')}</div>`).join('');
   }
   window.__renderMap = renderMap;
+
+  /* ---------- 登錄檢查：資料夾裡的電子檔 ↔ 文件目錄 ---------- */
+  // 找出①資料夾裡有、但目錄還沒登錄的檔案（可一鍵登錄）②目錄有、但資料夾找不到電子檔的文件
+  let regTab = 'new', regSel = new Set();
+  function regAnalyze(){
+    const files = fidx.files.filter(f => DOC_EXT.test(baseName(f.rel)) && !baseName(f.rel).startsWith('~$'));
+    const keys = docs.map(d => ({d, k:compact(d.code || '')})).filter(x => x.k.length >= 3);
+    const linkedRel = new Set(); docs.forEach(d => getLinks(d).forEach(l => l.rel && linkedRel.add(l.rel.toLowerCase())));
+    const matchedDocs = new Set(), unreg = [];
+    files.forEach(f => {
+      const c = compact(baseName(f.rel));
+      const hits = keys.filter(x => x.k.length >= 6 ? c.includes(x.k) : c.startsWith(x.k));
+      hits.forEach(x => matchedDocs.add(x.d));
+      if (!hits.length && !linkedRel.has(f.rel.toLowerCase())) unreg.push(f);
+    });
+    docs.forEach(d => { if (getLinks(d).some(l => l.rel || l.abs || l.url || l.hid)) matchedDocs.add(d); });
+    const map = parseMap(), mapped = allBinders().filter(b => b.item.dir).sort((a, b) => b.item.dir.length - a.item.dir.length);
+    const items = unreg.map(f => {
+      const p = parseFile(f.rel, f.mtime, map) || {};
+      const b = mapped.find(x => f.rel.startsWith(x.item.dir + '\\'));
+      return {f, p:p.skip ? null : p, bid:b ? b.item.id : '', std:(p && !p.skip && p.std) || (b ? binderStd({cab:b.cab, item:b.item}) : '')};
+    });
+    const miss = docs.filter(d => !matchedDocs.has(d) && d.status !== '已廢止');
+    return {files, items, miss, ok:docs.filter(d => matchedDocs.has(d))};
+  }
+  function renderReg(){
+    const has = fidx.files.length;
+    $('#regInfo').textContent = has ? `比對「${sync.root}」底下 ${fidx.files.length} 個檔案與目錄 ${docs.length} 份文件（以上次同步的資料為準）`
+      : '還沒有同步資料夾。請先到「資料夾匯入」選擇 ' + (sync.root || 'D:\\J-ISO驗證文件') + '，系統才能比對哪些檔案需要登錄。';
+    if (!has){ $('#regSum').innerHTML = ''; $('#regList').innerHTML = '<button type="button" class="btn pri" id="regGoSync">前往同步資料夾</button>'; $('#regBar').innerHTML = ''; return; }
+    const R = regAnalyze();
+    $('#regSum').innerHTML = `<div><b class="new">${R.items.length}</b><span>未登錄的檔案</span></div><div><b style="color:var(--orange)">${R.miss.length}</b><span>缺電子檔</span></div><div><b class="upd">${R.ok.length}</b><span>已對應</span></div>`;
+    $$('#regSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.r === regTab)));
+    const ext = n => (n.split('.').pop() || '').toUpperCase().slice(0, 4);
+    if (regTab === 'new'){
+      const can = R.items.filter(x => x.p && x.p.code);
+      regSel = new Set([...regSel].filter(r => can.some(x => x.f.rel === r)));
+      $('#regBar').innerHTML = R.items.length ? `<div class="reg-bar"><label class="chk" style="padding:0"><input type="checkbox" id="regAll" ${can.length && regSel.size === can.length ? 'checked' : ''}>全選可自動辨識的 ${can.length} 個</label>
+        <button type="button" class="btn pri save" id="regDo" ${regSel.size ? '' : 'disabled style="opacity:.5"'}>登錄已勾選的 ${regSel.size} 個</button></div>` : '';
+      $('#regList').innerHTML = R.items.length ? R.items.slice(0, 400).map((x, k) => `<div class="reg-row">
+          ${x.p && x.p.code ? `<input type="checkbox" data-sel="${esc(x.f.rel)}" ${regSel.has(x.f.rel) ? 'checked' : ''} aria-label="勾選">` : '<span style="width:20px"></span>'}
+          <span class="tagk">${esc(ext(x.f.rel))}</span>
+          <span class="rt"><b>${esc(baseName(x.f.rel))}</b>
+            <small>${esc(x.f.rel.split('\\').slice(0, -1).join(' › ') || '（根目錄）')}</small>
+            <small class="sug">${x.p && x.p.code ? `將登錄為：${esc(x.p.code)} ${esc(x.p.title)}｜ISO ${esc(x.std || '未分類')}${x.bid ? '｜' + esc(binderName(findBinder(x.bid).item)) : '｜未指定文件夾'}` : '檔名沒有文件編號，請按「手動登錄」填寫'}</small></span>
+          <span class="act2"><button type="button" class="lk-open" data-regopen="${k}">開啟</button><button type="button" class="lk-copy" data-reg1="${k}">${x.p && x.p.code ? '登錄' : '手動登錄'}</button></span>
+        </div>`).join('') + (R.items.length > 400 ? `<p class="hint">還有 ${R.items.length - 400} 個未列出</p>` : '')
+        : '<p class="hint" style="padding:16px 4px">👍 資料夾裡的電子檔都已經登錄在目錄中了</p>';
+      window.__regItems = R.items;
+    } else {
+      const list = regTab === 'miss' ? R.miss : R.ok;
+      $('#regBar').innerHTML = regTab === 'miss' && list.length ? '<p class="hint" style="margin:0 4px 8px">這些文件在資料夾中找不到檔名含其編號的電子檔。可能是檔名沒寫編號、放在其他位置，或尚未電子化。點一下可手動連結檔案。</p>' : '';
+      $('#regList').innerHTML = list.length ? list.slice(0, 400).map(d => `<div class="reg-row" data-regdoc="${esc(d.uid)}" style="cursor:pointer"><span class="tagk">${esc(d.code)}</span><span class="rt"><b>${esc(d.title)}</b><small>${d.binder && findBinder(d.binder) ? esc(binderText(d.binder, true)) : '未指定文件夾'}</small></span></div>`).join('')
+        : `<p class="hint" style="padding:16px 4px">${regTab === 'miss' ? '👍 目錄中的文件都找得到電子檔' : '目前沒有已對應的文件'}</p>`;
+    }
+  }
+  window.__renderReg = renderReg;
+  function regAdd(x){
+    const p = x.p, d = {uid:'r' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), std:x.std || '9001', code:p.code, title:p.title, clause:'', dept:'',
+      ver:p.ver || '', date:p.date || '', cycle:12, status:p.status || '現行有效', retention:'', forms:'', note:'',
+      binder:x.bid || '', binders:x.bid ? [x.bid] : [], links:[{name:baseName(x.f.rel), rel:x.f.rel, src:'folder'}], path:x.f.rel, src:'folder'};
+    docs.push(d); return d;
+  }
+  $('#regSeg').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; regTab = b.dataset.r; renderReg(); });
+  $('#tools').addEventListener('change', e => {
+    if (e.target.id === 'regAll'){ const can = (window.__regItems || []).filter(x => x.p && x.p.code); regSel = e.target.checked ? new Set(can.map(x => x.f.rel)) : new Set(); renderReg(); }
+    const sel = e.target.closest('[data-sel]'); if (sel){ sel.checked ? regSel.add(sel.dataset.sel) : regSel.delete(sel.dataset.sel); renderReg(); }
+  });
+  $('#tools').addEventListener('click', async e => {
+    if (e.target.closest('#regGoSync')){ goTools('sync'); return; }
+    const items = window.__regItems || [];
+    const op = e.target.closest('[data-regopen]'); if (op){ const x = items[+op.dataset.regopen]; if (x) openLink({name:baseName(x.f.rel), rel:x.f.rel}); return; }
+    const one = e.target.closest('[data-reg1]');
+    if (one){
+      const x = items[+one.dataset.reg1]; if (!x) return;
+      if (x.p && x.p.code){ const d = regAdd(x); saveDocs(); renderList(); renderReg(); toast(`已登錄 ${d.code} ${d.title}`); }
+      else {   // 檔名沒有編號：開啟新增表單，先帶入名稱與檔案連結
+        resetForm(false); $('#fTitle').value = baseName(x.f.rel).replace(DOC_EXT, ''); if (x.bid) $('#fBinder').value = x.bid;
+        formLinks = [{name:baseName(x.f.rel), rel:x.f.rel}]; renderFormLinks(); saveDraft(); setTool('form'); history.replaceState && setHash('form', true);
+        toast('已帶入檔名與連結，請補上文件編號後儲存');
+      }
+      return;
+    }
+    if (e.target.closest('#regDo')){
+      const list = items.filter(x => regSel.has(x.f.rel) && x.p && x.p.code); if (!list.length) return;
+      if (!(await askConfirm(`要把勾選的 ${list.length} 個檔案登錄到目錄嗎？\n系統會依檔名建立文件，並自動連結電子檔、放入對應的文件夾。`, {ok:'登錄'}))) return;
+      list.forEach(regAdd); regSel.clear(); saveDocs(); renderList(); renderReg(); toast(`已登錄 ${list.length} 份文件`);
+      return;
+    }
+    const rd = e.target.closest('[data-regdoc]'); if (rd){ openSheet(rd.dataset.regdoc); }
+  });
   function flashMapRow(id){ const r = $(`.map-row[data-bid="${CSS.escape(id)}"]`); if (!r) return; r.scrollIntoView({block:'center'}); r.classList.add('flash'); r.querySelector('input').focus(); setTimeout(() => r.classList.remove('flash'), 2500); }
   $('#mapList').addEventListener('change', async e => {
     const inp = e.target.closest('.map-in'); if (!inp) return;
